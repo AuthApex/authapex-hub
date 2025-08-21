@@ -1,0 +1,18 @@
+name: Deploy docker image to docker hub
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Login to Docker repository
+        run: docker login -u "${{ secrets.CI_REGISTRY_USER }}" -p "${{ secrets.CI_REGISTRY_PASSWORD }}" "${{ secrets.CI_REGISTRY }}"
+      - name: Build the Docker image
+        run: docker build --pull --build-arg NEXT_PUBLIC_GOOGLE_CLIENT_ID=${{secrets.NEXT_PUBLIC_GOOGLE_CLIENT_ID}} -t "${{ secrets.CI_REGISTRY_IMAGE }}" .
+      - name: Publish to Docker repository
+        run: docker push "${{ secrets.CI_REGISTRY_IMAGE }}"
