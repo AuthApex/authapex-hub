@@ -22,4 +22,5 @@ export async function POST(request: NextRequest) {
   }
 
   await invalidateSession({ sessionId: session.sessionId });
+  return new NextResponse(null, { status: 200 });
 }
