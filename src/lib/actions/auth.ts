@@ -6,7 +6,6 @@ import { ValidationError } from 'yup';
 import { createSession, deleteSession, getRawSession } from '@/lib/server/session';
 import { getAuthorizeData } from '@/lib/server/authorizeData';
 import * as bcrypt from 'bcrypt';
-import { User } from '@/lib/models/User';
 import { CredentialResponse } from '@react-oauth/google';
 import {
   createUser,
@@ -17,6 +16,7 @@ import {
   invalidateSession,
 } from '@/lib/server/mongodb';
 import { getGoogleSessionFromToken } from '@/lib/server/googleClient';
+import { User } from '@authapex/core';
 
 const app = 'authapex-hub';
 

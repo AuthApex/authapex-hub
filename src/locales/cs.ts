@@ -1,7 +1,7 @@
 import { Translations } from '@/locales/translation';
 
 export const CS: Translations = {
-  title: 'AuthApex',
+  title: 'AuthApex ID-Hub',
   description: 'AuthApex ID-Hub aplikace.',
   logout: 'Odhlásit se',
   back: 'Zpátky',
@@ -88,7 +88,7 @@ export const CS: Translations = {
         'Naše Služby poskytujeme "tak, jak jsou". Nezaručujeme, že Služby budou bezchybné nebo nepřerušené. Nenese žádnou odpovědnost za přímé, nepřímé, náhodné, speciální nebo následné škody vzniklé v souvislosti s používáním našich Služeb.',
       element2: 'Pokud máte jakékoli dotazy ohledně našich Podmínek využití, kontaktujte nás na',
       list: {
-        element1: 'Email: mail@stanekr.cz',
+        element1: 'Email: gtomyasek@gmail.com',
         element2: 'IG/Threads: @gtomyasek',
       },
     },
@@ -166,7 +166,7 @@ export const CS: Translations = {
       paragraph1:
         'Pokud máte dotazy nebo obavy týkající se našich Zásad ochrany osobních údajů nebo si přejete uplatnit svá práva, jak je popsáno výše, kontaktujte nás prosím prostřednictvím:',
       list: {
-        element1: 'Email: mail@stanekr.cz',
+        element1: 'Email: gtomyasek@gmail.com',
         element2: 'IG/Threads: @gtomyasek',
       },
       paragraph2:

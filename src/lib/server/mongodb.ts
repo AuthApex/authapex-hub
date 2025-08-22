@@ -1,7 +1,7 @@
 import 'server-only';
-import { UserWithPassword } from '@/lib/models/User';
 import { getServerState } from '@/lib/server/serverState';
 import { nanoid } from 'nanoid';
+import { UserWithPassword } from '@/lib/models/User';
 
 export async function invalidateSession({ sessionId }: { sessionId: string }) {
   try {
@@ -184,6 +184,31 @@ export async function getUserIdByAuthCode(authCode: string): Promise<string | nu
       return null;
     }
     return authCodeDoc.userId;
+  } catch {
+    return null;
+  }
+}
+
+export async function getUserByUserId(userId: string): Promise<UserWithPassword | null> {
+  try {
+    const serverState = getServerState();
+    const db = serverState.mongoClient.db(serverState.mongoDbName);
+
+    const user = await db.collection('users').findOne({ userId: userId });
+    if (!user) {
+      return null;
+    }
+
+    return {
+      userId: user.userId,
+      email: user.email,
+      password: user.password,
+      displayName: user.displayName,
+      username: user.username,
+      roles: user.roles,
+      profileImageId: user.profileImageId,
+      profileImageUrl: user.profileImageUrl,
+    };
   } catch {
     return null;
   }

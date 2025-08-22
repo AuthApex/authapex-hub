@@ -8,43 +8,8 @@ import Image from 'next/image';
 import { Button, Typography } from 'gtomy-lib';
 import { authorize } from '@/lib/actions/authorize';
 import { Footer } from '@/components/Footer';
-import { parseAuthorizeData } from '@/lib/aurthorizeUtils';
 import Fuse from 'fuse.js';
-
-enum VerifiedStatus {
-  NO_DATA,
-  VERIFIED,
-  NOT_VERIFIED,
-}
-
-interface VerifiedApp {
-  name: string;
-  url: string;
-}
-
-// TODO: Move to config file
-const VERIFIED_APPS: VerifiedApp[] = [
-  {
-    name: 'authapex',
-    url: 'https://id.authapex.net',
-  },
-  {
-    name: 'gtomy',
-    url: 'https://gtomy.net',
-  },
-  {
-    name: 'mythranel',
-    url: 'https://mythranel.net',
-  },
-  {
-    name: 'prvni-sobota',
-    url: 'https://prvni-sobota.cz',
-  },
-  {
-    name: 'galleryeet',
-    url: 'https://galleryeet.net',
-  },
-];
+import { AUTHORIZATION_SERVICE, VERIFIED_APPS, VerifiedStatus } from '@/lib/consts';
 
 const fuse = new Fuse(VERIFIED_APPS, {
   keys: ['name'],
@@ -75,7 +40,7 @@ export function AuthorizeCard({ isAuth, trans, lang }: AuthorizeCardProps) {
   const [rawAuthorizeData, setRawAuthorizeData, removeRawAuthorizeData] = useCookie('authorize-data', undefined);
   const searchParams = useSearchParams();
 
-  const authorizeData = parseAuthorizeData(rawAuthorizeData);
+  const authorizeData = AUTHORIZATION_SERVICE.decodeAuthorizeData(rawAuthorizeData);
 
   useEffect(() => {
     const appData = searchParams.get('appData');

@@ -1,7 +1,7 @@
 import { Translations } from '@/locales/translation';
 
 export const EN: Translations = {
-  title: 'AuthApex',
+  title: 'AuthApex ID-Hub',
   description: 'AuthApex ID-Hub application.',
   back: 'Back',
   logout: 'Logout',
@@ -88,7 +88,7 @@ export const EN: Translations = {
         'We provide our Services "as is". We do not guarantee that the Services will be error-free or uninterrupted. We are not responsible for any direct, indirect, incidental, special, or consequential damages arising from the use of our Services.',
       element2: 'If you have any questions regarding our Terms of Service, contact us at',
       list: {
-        element1: 'Email: mail@stanekr.cz ',
+        element1: 'Email: gtomyasek@gmail.com ',
         element2: 'IG/Threads: @gtomyasek',
       },
     },
@@ -166,7 +166,7 @@ export const EN: Translations = {
       paragraph1:
         'If you have questions or concerns about our Privacy Policy or wish to exercise your rights as described above, please contact us through:',
       list: {
-        element1: 'Email: mail@stanekr.cz',
+        element1: 'Email: gtomyasek@gmail.com',
         element2: 'IG/Threads: @gtomyasek',
       },
       paragraph2:

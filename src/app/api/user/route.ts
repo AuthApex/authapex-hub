@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { decrypt } from '@/lib/server/encryption';
 import { SessionPayload } from '@/lib/server/session';
-import { User } from '@/lib/models/User';
 import { getUserBySession } from '@/lib/server/mongodb';
+import { User } from '@authapex/core';
 
 export interface UserRequest {
   session?: string;
