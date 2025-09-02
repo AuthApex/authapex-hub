@@ -45,6 +45,7 @@
     "postcss": "^8.5.2",
     "prettier": "3.5.1",
     "sort-package-json": "^2.14.0",
+    "standard-version": "^9.5.0",
     "tailwindcss": "^4.0.7",
     "typescript": "^5"
   }
