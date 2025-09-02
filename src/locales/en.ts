@@ -1,8 +1,8 @@
 import { Translations } from '@/locales/translation';
 
 export const EN: Translations = {
-  title: 'AuthApex ID-Hub',
-  description: 'AuthApex ID-Hub application.',
+  title: 'AuthApex Hub',
+  description: 'AuthApex Hub application.',
   back: 'Back',
   logout: 'Logout',
   and: 'and',
@@ -88,8 +88,8 @@ export const EN: Translations = {
         'We provide our Services "as is". We do not guarantee that the Services will be error-free or uninterrupted. We are not responsible for any direct, indirect, incidental, special, or consequential damages arising from the use of our Services.',
       element2: 'If you have any questions regarding our Terms of Service, contact us at',
       list: {
-        element1: 'Email: gtomyasek@gmail.com ',
-        element2: 'IG/Threads: @gtomyasek',
+        element1: 'Bluesky: @authapex.net',
+        element2: 'Email: support@authapex.net',
       },
     },
   },
@@ -166,8 +166,8 @@ export const EN: Translations = {
       paragraph1:
         'If you have questions or concerns about our Privacy Policy or wish to exercise your rights as described above, please contact us through:',
       list: {
-        element1: 'Email: gtomyasek@gmail.com',
-        element2: 'IG/Threads: @gtomyasek',
+        element1: 'Bluesky: @authapex.net',
+        element2: 'Email: support@authapex.net',
       },
       paragraph2:
         'By providing clear channels for communication regarding privacy concerns and exercising GDPR rights, we aim at maintaining transparency and trust with our users while ensuring compliance with applicable laws and regulations.',
