@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.3](https://github.com/AuthApex/authapex-hub/compare/v0.1.2...v0.1.3) (2025-10-02)
+
+
+### Features
+
+* add viewport metadata configuration to layout.tsx ([0a48ae3](https://github.com/AuthApex/authapex-hub/commit/0a48ae34a235344a6ecd48e67e1d8ee100a67094))
+
+
+### Bug Fixes
+
+* adjust role display structure and improve typography usage in Home page ([286ac60](https://github.com/AuthApex/authapex-hub/commit/286ac60d594411e7341f28f4c379feb2164a5035))
+* enhance app verification logic and optimize verified app display names ([afa8ff5](https://github.com/AuthApex/authapex-hub/commit/afa8ff5d8b700b4112a0055a72918174aa573f75))
+* update localization titles and descriptions to remove 'Hub' from app name ([17aaa83](https://github.com/AuthApex/authapex-hub/commit/17aaa83c4a173e1d5da4631e789b974a94204b2d))
+* use constant for app name in session creation ([5f5f86a](https://github.com/AuthApex/authapex-hub/commit/5f5f86a8bd31967d0433b716b1491d1c4f873b30))
+
 ### [0.1.2](https://github.com/AuthApex/authapex-hub/compare/v0.1.1...v0.1.2) (2025-10-02)
 
 
