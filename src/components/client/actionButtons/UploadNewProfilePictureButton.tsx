@@ -27,7 +27,7 @@ export function UploadNewProfilePictureButton({ trans, setIsLoading, isLoading }
     formData.append('file', file);
 
     try {
-      const response = await fetch('/api/user/profile-picture', {
+      const response = await fetch('/api/user/profile', {
         method: 'POST',
         body: formData,
       });
