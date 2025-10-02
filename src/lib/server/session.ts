@@ -11,16 +11,11 @@ export interface SessionPayload extends JWTPayload {
   expiresAt: string;
 }
 
-export async function generateSession() {
+export async function createSession() {
   const sessionId = nanoid();
   const expiresAt = addMonths(new Date(), 1);
   const session = await encrypt<SessionPayload>({ sessionId, expiresAt: expiresAt.toISOString() }, expiresAt);
 
-  return { sessionId, expiresAt, session };
-}
-
-export async function createSession() {
-  const { sessionId, expiresAt, session } = await generateSession();
   const cookieStore = await cookies();
 
   cookieStore.set(sessionKey, session, {

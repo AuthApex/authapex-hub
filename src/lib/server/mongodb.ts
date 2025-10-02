@@ -60,18 +60,16 @@ export async function invalidateSession({ sessionId }: { sessionId: string }): P
 export async function insertSession({
   userId,
   sessionId,
-  app,
   expiresAt,
 }: {
   userId: string;
   sessionId: string;
-  app: string;
   expiresAt: Date;
 }): Promise<DbUpdateResult> {
   try {
     const serverState = getServerState();
     const db = serverState.mongoClient.db(serverState.mongoDbName);
-    await db.collection('sessions').insertOne({ userId, sessionId, app, expiresAt });
+    await db.collection('sessions').insertOne({ userId, sessionId, expiresAt });
     return { success: true };
   } catch {
     return { success: false };
@@ -128,11 +126,11 @@ export async function getUserByGoogleId(googleId: string): Promise<UserWithPassw
   }
 }
 
-export async function getUserBySession(sessionId: string, app: string): Promise<UserWithPassword | null> {
+export async function getUserBySession(sessionId: string): Promise<UserWithPassword | null> {
   try {
     const serverState = getServerState();
     const db = serverState.mongoClient.db(serverState.mongoDbName);
-    const session = await db.collection('sessions').findOne({ sessionId, app, expiresAt: { $gt: new Date() } });
+    const session = await db.collection('sessions').findOne({ sessionId, expiresAt: { $gt: new Date() } });
 
     if (!session) {
       return null;

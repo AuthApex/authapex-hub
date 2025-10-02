@@ -6,6 +6,7 @@ export const APP_NAME = 'authapex';
 export const REDIRECT_URL = ''; // Not needed
 
 export const AUTHORIZATION_SERVICE = new AuthorizationService(AUTH_URL, APP_NAME, REDIRECT_URL);
+export const PERMISSION_SERVICE = new PermissionService(APP_NAME);
 
 export enum VerifiedStatus {
   NO_DATA,
@@ -46,5 +47,3 @@ export const VERIFIED_APPS: VerifiedApp[] = [
     url: 'https://galleryeet.net',
   },
 ];
-
-export const PERMISSION_SERVICE = new PermissionService(APP_NAME);

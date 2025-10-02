@@ -17,7 +17,6 @@ import {
 } from '@/lib/server/mongodb';
 import { getGoogleSessionFromToken } from '@/lib/server/googleClient';
 import { User } from '@authapex/core';
-import { APP_NAME } from '@/lib/consts';
 
 export async function signinWithGoogle(credentials: CredentialResponse): Promise<void> {
   if (!credentials.credential) {
@@ -50,7 +49,6 @@ export async function signinWithGoogle(credentials: CredentialResponse): Promise
     sessionId: session.sessionId,
     userId: user.userId,
     expiresAt: session.expiresAt,
-    app: APP_NAME,
   });
   await handleAuthorizeRedirect();
 }
@@ -102,7 +100,6 @@ export async function signin(formData: FormData): Promise<ValidationResult> {
     sessionId: session.sessionId,
     userId: user.userId,
     expiresAt: session.expiresAt,
-    app: APP_NAME,
   });
   if (result.success) {
     await handleAuthorizeRedirect();
@@ -157,7 +154,6 @@ export async function signup(formData: FormData): Promise<ValidationResult> {
     sessionId: session.sessionId,
     userId: user.userId,
     expiresAt: session.expiresAt,
-    app: APP_NAME,
   });
 
   if (result.success) {
@@ -202,7 +198,7 @@ export async function getAuth(): Promise<AuthResponse> {
     return { isAuth: false, sessionId: null, user: null, expiresAt: null, canChangeProfileImage: false };
   }
 
-  const user = await getUserBySession(session.sessionId, APP_NAME);
+  const user = await getUserBySession(session.sessionId);
   if (!user) {
     return { isAuth: false, sessionId: null, user: null, canChangeProfileImage: false, expiresAt: null };
   }
