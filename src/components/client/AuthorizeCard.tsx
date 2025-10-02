@@ -7,7 +7,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Button, Typography } from 'gtomy-lib';
 import { authorize } from '@/lib/actions/authorize';
 import Fuse from 'fuse.js';
-import { AUTHORIZATION_SERVICE, VERIFIED_APPS, VerifiedStatus } from '@/lib/consts';
+import { AUTHORIZATION_SERVICE, VERIFIED_APPS, VerifiedStatus, VerifiedStatusResponse } from '@/lib/consts';
 
 const fuse = new Fuse(VERIFIED_APPS, {
   keys: ['name'],
@@ -15,16 +15,24 @@ const fuse = new Fuse(VERIFIED_APPS, {
   ignoreDiacritics: true,
 });
 
-function getVerifiedStatus(appName: string, url: string): VerifiedStatus {
+function getVerifiedStatus(appName: string, url: string): VerifiedStatusResponse {
   const verifiedApp = VERIFIED_APPS.find((app) => app.name === appName);
   if (!verifiedApp) {
     const results = fuse.search(appName).map((result) => result.item);
     if (results.length > 0) {
-      return VerifiedStatus.NOT_VERIFIED;
+      return {
+        status: VerifiedStatus.NOT_VERIFIED,
+      };
     }
-    return VerifiedStatus.NO_DATA;
+    return {
+      status: VerifiedStatus.NO_DATA,
+    };
   }
-  return url === verifiedApp.url ? VerifiedStatus.VERIFIED : VerifiedStatus.NOT_VERIFIED;
+  return url === verifiedApp.url
+    ? { status: VerifiedStatus.VERIFIED, displayName: verifiedApp.displayName }
+    : {
+        status: VerifiedStatus.NOT_VERIFIED,
+      };
 }
 
 export interface AuthorizeCardProps {
@@ -76,12 +84,15 @@ export function AuthorizeCard({ isAuth, trans, lang }: AuthorizeCardProps) {
   }
 
   const redirectUrlOrigin = new URL(authorizeData.redirectUrl).origin;
-  const verifiedStatus = getVerifiedStatus(authorizeData.app, redirectUrlOrigin);
+  const { status: verifiedStatus, displayName: verifiedDisplayName } = getVerifiedStatus(
+    authorizeData.app,
+    redirectUrlOrigin
+  );
 
   return (
     <>
       <div className="grid grid-cols-2 gap-4">
-        <Typography>{trans.authorize.appName}</Typography>
+        <Typography>{verifiedDisplayName ?? trans.authorize.appName}</Typography>
         <Typography className="flex items-center gap-2 flex-wrap">
           {authorizeData.app}
           {verifiedStatus === VerifiedStatus.VERIFIED && (

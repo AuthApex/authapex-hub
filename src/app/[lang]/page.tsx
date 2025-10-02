@@ -8,11 +8,9 @@ import { TokenRefresher } from '@/components/client/TokenRefresher';
 import { Footer } from '@/components/Footer';
 import Link from 'next/link';
 import { ProfileImage } from '@/components/ProfileImage';
-import { capitalizeFirstLetter } from '@/lib/stringUtils';
-import { PERMISSION_SERVICE } from '@/lib/consts';
+import { PERMISSION_SERVICE, VERIFIED_APPS } from '@/lib/consts';
 import { EditDisplayNameButton } from '@/components/client/actionButtons/EditDisplayNameButton';
 import { ProfilePictureButtons } from '@/components/client/actionButtons/ProfilePictureButtons';
-import { Fragment } from 'react';
 
 export default async function Home({ params }: Readonly<{ params: Promise<{ lang: string }> }>) {
   const lang = (await params).lang;
@@ -65,7 +63,10 @@ export default async function Home({ params }: Readonly<{ params: Promise<{ lang
                   <div className="flex flex-col">
                     {user.roles.map((role) => (
                       <div key={role.application + role.role}>
-                        <Typography weight="semibold">{capitalizeFirstLetter(role.application)}:&nbsp;</Typography>
+                        <Typography weight="semibold">
+                          {VERIFIED_APPS.find((app) => app.name === role.application)?.displayName ?? role.application}
+                          :&nbsp;
+                        </Typography>
                         <Typography>{role.role.toUpperCase()}</Typography>
                       </div>
                     ))}

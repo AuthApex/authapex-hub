@@ -13,26 +13,36 @@ export enum VerifiedStatus {
   NOT_VERIFIED,
 }
 
+export interface VerifiedStatusResponse {
+  status: VerifiedStatus;
+  displayName?: string;
+}
+
 export interface VerifiedApp {
   name: string;
+  displayName: string;
   url: string;
 }
 
 export const VERIFIED_APPS: VerifiedApp[] = [
   {
     name: APP_NAME,
+    displayName: 'AuthApex',
     url: AUTH_URL,
   },
   {
     name: 'mythranel',
+    displayName: 'Mythranel',
     url: 'https://mythranel.net',
   },
   {
     name: 'prvni-sobota',
+    displayName: 'První sobota',
     url: 'https://prvni-sobota.cz',
   },
   {
     name: 'galleryeet',
+    displayName: 'GallerYeet',
     url: 'https://galleryeet.net',
   },
 ];
