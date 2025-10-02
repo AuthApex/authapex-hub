@@ -3,6 +3,7 @@ import { getAuth } from '@/lib/actions/auth';
 import { addWeeks, isAfter } from 'date-fns';
 import { insertSession, invalidateSession } from '@/lib/server/mongodb';
 import { createSession, deleteSession } from '@/lib/server/session';
+import { APP_NAME } from '@/lib/consts';
 
 export async function GET() {
   const auth = await getAuth();
@@ -19,7 +20,7 @@ export async function GET() {
         sessionId: session.sessionId,
         userId: auth.user.userId,
         expiresAt: session.expiresAt,
-        app: 'authapex-hub',
+        app: APP_NAME,
       });
 
       if (!insertResult.success) {
