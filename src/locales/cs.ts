@@ -1,8 +1,8 @@
 import { Translations } from '@/locales/translation';
 
 export const CS: Translations = {
-  title: 'AuthApex Hub',
-  description: 'AuthApex Hub aplikace.',
+  title: 'AuthApex',
+  description: 'AuthApex aplikace.',
   logout: 'Odhlásit se',
   back: 'Zpátky',
   and: 'a',
