@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { getTranslation } from '@/locales/lang';
 import { ReactNode } from 'react';
 
@@ -19,6 +19,11 @@ export async function generateMetadata({ params }: Readonly<{ params: Promise<{ 
     description: trans.description,
   };
 }
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+};
 
 export default async function RootLayout({
   children,
