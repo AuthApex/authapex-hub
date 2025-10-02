@@ -12,6 +12,7 @@ import { capitalizeFirstLetter } from '@/lib/stringUtils';
 import { PERMISSION_SERVICE } from '@/lib/consts';
 import { EditDisplayNameButton } from '@/components/client/actionButtons/EditDisplayNameButton';
 import { ProfilePictureButtons } from '@/components/client/actionButtons/ProfilePictureButtons';
+import { Fragment } from 'react';
 
 export default async function Home({ params }: Readonly<{ params: Promise<{ lang: string }> }>) {
   const lang = (await params).lang;
@@ -63,9 +64,10 @@ export default async function Home({ params }: Readonly<{ params: Promise<{ lang
                   <Typography>{trans.home.permissions}</Typography>
                   <div className="flex flex-col">
                     {user.roles.map((role) => (
-                      <Typography key={role.application + role.role}>
-                        {capitalizeFirstLetter(role.application)}: {role.role.toUpperCase()}
-                      </Typography>
+                      <div key={role.application + role.role}>
+                        <Typography weight="semibold">{capitalizeFirstLetter(role.application)}:&nbsp;</Typography>
+                        <Typography>{role.role.toUpperCase()}</Typography>
+                      </div>
                     ))}
                   </div>
                 </>
