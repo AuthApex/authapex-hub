@@ -3,13 +3,57 @@ import { getServerState } from '@/lib/server/serverState';
 import { nanoid } from 'nanoid';
 import { UserWithPassword } from '@/lib/models/User';
 
-export async function invalidateSession({ sessionId }: { sessionId: string }) {
+export interface DbUpdateResult {
+  success: boolean;
+}
+
+export async function setDisplayName(userId: string, newDisplayName: string): Promise<DbUpdateResult> {
+  try {
+    const serverState = getServerState();
+    const db = serverState.mongoClient.db(serverState.mongoDbName);
+    await db.collection('users').updateOne({ userId }, { $set: { displayName: newDisplayName } });
+    return { success: true };
+  } catch {
+    return { success: false };
+  }
+}
+
+export async function setProfileImageId(
+  userId: string,
+  newProfileImageId: string | null | undefined
+): Promise<DbUpdateResult> {
+  try {
+    const serverState = getServerState();
+    const db = serverState.mongoClient.db(serverState.mongoDbName);
+    await db.collection('users').updateOne({ userId }, { $set: { profileImageId: newProfileImageId } });
+    return { success: true };
+  } catch {
+    return { success: false };
+  }
+}
+
+export async function setProfileImageUrl(
+  userId: string,
+  newProfileImageUrl: string | null | undefined
+): Promise<DbUpdateResult> {
+  try {
+    const serverState = getServerState();
+    const db = serverState.mongoClient.db(serverState.mongoDbName);
+    await db.collection('users').updateOne({ userId }, { $set: { profileImageUrl: newProfileImageUrl } });
+    return { success: true };
+  } catch {
+    return { success: false };
+  }
+}
+
+export async function invalidateSession({ sessionId }: { sessionId: string }): Promise<DbUpdateResult> {
   try {
     const serverState = getServerState();
     const db = serverState.mongoClient.db(serverState.mongoDbName);
     await db.collection('sessions').deleteOne({ sessionId });
+    return { success: true };
   } catch {
-    return;
+    return { success: false };
   }
 }
 
@@ -23,14 +67,14 @@ export async function insertSession({
   sessionId: string;
   app: string;
   expiresAt: Date;
-}): Promise<{ inserted: boolean }> {
+}): Promise<DbUpdateResult> {
   try {
     const serverState = getServerState();
     const db = serverState.mongoClient.db(serverState.mongoDbName);
     await db.collection('sessions').insertOne({ userId, sessionId, app, expiresAt });
-    return { inserted: true };
+    return { success: true };
   } catch {
-    return { inserted: false };
+    return { success: false };
   }
 }
 
@@ -107,6 +151,7 @@ export async function getUserBySession(sessionId: string, app: string): Promise<
       roles: user.roles,
       profileImageId: user.profileImageId,
       profileImageUrl: user.profileImageUrl,
+      googleId: user.googleId,
     };
   } catch {
     return null;
@@ -136,13 +181,13 @@ export async function createUser({
     const inserted = await db.collection('users').insertOne({
       userId,
       googleId,
-      username,
+      username: username.trim().replace(/\s/g, '_').toLowerCase(),
       email,
       password,
       emailVerified: emailVerified,
       emailVerificationKey,
       roles: [],
-      displayName: username.toLowerCase().trim(),
+      displayName: username.trim(),
       profileImageUrl,
     });
     const user = await db.collection('users').findOne({ _id: inserted.insertedId });
@@ -165,13 +210,14 @@ export async function createUser({
   }
 }
 
-export async function insertAuthCode(authCode: string, userId: string) {
+export async function insertAuthCode(authCode: string, userId: string): Promise<DbUpdateResult> {
   try {
     const serverState = getServerState();
     const db = serverState.mongoClient.db(serverState.mongoDbName);
     await db.collection('authCodes').insertOne({ authCode, userId });
+    return { success: true };
   } catch {
-    return;
+    return { success: false };
   }
 }
 
@@ -214,12 +260,13 @@ export async function getUserByUserId(userId: string): Promise<UserWithPassword 
   }
 }
 
-export async function removeAuthCode(authCode: string) {
+export async function removeAuthCode(authCode: string): Promise<DbUpdateResult> {
   try {
     const serverState = getServerState();
     const db = serverState.mongoClient.db(serverState.mongoDbName);
     await db.collection('authCodes').deleteOne({ authCode });
+    return { success: true };
   } catch {
-    return;
+    return { success: false };
   }
 }

@@ -1,4 +1,4 @@
-import { AuthorizationService } from '@authapex/core';
+import { AuthorizationService, PermissionService } from '@authapex/core';
 
 // TODO: Move configs to env
 export const AUTH_URL = 'https://id.authapex.net';
@@ -24,10 +24,6 @@ export const VERIFIED_APPS: VerifiedApp[] = [
     url: AUTH_URL,
   },
   {
-    name: 'gtomy',
-    url: 'https://gtomy.net',
-  },
-  {
     name: 'mythranel',
     url: 'https://mythranel.net',
   },
@@ -40,3 +36,5 @@ export const VERIFIED_APPS: VerifiedApp[] = [
     url: 'https://galleryeet.net',
   },
 ];
+
+export const PERMISSION_SERVICE = new PermissionService(APP_NAME);

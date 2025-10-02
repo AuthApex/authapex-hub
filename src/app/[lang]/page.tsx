@@ -6,6 +6,12 @@ import { redirect } from 'next/navigation';
 import { getRoute } from '@/lib/getRoute';
 import { TokenRefresher } from '@/components/client/TokenRefresher';
 import { Footer } from '@/components/Footer';
+import Link from 'next/link';
+import { ProfileImage } from '@/components/ProfileImage';
+import { capitalizeFirstLetter } from '@/lib/stringUtils';
+import { PERMISSION_SERVICE } from '@/lib/consts';
+import { EditDisplayNameButton } from '@/components/client/actionButtons/EditDisplayNameButton';
+import { ProfilePictureButtons } from '@/components/client/actionButtons/ProfilePictureButtons';
 
 export default async function Home({ params }: Readonly<{ params: Promise<{ lang: string }> }>) {
   const lang = (await params).lang;
@@ -28,35 +34,60 @@ export default async function Home({ params }: Readonly<{ params: Promise<{ lang
             {trans.title}
           </Typography>
         </div>
-        <div className="card md:bg-neutral text-neutral-content w-lg max-w-screen">
+        <div className="card md:bg-neutral text-neutral-content w-3xl max-w-screen">
           <div className="card-body flex flex-col gap-4">
+            <div className="flex justify-between flex-col md:flex-row gap-4">
+              <div className="flex gap-4">
+                <ProfileImage user={user} className="w-24 h-24" />
+                <div className="flex flex-col">
+                  <Typography size="xl" weight="semibold">
+                    {user.displayName}
+                  </Typography>
+                  <Typography>@{user.username}</Typography>
+                </div>
+              </div>
+              <div>
+                <Typography>{trans.home.userId}:&nbsp;</Typography>
+                <Typography>{user.userId}</Typography>
+              </div>
+            </div>
+            <div className="divider"></div>
+            <Typography size="xl" weight="semibold">
+              {trans.home.userInformation}
+            </Typography>
             <div className="grid grid-cols-2 gap-4 break-all">
-              <Typography>{trans.home.userId}</Typography>
-              <Typography>{user.userId}</Typography>
-              <Typography>Email</Typography>
+              <Typography>{trans.home.email}</Typography>
               <Typography>{user.email}</Typography>
-              <Typography>{trans.home.username}</Typography>
-              <Typography>{user.username}</Typography>
-              <Typography>{trans.home.displayName}</Typography>
-              <Typography>{user.displayName}</Typography>
-              {user.profileImageUrl && (
+              {user.roles.length > 0 && (
                 <>
-                  <Typography>{trans.home.profileImageUrl}</Typography>
-                  <Typography>{user.profileImageUrl}</Typography>
-                </>
-              )}
-              {user.profileImageId && (
-                <>
-                  <Typography>{trans.home.profileImageId}</Typography>
-                  <Typography>{user.profileImageId}</Typography>
+                  <Typography>{trans.home.permissions}</Typography>
+                  <div className="flex flex-col">
+                    {user.roles.map((role) => (
+                      <Typography key={role.application + role.role}>
+                        {capitalizeFirstLetter(role.application)}: {role.role.toUpperCase()}
+                      </Typography>
+                    ))}
+                  </div>
                 </>
               )}
             </div>
+
             <div className="divider"></div>
-            <Button onClick={logout}>{trans.logout}</Button>
+            <div className="flex flex-col md:flex-row justify-between gap-12 md:gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <EditDisplayNameButton user={user} trans={trans} />
+                {auth.canChangeProfileImage && <ProfilePictureButtons trans={trans} />}
+                {PERMISSION_SERVICE.hasPermission(user, 'admin') && (
+                  <Button as={Link} href={getRoute(lang, '/admin')} color="accent">
+                    {trans.admin.title}
+                  </Button>
+                )}
+              </div>
+              <Button onClick={logout}>{trans.logout}</Button>
+            </div>
           </div>
         </div>
-        <Footer lang={lang} trans={trans} />
+        <Footer lang={lang} trans={trans} isSignIn />
       </div>
     </div>
   );

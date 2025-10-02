@@ -7,12 +7,17 @@ export const EN: Translations = {
   logout: 'Logout',
   and: 'and',
   home: {
-    username: 'User name',
-    displayName: 'Display name',
-    userId: 'User Id',
-    profileImageId: 'Profile image Id',
-    profileImageUrl: 'Profile image Url',
+    userId: 'Id',
     byUsing: 'By using, you agree to our',
+    removeProfileImage: 'Remove profile image',
+    uploadNewProfileImage: 'Upload profile image',
+    uploadingNewProfileImage: 'Uploading...',
+    email: 'Email',
+    userInformation: 'User information',
+    permissions: 'Permissions',
+    editDisplayName: 'Edit name',
+    displayName: 'Display name',
+    save: 'Save',
   },
   signin: {
     title: 'Welcome back',
@@ -174,5 +179,8 @@ export const EN: Translations = {
       paragraph3:
         'Remember that protecting your privacy starts with being mindful about what information you share online. Always think twice before sharing sensitive details on websites or applications.',
     },
+  },
+  admin: {
+    title: 'Administration',
   },
 };

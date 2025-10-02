@@ -3,9 +3,10 @@ import { MongoClient } from 'mongodb';
 import { getMongoDbClient } from '@/lib/clients/getMongoDbClient';
 import { OAuth2Client } from 'google-auth-library';
 import { getGoogleClient } from '@/lib/clients/getGoogleClient';
+import { CloudflareClient } from 'cloudflare-images';
+import { getCloudflareImagesClient } from '@/lib/clients/getCloudflareImagesClient';
 
 declare global {
-  // eslint-disable-next-line no-var
   var serverState: ServerState;
 }
 
@@ -14,6 +15,7 @@ export interface ServerState {
   mongoClient: MongoClient;
   mongoDbName: string;
   googleClient: OAuth2Client;
+  cloudflareImages: CloudflareClient;
 }
 
 export function getServerState(): ServerState {
@@ -26,6 +28,7 @@ export function getServerState(): ServerState {
       mongoClient: getMongoDbClient(),
       mongoDbName: process.env.MONGODB_DB_NAME,
       googleClient: getGoogleClient(),
+      cloudflareImages: getCloudflareImagesClient(),
     };
   }
   return globalThis.serverState;

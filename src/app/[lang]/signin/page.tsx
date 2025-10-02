@@ -1,11 +1,11 @@
 import { getTranslation } from '@/locales/lang';
 import Image from 'next/image';
-import { Button, TextInput, Typography } from 'gtomy-lib';
-import Link from 'next/link';
-import { signin } from '@/lib/actions/auth';
-import { getRoute } from '@/lib/getRoute';
+import { Typography } from 'gtomy-lib';
 import { Footer } from '@/components/Footer';
+import { LoginForm } from '@/components/client/forms/LoginForm';
 import { GoogleLoginButton } from '@/components/client/GoogleLoginButton';
+import Link from 'next/link';
+import { getRoute } from '@/lib/getRoute';
 
 export default async function Signin({ params }: Readonly<{ params: Promise<{ lang: string }> }>) {
   const lang = (await params).lang;
@@ -20,7 +20,7 @@ export default async function Signin({ params }: Readonly<{ params: Promise<{ la
             {trans.title}
           </Typography>
         </div>
-        <form action={signin} className="card md:bg-neutral text-neutral-content w-sm max-w-screen">
+        <div className="card md:bg-neutral text-neutral-content w-sm max-w-screen">
           <div className="card-body flex flex-col">
             <Typography as="h2" size="xl" weight="bold" className="text-center">
               {trans.signin.title}
@@ -30,18 +30,7 @@ export default async function Signin({ params }: Readonly<{ params: Promise<{ la
               <GoogleLoginButton />
             </div>
             <div className="divider">{trans.signin.divider}</div>
-            <div className="flex flex-col gap-2">
-              <TextInput label="Email" name="email" placeholder="mail@example.com" type="email" />
-              <TextInput
-                label={trans.signin.password}
-                name="password"
-                type="password"
-                placeholder="&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;"
-              />
-              <Button color="primary" type="submit" className="mt-4">
-                {trans.signin.button}
-              </Button>
-            </div>
+            <LoginForm trans={trans} />
             <Typography className="text-center mt-2">
               {trans.signin.dontHaveAnAccount}{' '}
               <Link href={getRoute(lang, '/signup')} className="link">
@@ -49,7 +38,7 @@ export default async function Signin({ params }: Readonly<{ params: Promise<{ la
               </Link>
             </Typography>
           </div>
-        </form>
+        </div>
         <Footer lang={lang} trans={trans} />
       </div>
     </div>

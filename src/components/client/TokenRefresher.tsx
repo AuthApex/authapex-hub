@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import axios from 'axios';
 
 export function TokenRefresher() {
   const refreshRef = useRef<boolean>(false);
@@ -10,7 +11,7 @@ export function TokenRefresher() {
       return;
     }
     refreshRef.current = true;
-    fetch('/api/refresh').catch(console.error);
+    axios.get('/api/refresh', { withCredentials: true }).catch(console.error);
   }, []);
 
   return null;

@@ -8,16 +8,25 @@ export async function GET() {
   const auth = await getAuth();
   if (auth.isAuth && isAfter(addWeeks(new Date(), 1), auth.expiresAt)) {
     try {
-      await invalidateSession({ sessionId: auth.sessionId });
+      const invalidateResult = await invalidateSession({ sessionId: auth.sessionId });
+      if (!invalidateResult.success) {
+        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+      }
       await deleteSession();
 
       const session = await createSession();
-      await insertSession({
+      const insertResult = await insertSession({
         sessionId: session.sessionId,
         userId: auth.user.userId,
         expiresAt: session.expiresAt,
         app: 'authapex-hub',
       });
+
+      if (!insertResult.success) {
+        await deleteSession();
+        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+      }
+
       return NextResponse.json({
         refreshed: true,
       });

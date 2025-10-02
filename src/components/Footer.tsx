@@ -9,11 +9,11 @@ export interface FooterProps {
   isSignIn?: boolean;
 }
 
-export function Footer({ trans, lang }: FooterProps) {
+export function Footer({ trans, lang, isSignIn }: FooterProps) {
   return (
     <div className="text-center p-2">
       <Typography as="p" size="sm">
-        {trans.signin.byContinuing}
+        {isSignIn ? trans.home.byUsing : trans.signin.byContinuing}
       </Typography>
       <Typography as="p" size="sm">
         <Link href={getRoute(lang, '/terms-of-service')} className="link">

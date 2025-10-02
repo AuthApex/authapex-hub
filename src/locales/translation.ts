@@ -6,11 +6,16 @@ export interface Translations {
   and: string;
   home: {
     userId: string;
-    username: string;
-    displayName: string;
-    profileImageId: string;
-    profileImageUrl: string;
     byUsing: string;
+    userInformation: string;
+    permissions: string;
+    email: string;
+    removeProfileImage: string;
+    uploadNewProfileImage: string;
+    uploadingNewProfileImage: string;
+    editDisplayName: string;
+    displayName: string;
+    save: string;
   };
   signin: {
     title: string;
@@ -148,5 +153,8 @@ export interface Translations {
       paragraph2: string;
       paragraph3: string;
     };
+  };
+  admin: {
+    title: string;
   };
 }

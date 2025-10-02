@@ -7,12 +7,17 @@ export const CS: Translations = {
   back: 'Zpátky',
   and: 'a',
   home: {
-    username: 'Uživatelské jméno',
-    displayName: 'Zobrazované jméno',
-    userId: 'Id uživatele',
-    profileImageId: 'Id profilového obrázku',
-    profileImageUrl: 'Url profilového obrázku',
+    userId: 'Id',
     byUsing: 'Využíváním souhlasíte s',
+    removeProfileImage: 'Odstranit profilový obrázek',
+    uploadNewProfileImage: 'Nahrát profilový obrázek',
+    uploadingNewProfileImage: 'Nahrávání...',
+    email: 'Email',
+    userInformation: 'Uživatelské informace',
+    permissions: 'Přístupy',
+    editDisplayName: 'Upravit jméno',
+    displayName: 'Zobrazované jméno',
+    save: 'Uložit',
   },
   signin: {
     title: 'Vítej zpátky',
@@ -174,5 +179,8 @@ export const CS: Translations = {
       paragraph3:
         'Pamatujte, že ochrana vašeho soukromí začíná tím, že si dáváte pozor na to, jaké informace sdílíte online. Vždy si dvakrát rozmyslete, než na webových stránkách nebo v aplikacích sdílíte citlivé údaje.',
     },
+  },
+  admin: {
+    title: 'Administrace',
   },
 };
