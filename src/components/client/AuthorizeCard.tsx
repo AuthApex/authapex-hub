@@ -92,9 +92,9 @@ export function AuthorizeCard({ isAuth, trans, lang }: AuthorizeCardProps) {
   return (
     <>
       <div className="grid grid-cols-2 gap-4">
-        <Typography>{verifiedDisplayName ?? trans.authorize.appName}</Typography>
+        <Typography>{trans.authorize.appName}</Typography>
         <Typography className="flex items-center gap-2 flex-wrap">
-          {authorizeData.app}
+          {verifiedDisplayName ?? authorizeData.app}
           {verifiedStatus === VerifiedStatus.VERIFIED && (
             <div className="tooltip tooltip-success" data-tip={trans.authorize.verifiedTooltip}>
               <div className="badge badge-success badge-sm">{trans.authorize.verified}</div>
