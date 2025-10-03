@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.2.0](https://github.com/AuthApex/authapex-hub/compare/v0.1.3...v0.2.0) (2025-10-03)
+
+
+### Features
+
+* update profile picture API endpoint in route and action buttons ([5d6b1a3](https://github.com/AuthApex/authapex-hub/commit/5d6b1a3d66a7810011b1632d963f21bb1380ce54))
+
+
+### Bug Fixes
+
+* adjust app display logic in `AuthorizeCard` to enhance verified name handling ([829e248](https://github.com/AuthApex/authapex-hub/commit/829e248fa5395b3371666b1b09d2c27d2924a114))
+* remove unused `app` field from session handling functions and actions ([28aec29](https://github.com/AuthApex/authapex-hub/commit/28aec29891ed149daa621c1cfbea3c4badcc3538))
+
 ### [0.1.3](https://github.com/AuthApex/authapex-hub/compare/v0.1.2...v0.1.3) (2025-10-02)
 
 
