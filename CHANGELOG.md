@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.1](https://github.com/AuthApex/authapex-hub/compare/v0.2.0...v0.2.1) (2025-10-03)
+
+
+### Features
+
+* add user lookup API route and upgrade @authapex/core to v0.2.1 ([150915d](https://github.com/AuthApex/authapex-hub/commit/150915df6d1063541b4ede41d7d62cd4af2c2ebb))
+
 ## [0.2.0](https://github.com/AuthApex/authapex-hub/compare/v0.1.3...v0.2.0) (2025-10-03)
 
 
