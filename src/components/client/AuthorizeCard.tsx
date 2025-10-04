@@ -7,7 +7,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Button, Typography } from 'gtomy-lib';
 import { authorize } from '@/lib/actions/authorize';
 import Fuse from 'fuse.js';
-import { AUTHORIZATION_SERVICE, VerifiedStatus, VerifiedStatusResponse } from '@/lib/consts';
+import { AUTHORIZATION_SERVICE } from '@/lib/consts';
 
 enum VerifiedStatus {
   NO_DATA,
