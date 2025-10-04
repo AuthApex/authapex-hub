@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.3.2](https://github.com/AuthApex/authapex-hub/compare/v0.3.1...v0.3.2) (2025-10-04)
+
+
+### Bug Fixes
+
+* handle errors in `notifyUserUpdate` and clean up promise logic ([30099f7](https://github.com/AuthApex/authapex-hub/commit/30099f7fd8cb2045091ef6af931cad73e4156407))
+* use `getUserAppSessions` in `notifyUserUpdate` and refine websocket logic ([02c5879](https://github.com/AuthApex/authapex-hub/commit/02c58795659eda7c6e8b6f82951987961d78bae4))
+
 ### [0.3.1](https://github.com/AuthApex/authapex-hub/compare/v0.3.0...v0.3.1) (2025-10-04)
 
 
