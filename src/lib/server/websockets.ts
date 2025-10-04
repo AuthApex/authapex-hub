@@ -1,17 +1,19 @@
 import 'server-only';
 import { User, WebSocketEvent } from '@authapex/core';
-import { getAuthorizedApps } from '@/lib/server/mongodb';
+import { getAuthorizedApps, getUserAppSessions } from '@/lib/server/mongodb';
 import axios from 'axios';
 
 export async function notifyUserUpdate(user: User): Promise<void> {
   const authorizedApps = await getAuthorizedApps();
+  const userAppSessions = await getUserAppSessions(user.userId);
 
-  const promisses = authorizedApps.map((app) => {
-    if (app.websocketEndpoint == null) {
+  const promisses = userAppSessions.map((session) => {
+    const authorizedApp = authorizedApps.find((app) => app.name === session.app && app.websocketEndpoint != null);
+    if (authorizedApp == null) {
       return;
     }
     return axios
-      .post(app.websocketEndpoint, {
+      .post(authorizedApp.websocketEndpoint!, {
         type: 'user-update',
         data: {
           userId: user.userId,
