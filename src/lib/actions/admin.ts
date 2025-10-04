@@ -10,6 +10,7 @@ import { addAuthorizedApp, deleteAuthorizedApp, setUserRoles } from '@/lib/serve
 import { getAuth } from '@/lib/actions/auth';
 import { PERMISSION_SERVICE } from '@/lib/consts';
 import { RoleModel } from '@authapex/core';
+import { notifyUserUpdate } from '@/lib/server/websockets';
 
 export async function createNewAuthorizedApp(formData: FormData): Promise<ValidationResult> {
   const auth = await getAuth();
@@ -23,6 +24,7 @@ export async function createNewAuthorizedApp(formData: FormData): Promise<Valida
         name: formData.get('name'),
         displayName: formData.get('displayName'),
         url: formData.get('url'),
+        websocketEndpoint: formData.get('websocketEndpoint'),
       },
       {
         abortEarly: false,
@@ -34,7 +36,7 @@ export async function createNewAuthorizedApp(formData: FormData): Promise<Valida
     return values;
   }
 
-  const result = await addAuthorizedApp(values.name, values.displayName, values.url);
+  const result = await addAuthorizedApp(values.name, values.displayName, values.url, values.websocketEndpoint);
   if (result.success) {
     return { success: true, errors: [] };
   } else {
@@ -84,6 +86,7 @@ export async function updateUserRoles(userId: string, roles: RoleModel[]): Promi
   }
 
   const result = await setUserRoles(userId, roles);
+  await notifyUserUpdate(auth.user);
   if (result.success) {
     return { success: true, errors: [] };
   } else {

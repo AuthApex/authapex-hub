@@ -38,6 +38,11 @@ export function AddAuthorizedAppDialog({ trans, ...props }: AddAuthorizedAppDial
           error={getErrorMessageForName('displayName', errors)}
         />
         <TextInput label={trans.admin.authorizedApps.url} name="url" error={getErrorMessageForName('url', errors)} />
+        <TextInput
+          label={trans.admin.authorizedApps.websocketEndpoint}
+          name="websocketEndpoint"
+          error={getErrorMessageForName('websocketEndpoint', errors)}
+        />
         <div>
           <Button color="primary" className="mt-4" type="submit" disabled={isLoading}>
             {trans.home.save}

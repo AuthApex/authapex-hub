@@ -54,6 +54,7 @@ export const adminAddNewAppSchema = object({
   name: string().required('Toto pole je vyžadované'),
   displayName: string().required('Toto pole je vyžadované'),
   url: string().required('Toto pole je vyžadované'),
+  websocketEndpoint: string().nullable().optional(),
 });
 
 export const adminEditUserRoles = object({

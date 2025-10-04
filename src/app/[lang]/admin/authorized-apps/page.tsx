@@ -62,6 +62,7 @@ export default async function Admin({ params }: Readonly<{ params: Promise<{ lan
                     <th>{trans.admin.authorizedApps.name}</th>
                     <th>{trans.admin.authorizedApps.displayName}</th>
                     <th>{trans.admin.authorizedApps.url}</th>
+                    <th>{trans.admin.authorizedApps.websocketEndpoint}</th>
                     <th>{trans.admin.authorizedApps.apiKey}</th>
                     <th></th>
                   </tr>
@@ -72,6 +73,7 @@ export default async function Admin({ params }: Readonly<{ params: Promise<{ lan
                       <td>{app.name}</td>
                       <td>{app.displayName}</td>
                       <td>{app.url}</td>
+                      <td>{app.websocketEndpoint}</td>
                       <td>{app.apiKey.slice(0, 8) + '...'}</td>
                       <td className="flex gap-1 flex-wrap justify-end">
                         <CopyApiKeyButton apiKey={app.apiKey} trans={trans} />

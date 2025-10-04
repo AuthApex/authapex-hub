@@ -166,6 +166,7 @@ export interface Translations {
       name: string;
       displayName: string;
       url: string;
+      websocketEndpoint: string;
       apiKey: string;
       remove: string;
       copyApiKey: string;

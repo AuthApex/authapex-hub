@@ -17,6 +17,7 @@ import {
 } from '@/lib/server/mongodb';
 import { getGoogleSessionFromToken } from '@/lib/server/googleClient';
 import { User } from '@authapex/core';
+import { notifyUserUpdate } from '@/lib/server/websockets';
 
 export async function signinWithGoogle(credentials: CredentialResponse): Promise<void> {
   if (!credentials.credential) {
@@ -43,6 +44,7 @@ export async function signinWithGoogle(credentials: CredentialResponse): Promise
     }
   } else {
     await setProfileImageUrl(user.userId, googleSession.profileImageUrl);
+    await notifyUserUpdate(auth.user);
   }
   const session = await createSession();
   await insertSession({

@@ -332,7 +332,7 @@ export async function removeUserAppSession(
 }
 
 export async function getAuthorizedApps(): Promise<
-  { name: string; displayName: string; url: string; apiKey: string }[]
+  { name: string; displayName: string; url: string; apiKey: string; websocketEndpoint?: string | null }[]
 > {
   try {
     const serverState = getServerState();
@@ -343,6 +343,7 @@ export async function getAuthorizedApps(): Promise<
       displayName: app.displayName,
       url: app.url,
       apiKey: app.apiKey,
+      websocketEndpoint: app.websocketEndpoint,
     }));
   } catch {
     return [];
@@ -378,11 +379,16 @@ export async function getUsers(): Promise<User[]> {
   }
 }
 
-export async function addAuthorizedApp(name: string, displayName: string, url: string): Promise<DbUpdateResult> {
+export async function addAuthorizedApp(
+  name: string,
+  displayName: string,
+  url: string,
+  websocketEndpoint?: string | null
+): Promise<DbUpdateResult> {
   try {
     const serverState = getServerState();
     const db = serverState.mongoClient.db(serverState.mongoDbName);
-    await db.collection('authorizedApps').insertOne({ name, displayName, url, apiKey: nanoid(64) });
+    await db.collection('authorizedApps').insertOne({ name, displayName, url, apiKey: nanoid(64), websocketEndpoint });
     return { success: true };
   } catch {
     return { success: false };
