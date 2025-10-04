@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.3.0](https://github.com/AuthApex/authapex-hub/compare/v0.2.1...v0.3.0) (2025-10-04)
+
+
+### Features
+
+* add pagination to admin users list with `AdminUsersPagination` component and backend handling in `getUsers` ([9cd155c](https://github.com/AuthApex/authapex-hub/commit/9cd155ca6f37fd4e9f5a5e44ad5f166edbe92ad7))
+* add websocket notifications for user updates and integrate `websocketEndpoint` handling in authorized apps ([3737895](https://github.com/AuthApex/authapex-hub/commit/373789556ddfe735f6dc21d7b3ad0fe24d7101e8))
+* introduce admin panel with authorized apps and users management ([c4f5a64](https://github.com/AuthApex/authapex-hub/commit/c4f5a64655da44a4ee33a37fc13f714f79cc0781))
+
+
+### Bug Fixes
+
+* correct `notifyUserUpdate` parameter in `auth` actions ([33d253d](https://github.com/AuthApex/authapex-hub/commit/33d253d816015260b2eb16a3767f109ff00e63ab))
+* remove unused `VerifiedStatus` enum from `AuthorizeCard` component ([5d39a95](https://github.com/AuthApex/authapex-hub/commit/5d39a95c530337cb93c441ff7acefcf6ec1ba607))
+
 ### [0.2.1](https://github.com/AuthApex/authapex-hub/compare/v0.2.0...v0.2.1) (2025-10-03)
 
 
