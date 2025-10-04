@@ -6,18 +6,18 @@ import axios from 'axios';
 export async function notifyUserUpdate(user: User): Promise<void> {
   const authorizedApps = await getAuthorizedApps();
 
-  const promisses = authorizedApps.map(async (app) => {
+  const promisses = authorizedApps.map((app) => {
     if (app.websocketEndpoint == null) {
       return;
     }
-    await axios
+    return axios
       .post(app.websocketEndpoint, {
         type: 'user-update',
         data: {
           userId: user.userId,
         },
       } as WebSocketEvent)
-      .catch();
+      .catch(console.error);
   });
 
   await Promise.all(promisses);
