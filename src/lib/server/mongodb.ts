@@ -175,13 +175,29 @@ export async function createUser({
   try {
     const serverState = getServerState();
     const db = serverState.mongoClient.db(serverState.mongoDbName);
+    const normalizedUsername = username
+      .trim()
+      .replace(/\s/g, '_')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase();
+    const normalizedEmail = email.trim().toLowerCase();
+
+    const existingUser = await db.collection('users').findOne({
+      $or: [{ username: normalizedUsername }, { email: normalizedEmail }],
+    });
+
+    if (existingUser) {
+      return null;
+    }
+
     const userId = nanoid();
     const emailVerificationKey = nanoid();
     const inserted = await db.collection('users').insertOne({
       userId,
       googleId,
-      username: username.trim().replace(/\s/g, '_').toLowerCase(),
-      email,
+      username: normalizedUsername,
+      email: normalizedEmail,
       password,
       emailVerified: emailVerified,
       emailVerificationKey,
@@ -264,7 +280,7 @@ export async function authorizeAppToSeeUser(
     const serverState = getServerState();
     const db = serverState.mongoClient.db(serverState.mongoDbName);
 
-    const existingUserSession = await db.collection('authorizedApps').findOne({ name: app, userId });
+    const existingUserSession = await db.collection('userAppSessions').findOne({ app, userId });
     if (existingUserSession) {
       const authorizedApp = await db.collection('authorizedApps').findOne({ name: app });
       const verified = authorizedApp ? authorizedApp.apiKey !== apiKey : null;
