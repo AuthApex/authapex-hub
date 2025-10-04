@@ -5,8 +5,8 @@
   "scripts": {
     "build": "next build",
     "dev": "next dev",
-    "lint:check": "eslint .",
-    "lint:fix": "eslint . --fix",
+    "lint:check": "eslint ./src",
+    "lint:fix": "eslint ./src --fix",
     "sort-package-json": "sort-package-json",
     "start": "next start"
   },
