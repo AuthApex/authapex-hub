@@ -280,27 +280,14 @@ export async function authorizeAppToSeeUser(
     const serverState = getServerState();
     const db = serverState.mongoClient.db(serverState.mongoDbName);
 
-    const existingUserSession = await db.collection('userAppSessions').findOne({ app, userId });
-    if (existingUserSession) {
-      const authorizedApp = await db.collection('authorizedApps').findOne({ name: app });
-      const verified = authorizedApp ? authorizedApp.apiKey !== apiKey : null;
+    const authorizedApp = await db.collection('authorizedApps').findOne({ name: app });
+    const verified = authorizedApp ? authorizedApp.apiKey === apiKey : null;
 
-      if (verified !== existingUserSession.verified) {
-        await db.collection('userAppSessions').insertOne({ app, userId, verified });
-      }
+    const existingUserSession = await db.collection('userAppSessions').findOne({ app, userId, verified });
+    if (existingUserSession) {
       return { success: true };
     }
-
-    const authorizedApp = await db.collection('authorizedApps').findOne({ name: app });
-    if (authorizedApp) {
-      if (authorizedApp.apiKey !== apiKey) {
-        await db.collection('userAppSessions').insertOne({ app, userId, verified: false });
-      } else {
-        await db.collection('userAppSessions').insertOne({ app, userId, verified: true });
-      }
-    } else {
-      await db.collection('userAppSessions').insertOne({ app, userId, verified: null });
-    }
+    await db.collection('userAppSessions').insertOne({ app, userId, verified });
 
     return { success: true };
   } catch {
