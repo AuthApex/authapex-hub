@@ -360,11 +360,16 @@ export async function getAuthorizedAppsSanitized(): Promise<{ name: string; disp
   }
 }
 
-export async function getUsers(): Promise<User[]> {
+export async function getUsers(page: number, usersPerPage: number = 5): Promise<User[]> {
   try {
     const serverState = getServerState();
     const db = serverState.mongoClient.db(serverState.mongoDbName);
-    const users = await db.collection('users').find({}).toArray();
+    const users = await db
+      .collection('users')
+      .find({})
+      .skip(page * usersPerPage)
+      .limit(usersPerPage)
+      .toArray();
     return users.map((user) => ({
       userId: user.userId,
       email: user.email,
