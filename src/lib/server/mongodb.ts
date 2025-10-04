@@ -2,6 +2,7 @@ import 'server-only';
 import { getServerState } from '@/lib/server/serverState';
 import { nanoid } from 'nanoid';
 import { UserWithPassword } from '@/lib/models/User';
+import { RoleModel, User } from '@authapex/core';
 
 export interface DbUpdateResult {
   success: boolean;
@@ -230,6 +231,183 @@ export async function getUserIdByAuthCode(authCode: string): Promise<string | nu
     return authCodeDoc.userId;
   } catch {
     return null;
+  }
+}
+
+export async function isAppAuthorizedToSeeUser(
+  app: string,
+  apiKey: string | null | undefined,
+  userId: string
+): Promise<boolean> {
+  try {
+    const serverState = getServerState();
+    const db = serverState.mongoClient.db(serverState.mongoDbName);
+
+    const authorizedApp = await db.collection('authorizedApps').findOne({ name: app });
+    if (authorizedApp && authorizedApp.apiKey !== apiKey) {
+      return false;
+    }
+
+    const userAppSession = await db.collection('userAppSessions').findOne({ app, userId });
+    return !!userAppSession;
+  } catch {
+    return false;
+  }
+}
+
+export async function authorizeAppToSeeUser(
+  app: string,
+  apiKey: string | null | undefined,
+  userId: string
+): Promise<DbUpdateResult> {
+  try {
+    const serverState = getServerState();
+    const db = serverState.mongoClient.db(serverState.mongoDbName);
+
+    const existingUserSession = await db.collection('authorizedApps').findOne({ name: app, userId });
+    if (existingUserSession) {
+      const authorizedApp = await db.collection('authorizedApps').findOne({ name: app });
+      const verified = authorizedApp ? authorizedApp.apiKey !== apiKey : null;
+
+      if (verified !== existingUserSession.verified) {
+        await db.collection('userAppSessions').insertOne({ app, userId, verified });
+      }
+      return { success: true };
+    }
+
+    const authorizedApp = await db.collection('authorizedApps').findOne({ name: app });
+    if (authorizedApp) {
+      if (authorizedApp.apiKey !== apiKey) {
+        await db.collection('userAppSessions').insertOne({ app, userId, verified: false });
+      } else {
+        await db.collection('userAppSessions').insertOne({ app, userId, verified: true });
+      }
+    } else {
+      await db.collection('userAppSessions').insertOne({ app, userId, verified: null });
+    }
+
+    return { success: true };
+  } catch {
+    return { success: false };
+  }
+}
+
+export async function getUserAppSessions(
+  userId: string
+): Promise<{ app: string; userId: string; displayName?: string; url?: string; verified: boolean | null }[]> {
+  try {
+    const serverState = getServerState();
+    const db = serverState.mongoClient.db(serverState.mongoDbName);
+    const userAppSessions = await db.collection('userAppSessions').find({ userId }).toArray();
+    const authorizedApps = await db.collection('authorizedApps').find({}).toArray();
+
+    return userAppSessions.map((session) => {
+      const authorizedApp = authorizedApps.find((app) => app.name === session.app);
+      return {
+        app: session.app,
+        userId: session.userId,
+        displayName: authorizedApp?.displayName,
+        url: authorizedApp?.url,
+        verified: session.verified,
+      };
+    });
+  } catch {
+    return [];
+  }
+}
+
+export async function removeUserAppSession(
+  userId: string,
+  app: string,
+  verified: boolean | null
+): Promise<DbUpdateResult> {
+  try {
+    const serverState = getServerState();
+    const db = serverState.mongoClient.db(serverState.mongoDbName);
+    await db.collection('userAppSessions').deleteOne({ userId, app, verified });
+    return { success: true };
+  } catch {
+    return { success: false };
+  }
+}
+
+export async function getAuthorizedApps(): Promise<
+  { name: string; displayName: string; url: string; apiKey: string }[]
+> {
+  try {
+    const serverState = getServerState();
+    const db = serverState.mongoClient.db(serverState.mongoDbName);
+    const authorizedApps = await db.collection('authorizedApps').find({}).toArray();
+    return authorizedApps.map((app) => ({
+      name: app.name,
+      displayName: app.displayName,
+      url: app.url,
+      apiKey: app.apiKey,
+    }));
+  } catch {
+    return [];
+  }
+}
+
+export async function getAuthorizedAppsSanitized(): Promise<{ name: string; displayName: string; url: string }[]> {
+  try {
+    return getAuthorizedApps().then((apps) =>
+      apps.map((app) => ({ name: app.name, displayName: app.displayName, url: app.url }))
+    );
+  } catch {
+    return [];
+  }
+}
+
+export async function getUsers(): Promise<User[]> {
+  try {
+    const serverState = getServerState();
+    const db = serverState.mongoClient.db(serverState.mongoDbName);
+    const users = await db.collection('users').find({}).toArray();
+    return users.map((user) => ({
+      userId: user.userId,
+      email: user.email,
+      displayName: user.displayName,
+      username: user.username,
+      roles: user.roles,
+      profileImageId: user.profileImageId,
+      profileImageUrl: user.profileImageUrl,
+    }));
+  } catch {
+    return [];
+  }
+}
+
+export async function addAuthorizedApp(name: string, displayName: string, url: string): Promise<DbUpdateResult> {
+  try {
+    const serverState = getServerState();
+    const db = serverState.mongoClient.db(serverState.mongoDbName);
+    await db.collection('authorizedApps').insertOne({ name, displayName, url, apiKey: nanoid(64) });
+    return { success: true };
+  } catch {
+    return { success: false };
+  }
+}
+
+export async function deleteAuthorizedApp(name: string): Promise<DbUpdateResult> {
+  try {
+    const serverState = getServerState();
+    const db = serverState.mongoClient.db(serverState.mongoDbName);
+    await db.collection('authorizedApps').deleteOne({ name });
+    return { success: true };
+  } catch {
+    return { success: false };
+  }
+}
+
+export async function setUserRoles(userId: string, roles: RoleModel[]): Promise<DbUpdateResult> {
+  try {
+    const serverState = getServerState();
+    const db = serverState.mongoClient.db(serverState.mongoDbName);
+    await db.collection('users').updateOne({ userId }, { $set: { roles } });
+    return { success: true };
+  } catch {
+    return { success: false };
   }
 }
 

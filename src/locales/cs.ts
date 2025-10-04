@@ -7,6 +7,7 @@ export const CS: Translations = {
   back: 'Zpátky',
   and: 'a',
   home: {
+    title: 'Home',
     userId: 'Id',
     byUsing: 'Využíváním souhlasíte s',
     removeProfileImage: 'Odstranit profilový obrázek',
@@ -18,6 +19,10 @@ export const CS: Translations = {
     editDisplayName: 'Upravit jméno',
     displayName: 'Zobrazované jméno',
     save: 'Uložit',
+  },
+  sessions: {
+    button: 'Aktivní relace',
+    remove: 'Odstranit',
   },
   signin: {
     title: 'Vítej zpátky',
@@ -182,5 +187,27 @@ export const CS: Translations = {
   },
   admin: {
     title: 'Administrace',
+    authorizedApps: {
+      title: 'Ověřené aplikace',
+      displayName: 'Zobrazované jméno',
+      name: 'Jméno',
+      url: 'Url',
+      apiKey: 'Api klíč',
+      addNewApp: 'Přidat novou aplikaci',
+      remove: 'Odstranit',
+      copyApiKey: 'Kopírovat klíč',
+    },
+    users: {
+      title: 'Uživatelé',
+      userId: 'Id',
+      userName: 'Jméno',
+      profileImage: 'Obrázek',
+      email: 'Email',
+      displayName: 'Zobrazované jméno',
+      roles: 'Role',
+      removeRole: 'Odstranit roli',
+      editUserRoles: 'Upravit role',
+      addNewRole: 'Přidat novou roli',
+    },
   },
 };

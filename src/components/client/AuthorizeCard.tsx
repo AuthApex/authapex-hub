@@ -7,47 +7,59 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Button, Typography } from 'gtomy-lib';
 import { authorize } from '@/lib/actions/authorize';
 import Fuse from 'fuse.js';
-import { AUTHORIZATION_SERVICE, VERIFIED_APPS, VerifiedStatus, VerifiedStatusResponse } from '@/lib/consts';
+import { AUTHORIZATION_SERVICE, VerifiedStatus, VerifiedStatusResponse } from '@/lib/consts';
 
-const fuse = new Fuse(VERIFIED_APPS, {
-  keys: ['name'],
-  threshold: 0.2,
-  ignoreDiacritics: true,
-});
+enum VerifiedStatus {
+  NO_DATA,
+  VERIFIED,
+  NOT_VERIFIED,
+}
 
-function getVerifiedStatus(appName: string, url: string): VerifiedStatusResponse {
-  const verifiedApp = VERIFIED_APPS.find((app) => app.name === appName);
-  if (!verifiedApp) {
-    const results = fuse.search(appName).map((result) => result.item);
-    if (results.length > 0) {
-      return {
-        status: VerifiedStatus.NOT_VERIFIED,
-      };
-    }
-    return {
-      status: VerifiedStatus.NO_DATA,
-    };
-  }
-  return url === verifiedApp.url
-    ? { status: VerifiedStatus.VERIFIED, displayName: verifiedApp.displayName }
-    : {
-        status: VerifiedStatus.NOT_VERIFIED,
-      };
+interface VerifiedStatusResponse {
+  status: VerifiedStatus;
+  displayName?: string;
 }
 
 export interface AuthorizeCardProps {
   lang: string;
   trans: Translations;
   isAuth: boolean;
+  verifiedApps: { name: string; displayName: string; url: string }[];
 }
 
-export function AuthorizeCard({ isAuth, trans, lang }: AuthorizeCardProps) {
+export function AuthorizeCard({ isAuth, trans, lang, verifiedApps }: AuthorizeCardProps) {
   const router = useRouter();
   const [rawAuthorizeData, setRawAuthorizeData, removeRawAuthorizeData] = useCookie('authorize-data', undefined);
   const searchParams = useSearchParams();
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const authorizeData = AUTHORIZATION_SERVICE.decodeAuthorizeData(rawAuthorizeData);
+
+  const fuse = new Fuse(verifiedApps, {
+    keys: ['name'],
+    threshold: 0.2,
+    ignoreDiacritics: true,
+  });
+
+  function getVerifiedStatus(appName: string, url: string): VerifiedStatusResponse {
+    const verifiedApp = verifiedApps.find((app) => app.name === appName);
+    if (!verifiedApp) {
+      const results = fuse.search(appName).map((result) => result.item);
+      if (results.length > 0) {
+        return {
+          status: VerifiedStatus.NOT_VERIFIED,
+        };
+      }
+      return {
+        status: VerifiedStatus.NO_DATA,
+      };
+    }
+    return url === verifiedApp.url
+      ? { status: VerifiedStatus.VERIFIED, displayName: verifiedApp.displayName }
+      : {
+          status: VerifiedStatus.NOT_VERIFIED,
+        };
+  }
 
   useEffect(() => {
     const appData = searchParams.get('appData');

@@ -1,4 +1,4 @@
-import { object, string, ValidationError } from 'yup';
+import { array, boolean, object, string, ValidationError } from 'yup';
 
 export interface ValidationResult {
   success: boolean;
@@ -48,4 +48,20 @@ export const signupSchema = object({
 
 export const updateDisplayNameSchema = object({
   displayName: string().required('Toto pole je vyžadované'),
+});
+
+export const adminAddNewAppSchema = object({
+  name: string().required('Toto pole je vyžadované'),
+  displayName: string().required('Toto pole je vyžadované'),
+  url: string().required('Toto pole je vyžadované'),
+});
+
+export const adminEditUserRoles = object({
+  roles: array().of(
+    object({
+      application: string().required('Toto pole je vyžadované'),
+      role: string().required('Toto pole je vyžadované'),
+      remove: boolean(),
+    })
+  ),
 });
