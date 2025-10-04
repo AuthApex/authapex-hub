@@ -8,9 +8,11 @@ import { TokenRefresher } from '@/components/client/TokenRefresher';
 import { Footer } from '@/components/Footer';
 import Link from 'next/link';
 import { ProfileImage } from '@/components/ProfileImage';
-import { PERMISSION_SERVICE, VERIFIED_APPS } from '@/lib/consts';
+import { PERMISSION_SERVICE } from '@/lib/consts';
 import { EditDisplayNameButton } from '@/components/client/actionButtons/EditDisplayNameButton';
 import { ProfilePictureButtons } from '@/components/client/actionButtons/ProfilePictureButtons';
+import { SquaresPlusIcon, UsersIcon } from '@heroicons/react/24/outline';
+import { getAuthorizedAppsSanitized } from '@/lib/server/mongodb';
 
 export default async function Home({ params }: Readonly<{ params: Promise<{ lang: string }> }>) {
   const lang = (await params).lang;
@@ -22,6 +24,7 @@ export default async function Home({ params }: Readonly<{ params: Promise<{ lang
     redirect(getRoute(lang, '/signin'));
   }
   const user = auth.user;
+  const verifiedApps = await getAuthorizedAppsSanitized();
 
   return (
     <div className="flex min-h-svh flex-col items-center justify-center gap-6 p-6">
@@ -64,7 +67,7 @@ export default async function Home({ params }: Readonly<{ params: Promise<{ lang
                     {user.roles.map((role) => (
                       <div key={role.application + role.role}>
                         <Typography weight="semibold">
-                          {VERIFIED_APPS.find((app) => app.name === role.application)?.displayName ?? role.application}
+                          {verifiedApps.find((app) => app.name === role.application)?.displayName ?? role.application}
                           :&nbsp;
                         </Typography>
                         <Typography>{role.role.toUpperCase()}</Typography>
@@ -80,8 +83,11 @@ export default async function Home({ params }: Readonly<{ params: Promise<{ lang
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <EditDisplayNameButton user={user} trans={trans} />
                 {auth.canChangeProfileImage && <ProfilePictureButtons trans={trans} />}
+                <Button as={Link} href="/sessions" startIcon={SquaresPlusIcon}>
+                  {trans.sessions.button}
+                </Button>
                 {PERMISSION_SERVICE.hasPermission(user, 'admin') && (
-                  <Button as={Link} href={getRoute(lang, '/admin')} color="accent">
+                  <Button as={Link} href={getRoute(lang, '/admin')} color="accent" startIcon={UsersIcon}>
                     {trans.admin.title}
                   </Button>
                 )}

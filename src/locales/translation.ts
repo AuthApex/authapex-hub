@@ -5,6 +5,7 @@ export interface Translations {
   back: string;
   and: string;
   home: {
+    title: string;
     userId: string;
     byUsing: string;
     userInformation: string;
@@ -16,6 +17,10 @@ export interface Translations {
     editDisplayName: string;
     displayName: string;
     save: string;
+  };
+  sessions: {
+    button: string;
+    remove: string;
   };
   signin: {
     title: string;
@@ -156,5 +161,27 @@ export interface Translations {
   };
   admin: {
     title: string;
+    authorizedApps: {
+      title: string;
+      name: string;
+      displayName: string;
+      url: string;
+      apiKey: string;
+      remove: string;
+      copyApiKey: string;
+      addNewApp: string;
+    };
+    users: {
+      title: string;
+      userId: string;
+      userName: string;
+      displayName: string;
+      profileImage: string;
+      removeRole: string;
+      email: string;
+      roles: string;
+      editUserRoles: string;
+      addNewRole: string;
+    };
   };
 }

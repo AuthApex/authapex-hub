@@ -7,6 +7,7 @@ export const EN: Translations = {
   logout: 'Logout',
   and: 'and',
   home: {
+    title: 'Domů',
     userId: 'Id',
     byUsing: 'By using, you agree to our',
     removeProfileImage: 'Remove profile image',
@@ -18,6 +19,10 @@ export const EN: Translations = {
     editDisplayName: 'Edit name',
     displayName: 'Display name',
     save: 'Save',
+  },
+  sessions: {
+    button: 'Active app sessions',
+    remove: 'Remove',
   },
   signin: {
     title: 'Welcome back',
@@ -182,5 +187,27 @@ export const EN: Translations = {
   },
   admin: {
     title: 'Administration',
+    authorizedApps: {
+      title: 'Authorized apps',
+      displayName: 'Display name',
+      name: 'Name',
+      url: 'Url',
+      apiKey: 'Api key',
+      addNewApp: 'Add new app',
+      copyApiKey: 'Copy key',
+      remove: 'Remove',
+    },
+    users: {
+      title: 'Users',
+      userId: 'Id',
+      userName: 'Name',
+      profileImage: 'Image',
+      email: 'Email',
+      displayName: 'Display name',
+      removeRole: 'Remove role',
+      roles: 'Roles',
+      editUserRoles: 'Edit roles',
+      addNewRole: 'Add new role',
+    },
   },
 };

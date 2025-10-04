@@ -2,7 +2,7 @@
 
 import { mapValidationErrorToValidationResult, updateDisplayNameSchema, ValidationResult } from '@/lib/validations';
 import { getAuth } from '@/lib/actions/auth';
-import { setDisplayName, setProfileImageId } from '@/lib/server/mongodb';
+import { removeUserAppSession, setDisplayName, setProfileImageId } from '@/lib/server/mongodb';
 
 export async function updateDisplayName(formData: FormData): Promise<ValidationResult> {
   const values = await updateDisplayNameSchema
@@ -51,4 +51,12 @@ export async function removeProfileImage(): Promise<void> {
   }
 
   await setProfileImageId(auth.user.userId, null);
+}
+
+export async function removeActiveSession(app: string, verified: boolean | null): Promise<void> {
+  const auth = await getAuth();
+  if (!auth.isAuth) {
+    return;
+  }
+  await removeUserAppSession(auth.user.userId, app, verified);
 }
