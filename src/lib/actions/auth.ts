@@ -44,7 +44,7 @@ export async function signinWithGoogle(credentials: CredentialResponse): Promise
     }
   } else {
     await setProfileImageUrl(user.userId, googleSession.profileImageUrl);
-    await notifyUserUpdate(auth.user);
+    await notifyUserUpdate(user);
   }
   const session = await createSession();
   await insertSession({
