@@ -10,9 +10,17 @@ import { redirect } from 'next/navigation';
 import { PERMISSION_SERVICE } from '@/lib/consts';
 import { getUsers } from '@/lib/server/mongodb';
 import { ProfileImage } from '@/components/ProfileImage';
+import { AdminUsersPagination } from '@/components/client/AdminUsersPagination';
 
-export default async function Admin({ params }: Readonly<{ params: Promise<{ lang: string }> }>) {
+export default async function Admin({
+  params,
+  searchParams,
+}: Readonly<{
+  params: Promise<{ lang: string }>;
+  searchParams: Promise<{ page?: string }>;
+}>) {
   const lang = (await params).lang;
+  const page = (await searchParams).page;
   const trans = getTranslation(lang);
 
   const auth = await getAuth();
@@ -25,7 +33,10 @@ export default async function Admin({ params }: Readonly<{ params: Promise<{ lan
     redirect(getRoute(lang, '/'));
   }
 
-  const users = await getUsers();
+  if (page != null && isNaN(+page)) {
+    redirect(getRoute(lang, '/admin/users'));
+  }
+  const users = await getUsers(+(page ?? 0));
 
   return (
     <div className="flex min-h-svh flex-col items-center justify-center gap-6 p-6">
@@ -82,6 +93,7 @@ export default async function Admin({ params }: Readonly<{ params: Promise<{ lan
                 </tbody>
               </table>
             </div>
+            <AdminUsersPagination page={+(page ?? 0)} />
           </div>
         </div>
         <Footer lang={lang} trans={trans} isSignIn />
