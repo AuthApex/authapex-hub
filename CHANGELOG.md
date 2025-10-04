@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.3.1](https://github.com/AuthApex/authapex-hub/compare/v0.3.0...v0.3.1) (2025-10-04)
+
+
+### Bug Fixes
+
+* normalize username and email in user creation, adjust session lookup collection ([f7a54e2](https://github.com/AuthApex/authapex-hub/commit/f7a54e24ed22058c744eac02b714edd79d94ac59))
+
 ## [0.3.0](https://github.com/AuthApex/authapex-hub/compare/v0.2.1...v0.3.0) (2025-10-04)
 
 
