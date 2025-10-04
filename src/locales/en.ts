@@ -191,6 +191,7 @@ export const EN: Translations = {
       title: 'Authorized apps',
       displayName: 'Display name',
       name: 'Name',
+      websocketEndpoint: 'Websocket endpoint',
       url: 'Url',
       apiKey: 'Api key',
       addNewApp: 'Add new app',

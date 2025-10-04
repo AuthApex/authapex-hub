@@ -194,6 +194,7 @@ export const CS: Translations = {
       url: 'Url',
       apiKey: 'Api klíč',
       addNewApp: 'Přidat novou aplikaci',
+      websocketEndpoint: 'Websocket endpoint',
       remove: 'Odstranit',
       copyApiKey: 'Kopírovat klíč',
     },

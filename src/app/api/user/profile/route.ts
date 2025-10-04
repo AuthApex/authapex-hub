@@ -4,6 +4,7 @@ import { nanoid } from 'nanoid';
 import { APP_NAME } from '@/lib/consts';
 import { getAuth } from '@/lib/actions/auth';
 import { setProfileImageId } from '@/lib/server/mongodb';
+import { notifyUserUpdate } from '@/lib/server/websockets';
 
 export async function POST(request: NextRequest) {
   const auth = await getAuth();
@@ -35,6 +36,7 @@ export async function POST(request: NextRequest) {
     const previousImageId = auth.user.profileImageId;
     const imageId = cloudflareImage.result.id;
     const result = await setProfileImageId(auth.user.userId, imageId);
+    await notifyUserUpdate(auth.user);
 
     if (previousImageId != null) {
       try {
