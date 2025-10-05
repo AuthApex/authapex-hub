@@ -22,7 +22,7 @@ export async function createSession() {
     httpOnly: true,
     secure: true,
     expires: expiresAt,
-    sameSite: 'strict',
+    sameSite: 'lax',
     path: '/',
   });
   return { sessionId, expiresAt };
