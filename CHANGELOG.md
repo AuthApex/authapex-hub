@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.3.6](https://github.com/AuthApex/authapex-hub/compare/v0.3.5...v0.3.6) (2025-10-05)
+
+
+### Bug Fixes
+
+* improve table layouts and spacing in admin and session views ([20562e1](https://github.com/AuthApex/authapex-hub/commit/20562e18ac0d6b1a552d0e1e1ac7a43eae22af41))
+
 ### [0.3.5](https://github.com/AuthApex/authapex-hub/compare/v0.3.4...v0.3.5) (2025-10-05)
 
 
