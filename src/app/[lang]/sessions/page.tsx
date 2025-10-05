@@ -48,7 +48,11 @@ export default async function Home({ params }: Readonly<{ params: Promise<{ lang
                 <thead>
                   <tr>
                     <th>{trans.authorize.appName}</th>
-                    <th>{trans.authorize.appUrl}</th>
+                    <th>
+                      <a href={trans.authorize.appUrl} className="hover:underline" rel="noopener noreferrer">
+                        {trans.authorize.appUrl}
+                      </a>
+                    </th>
                     <th></th>
                     {/*<th></th>*/}
                   </tr>

@@ -74,16 +74,18 @@ export default async function Admin({
                 <tbody>
                   {users.map((user) => (
                     <tr key={user.userId}>
-                      <td className="flex gap-4">
+                      <td className="flex flex-col lg:flex-row gap-4">
                         <ProfileImage user={user} className="size-12" />
                         <div className="flex flex-col gap-0.5 justify-center">
                           <Typography weight="semibold">{user.username}</Typography>
-                          <Typography size="xs">{user.userId}</Typography>
+                          <Typography size="xs" className="whitespace-nowrap">
+                            {user.userId}
+                          </Typography>
                         </div>
                       </td>
                       <td>{user.displayName}</td>
                       <td>{user.email}</td>
-                      <td className="flex gap-1 flex-wrap justify-end">
+                      <td>
                         <Button size="sm" as={Link} href={getRoute(lang, '/admin/users/' + user.userId)}>
                           Detail
                         </Button>

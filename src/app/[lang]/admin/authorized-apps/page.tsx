@@ -70,12 +70,12 @@ export default async function Admin({ params }: Readonly<{ params: Promise<{ lan
                 <tbody>
                   {authorizedApps.map((app) => (
                     <tr key={app.name}>
-                      <td>{app.name}</td>
-                      <td>{app.displayName}</td>
+                      <td className="whitespace-nowrap">{app.name}</td>
+                      <td className="whitespace-nowrap">{app.displayName}</td>
                       <td>{app.url}</td>
                       <td>{app.websocketEndpoint}</td>
-                      <td>{app.apiKey.slice(0, 8) + '...'}</td>
-                      <td className="flex gap-1 flex-wrap justify-end">
+                      <td className="whitespace-nowrap">{app.apiKey.slice(0, 8) + '...'}</td>
+                      <td className="flex gap-2 flex-col justify-end">
                         <CopyApiKeyButton apiKey={app.apiKey} trans={trans} />
                         <RemoveAuthorizedAppButton app={app.name} trans={trans} />
                       </td>
