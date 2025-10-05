@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.3.3](https://github.com/AuthApex/authapex-hub/compare/v0.3.2...v0.3.3) (2025-10-04)
+
+
+### Bug Fixes
+
+* simplify user session verification logic in `mongodb.ts` ([0928d4a](https://github.com/AuthApex/authapex-hub/commit/0928d4ab4d84d42c8f0a1a20f559b52083a472b5))
+
 ### [0.3.2](https://github.com/AuthApex/authapex-hub/compare/v0.3.1...v0.3.2) (2025-10-04)
 
 
