@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.3.8](https://github.com/AuthApex/authapex-hub/compare/v0.3.7...v0.3.8) (2025-10-05)
+
+
+### Bug Fixes
+
+* paginate users with proper limit and isLast flag in admin panel ([b6f8684](https://github.com/AuthApex/authapex-hub/commit/b6f8684d45d316def941b84dd10d32ce8caf9a89))
+
 ### [0.3.7](https://github.com/AuthApex/authapex-hub/compare/v0.3.6...v0.3.7) (2025-10-05)
 
 
