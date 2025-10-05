@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.3.4](https://github.com/AuthApex/authapex-hub/compare/v0.3.3...v0.3.4) (2025-10-05)
+
+
+### Bug Fixes
+
+* add redirect for authenticated users on `/signin` and `/signup` pages ([49cf198](https://github.com/AuthApex/authapex-hub/commit/49cf1983b14b21d4c3a34c5ea24d7653660f2978))
+
 ### [0.3.3](https://github.com/AuthApex/authapex-hub/compare/v0.3.2...v0.3.3) (2025-10-04)
 
 
