@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 
-export function AdminUsersPagination({ page }: { page: number }) {
+export function AdminUsersPagination({ page, isLast }: { page: number; isLast: boolean }) {
   const { push } = useRouter();
 
   const onPreviousPage = () => {
@@ -24,7 +24,7 @@ export function AdminUsersPagination({ page }: { page: number }) {
           «
         </button>
         <div className="join-item btn">Page {page + 1}</div>
-        <button type="button" className="join-item btn" onClick={onNextPage}>
+        <button type="button" className="join-item btn" onClick={onNextPage} disabled={isLast}>
           »
         </button>
       </div>

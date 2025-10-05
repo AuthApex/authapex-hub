@@ -12,6 +12,8 @@ import { getUsers } from '@/lib/server/mongodb';
 import { ProfileImage } from '@/components/ProfileImage';
 import { AdminUsersPagination } from '@/components/client/AdminUsersPagination';
 
+const PAGE_SIZE = 5;
+
 export default async function Admin({
   params,
   searchParams,
@@ -36,7 +38,7 @@ export default async function Admin({
   if (page != null && isNaN(+page)) {
     redirect(getRoute(lang, '/admin/users'));
   }
-  const users = await getUsers(+(page ?? 0));
+  const users = await getUsers(+(page ?? 0), PAGE_SIZE);
 
   return (
     <div className="flex min-h-svh flex-col items-center justify-center gap-6 p-6">
@@ -72,7 +74,7 @@ export default async function Admin({
                   </tr>
                 </thead>
                 <tbody>
-                  {users.map((user) => (
+                  {users.slice(0, PAGE_SIZE).map((user) => (
                     <tr key={user.userId}>
                       <td className="flex flex-col lg:flex-row gap-4">
                         <ProfileImage user={user} className="size-12" />
@@ -95,7 +97,7 @@ export default async function Admin({
                 </tbody>
               </table>
             </div>
-            <AdminUsersPagination page={+(page ?? 0)} />
+            <AdminUsersPagination page={+(page ?? 0)} isLast={users.length <= PAGE_SIZE} />
           </div>
         </div>
         <Footer lang={lang} trans={trans} isSignIn />
