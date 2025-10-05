@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.3.5](https://github.com/AuthApex/authapex-hub/compare/v0.3.4...v0.3.5) (2025-10-05)
+
+
+### Bug Fixes
+
+* adjust `sameSite` setting to `lax` in session cookie configuration ([252b2ca](https://github.com/AuthApex/authapex-hub/commit/252b2cadde5d86f6d4f5d387ac8bf261738c3461))
+
 ### [0.3.4](https://github.com/AuthApex/authapex-hub/compare/v0.3.3...v0.3.4) (2025-10-05)
 
 
