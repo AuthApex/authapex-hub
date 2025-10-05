@@ -48,20 +48,24 @@ export default async function Home({ params }: Readonly<{ params: Promise<{ lang
                 <thead>
                   <tr>
                     <th>{trans.authorize.appName}</th>
-                    <th>
-                      <a href={trans.authorize.appUrl} className="hover:underline" rel="noopener noreferrer">
-                        {trans.authorize.appUrl}
-                      </a>
-                    </th>
+                    <th>{trans.authorize.appUrl}</th>
                     <th></th>
-                    {/*<th></th>*/}
+                    <th></th>
                   </tr>
                 </thead>
                 <tbody>
                   {userAppSessions.map((session) => (
                     <tr key={session.app + session.userId + session.verified}>
                       <td>{session.displayName ?? session.app}</td>
-                      <td>{session.url ?? '-'}</td>
+                      <td>
+                        {session.url != null ? (
+                          <a href={session.url} className="hover:underline" rel="noopener noreferrer">
+                            {session.url}
+                          </a>
+                        ) : (
+                          '-'
+                        )}
+                      </td>
                       <td>
                         {session.verified && (
                           <div className="tooltip tooltip-success" data-tip={trans.authorize.verifiedTooltip}>
