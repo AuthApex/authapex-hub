@@ -6,10 +6,18 @@ import { LoginForm } from '@/components/client/forms/LoginForm';
 import { GoogleLoginButton } from '@/components/client/GoogleLoginButton';
 import Link from 'next/link';
 import { getRoute } from '@/lib/getRoute';
+import { getAuth } from '@/lib/actions/auth';
+import { redirect } from 'next/navigation';
 
 export default async function Signin({ params }: Readonly<{ params: Promise<{ lang: string }> }>) {
   const lang = (await params).lang;
   const trans = getTranslation(lang);
+
+  const auth = await getAuth();
+
+  if (auth.isAuth) {
+    redirect(getRoute(lang, '/'));
+  }
 
   return (
     <div className="flex min-h-svh flex-col items-center justify-center gap-6 p-6">

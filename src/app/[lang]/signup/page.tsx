@@ -5,10 +5,18 @@ import Image from 'next/image';
 import { getRoute } from '@/lib/getRoute';
 import { Footer } from '@/components/Footer';
 import { RegisterForm } from '@/components/client/forms/RegisterForm';
+import { getAuth } from '@/lib/actions/auth';
+import { redirect } from 'next/navigation';
 
 export default async function Signup({ params }: Readonly<{ params: Promise<{ lang: string }> }>) {
   const lang = (await params).lang;
   const trans = getTranslation(lang);
+
+  const auth = await getAuth();
+
+  if (auth.isAuth) {
+    redirect(getRoute(lang, '/'));
+  }
 
   return (
     <div className="flex min-h-svh flex-col items-center justify-center gap-6 p-6">
