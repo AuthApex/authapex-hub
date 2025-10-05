@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.3.7](https://github.com/AuthApex/authapex-hub/compare/v0.3.6...v0.3.7) (2025-10-05)
+
+
+### Bug Fixes
+
+* convert session URLs to clickable links in session table ([4969aab](https://github.com/AuthApex/authapex-hub/commit/4969aabe434fe1ac8bfbe9b2c9887b76f943454a))
+
 ### [0.3.6](https://github.com/AuthApex/authapex-hub/compare/v0.3.5...v0.3.6) (2025-10-05)
 
 
