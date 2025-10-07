@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.3.9](https://github.com/AuthApex/authapex-hub/compare/v0.3.8...v0.3.9) (2025-10-07)
+
+
+### Bug Fixes
+
+* enhance list styling and expand privacy policy with Google account info and data retention policies ([ea2e9b5](https://github.com/AuthApex/authapex-hub/commit/ea2e9b538aaad5d2b37f0d0b9563326b649ad919))
+
 ### [0.3.8](https://github.com/AuthApex/authapex-hub/compare/v0.3.7...v0.3.8) (2025-10-05)
 
 
