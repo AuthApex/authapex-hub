@@ -50,7 +50,7 @@ export default async function TermsOfService({ params }: Readonly<{ params: Prom
       </Typography>
       <p>{trans.terms.limitationOfLiability.element1}</p>
       <p>{trans.terms.limitationOfLiability.element2}</p>
-      <ul>
+      <ul className="list-disc list-inside ml-2">
         <li>{trans.terms.limitationOfLiability.list.element1}</li>
         <li>{trans.terms.limitationOfLiability.list.element2}</li>
       </ul>

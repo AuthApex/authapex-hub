@@ -107,6 +107,16 @@ export interface Translations {
       };
       paragraph2: string;
     };
+    informationFromGoogle: {
+      title: string;
+      paragraph1: string;
+      list: {
+        element1: string;
+        element2: string;
+        element3: string;
+      };
+      paragraph2: string;
+    };
     howWeUseYourInformation: {
       title: string;
       paragraph1: string;
@@ -138,6 +148,11 @@ export interface Translations {
         element5: string;
         element6: string;
       };
+      paragraph2: string;
+    };
+    dataRetentionAndDeletion: {
+      title: string;
+      paragraph1: string;
       paragraph2: string;
     };
     childrenPrivacy: {

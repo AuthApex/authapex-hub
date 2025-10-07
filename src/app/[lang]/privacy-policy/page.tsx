@@ -25,17 +25,27 @@ export default async function PrivacyPolicy({ params }: Readonly<{ params: Promi
         {trans.privacy.informationWeCollect.title}
       </Typography>
       <p>{trans.privacy.informationWeCollect.paragraph1}</p>
-      <ul>
+      <ul className="list-disc list-inside ml-2">
         <li>{trans.privacy.informationWeCollect.list.element1}</li>
         <li>{trans.privacy.informationWeCollect.list.element2}</li>
         <li>{trans.privacy.informationWeCollect.list.element3}</li>
       </ul>
       <p>{trans.privacy.informationWeCollect.paragraph2}</p>
       <Typography size="xl" weight="medium">
+        {trans.privacy.informationFromGoogle.title}
+      </Typography>
+      <p>{trans.privacy.informationFromGoogle.paragraph1}</p>
+      <ul className="list-disc list-inside ml-2">
+        <li>{trans.privacy.informationFromGoogle.list.element1}</li>
+        <li>{trans.privacy.informationFromGoogle.list.element2}</li>
+        <li>{trans.privacy.informationFromGoogle.list.element3}</li>
+      </ul>
+      <p>{trans.privacy.informationFromGoogle.paragraph2}</p>
+      <Typography size="xl" weight="medium">
         {trans.privacy.howWeUseYourInformation.title}
       </Typography>
       <p>{trans.privacy.howWeUseYourInformation.paragraph1}</p>
-      <ul>
+      <ul className="list-disc list-inside ml-2">
         <li>{trans.privacy.howWeUseYourInformation.list.element1}</li>
         <li>{trans.privacy.howWeUseYourInformation.list.element2}</li>
         <li>{trans.privacy.howWeUseYourInformation.list.element3}</li>
@@ -55,7 +65,7 @@ export default async function PrivacyPolicy({ params }: Readonly<{ params: Promi
         {trans.privacy.gdpr.title}
       </Typography>
       <p>{trans.privacy.gdpr.paragraph1}</p>
-      <ul>
+      <ul className="list-disc list-inside ml-2">
         <li>{trans.privacy.gdpr.list.element1}</li>
         <li>{trans.privacy.gdpr.list.element2}</li>
         <li>{trans.privacy.gdpr.list.element3}</li>
@@ -64,6 +74,11 @@ export default async function PrivacyPolicy({ params }: Readonly<{ params: Promi
         <li>{trans.privacy.gdpr.list.element6}</li>
       </ul>
       <p>{trans.privacy.gdpr.paragraph2}</p>
+      <Typography size="xl" weight="medium">
+        {trans.privacy.dataRetentionAndDeletion.title}
+      </Typography>
+      <p>{trans.privacy.dataRetentionAndDeletion.paragraph1}</p>
+      <p>{trans.privacy.dataRetentionAndDeletion.paragraph2}</p>
       <Typography size="xl" weight="medium">
         {trans.privacy.childrenPrivacy.title}
       </Typography>
@@ -76,7 +91,7 @@ export default async function PrivacyPolicy({ params }: Readonly<{ params: Promi
         {trans.privacy.contactUs.title}
       </Typography>
       <p>{trans.privacy.contactUs.paragraph1}</p>
-      <ul>
+      <ul className="list-disc list-inside ml-2">
         <li>{trans.privacy.contactUs.list.element1}</li>
         <li>{trans.privacy.contactUs.list.element2}</li>
       </ul>

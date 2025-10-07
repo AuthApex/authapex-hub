@@ -96,10 +96,10 @@ export const EN: Translations = {
       title: 'Limitation of Liability',
       element1:
         'We provide our Services "as is". We do not guarantee that the Services will be error-free or uninterrupted. We are not responsible for any direct, indirect, incidental, special, or consequential damages arising from the use of our Services.',
-      element2: 'If you have any questions regarding our Terms of Service, contact us at',
+      element2: 'If you have any questions regarding our Terms of Service, contact us at:',
       list: {
         element1: 'Bluesky: @authapex.net',
-        element2: 'Email: support@authapex.net',
+        element2: 'Email: gtomyasek@gmail.com',
       },
     },
   },
@@ -120,6 +120,18 @@ export const EN: Translations = {
       },
       paragraph2:
         'Additionally, while using our services, certain technical data like IP address/browser details may be logged by Sentry for error tracking and improving application stability.',
+    },
+    informationFromGoogle: {
+      title: 'Information from Google Accounts',
+      paragraph1:
+        "When you choose to create an account or log in using your Google account, we use Google's OAuth service for authentication. In doing so, we request access to specific data from your Google profile. Our access is strictly limited to the following information:",
+      list: {
+        element1: 'Email Address: Used as a unique identifier for your account and for login purposes.',
+        element2: 'Display Name: Used to personalize your experience within our Services.',
+        element3: 'Profile Picture: An optional piece of data used to customize your user profile.',
+      },
+      paragraph2:
+        'We use this data solely to facilitate the account creation and logon process, and to personalize your user experience as described in the "How We Use Your Information" section. We do not access any other information from your Google account. The Google user data we access is not sold, rented, or shared with any third parties, except as required to provide our Services (e.g., with essential service providers bound by strict confidentiality agreements) or as required by law.',
     },
     howWeUseYourInformation: {
       title: 'How We Use Your Information',
@@ -143,7 +155,7 @@ export const EN: Translations = {
     dataSecurity: {
       title: 'Data Security',
       paragraph1:
-        'We implement a variety of security measures aimed at protecting against unauthorized access or alteration of your personal data. Despite these efforts no method over the internet can be guaranteed as completely secure therefore we cannot ensure absolute security.',
+        'We implement and maintain a variety of robust security measures to protect the safety of your personal information. Your data is stored on secure servers, and we use encryption (such as SSL/TLS) to protect data transmitted to and from our Services. Where you have registered directly with a password, it is stored in a hashed format. While we take reasonable steps to safeguard your data, no method of transmission over the Internet or method of electronic storage is 100% secure. Therefore, we cannot guarantee its absolute security, but we are committed to protecting your information to the best of our ability.',
     },
     gdpr: {
       title: 'Your Rights Under GDPR',
@@ -161,6 +173,13 @@ export const EN: Translations = {
       paragraph2:
         'To exercise these rights, please contact us using the information provided below. Note that some requests may require identity verification.',
     },
+    dataRetentionAndDeletion: {
+      title: 'Data Retention and Deletion',
+      paragraph1:
+        'We retain your personal information for as long as your account is active with us or as needed to provide you with our Services. We will securely delete your information when it is no longer required for these purposes.',
+      paragraph2:
+        'You may request the deletion of your account and associated personal data at any time. To initiate a data deletion request, please contact us directly via email at gtomyasek@gmail.com with the subject line "Data Deletion Request". We will process your request and confirm the deletion of your data from our active systems within a reasonable timeframe, subject to any legal or regulatory obligations to retain certain information.',
+    },
     childrenPrivacy: {
       title: "Children's Privacy",
       paragraph1:
@@ -177,7 +196,7 @@ export const EN: Translations = {
         'If you have questions or concerns about our Privacy Policy or wish to exercise your rights as described above, please contact us through:',
       list: {
         element1: 'Bluesky: @authapex.net',
-        element2: 'Email: support@authapex.net',
+        element2: 'Email: gtomyasek@gmail.com',
       },
       paragraph2:
         'By providing clear channels for communication regarding privacy concerns and exercising GDPR rights, we aim at maintaining transparency and trust with our users while ensuring compliance with applicable laws and regulations.',

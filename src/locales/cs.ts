@@ -96,10 +96,10 @@ export const CS: Translations = {
       title: 'Omezení odpovědnosti',
       element1:
         'Naše Služby poskytujeme "tak, jak jsou". Nezaručujeme, že Služby budou bezchybné nebo nepřerušené. Nenese žádnou odpovědnost za přímé, nepřímé, náhodné, speciální nebo následné škody vzniklé v souvislosti s používáním našich Služeb.',
-      element2: 'Pokud máte jakékoli dotazy ohledně našich Podmínek využití, kontaktujte nás na',
+      element2: 'Pokud máte jakékoli dotazy ohledně našich Podmínek využití, kontaktujte nás na:',
       list: {
         element1: 'Bluesky: @authapex.net',
-        element2: 'Email: support@authapex.net',
+        element2: 'Email: gtomyasek@gmail.com',
       },
     },
   },
@@ -120,6 +120,18 @@ export const CS: Translations = {
       },
       paragraph2:
         'Kromě toho, při používání našich služeb, mohou být určitá technická data, jako jsou IP adresa / podrobnosti prohlížeče, zaznamenána Sentry pro sledování chyb a zlepšení stability aplikace.',
+    },
+    informationFromGoogle: {
+      title: 'Informace z účtů Google',
+      paragraph1:
+        'Když si zvolíte vytvoření účtu nebo přihlášení pomocí vašeho účtu Google, používáme k ověření službu Google OAuth. Při tomto procesu žádáme o přístup ke konkrétním údajům z vašeho profilu Google. Náš přístup je přísně omezen na následující informace:',
+      list: {
+        element1: 'E-mailová adresa: Používá se jako jedinečný identifikátor vašeho účtu a pro účely přihlášení.',
+        element2: 'Zobrazované jméno: Používá se k personalizaci vaší zkušenosti v rámci našich Služeb.',
+        element3: 'Profilový obrázek: Nepovinný údaj používaný k přizpůsobení vašeho uživatelského profilu.',
+      },
+      paragraph2:
+        'Tyto údaje používáme výhradně k usnadnění procesu vytvoření účtu a přihlášení a k personalizaci vaší uživatelské zkušenosti, jak je popsáno v sekci „Jak používáme vaše informace“. Nepřistupujeme k žádným jiným informacím z vašeho účtu Google. Uživatelské údaje Google, ke kterým přistupujeme, nejsou prodávány, pronajímány ani sdíleny s žádnými třetími stranami, s výjimkou případů, kdy je to nezbytné pro poskytování našich Služeb (např. s klíčovými poskytovateli služeb vázanými přísnými dohodami o mlčenlivosti) nebo jak vyžaduje zákon.',
     },
     howWeUseYourInformation: {
       title: 'Jak používáme vaše informace',
@@ -143,7 +155,7 @@ export const CS: Translations = {
     dataSecurity: {
       title: 'Zabezpečení dat',
       paragraph1:
-        'Implementujeme řadu bezpečnostních opatření zaměřených na ochranu před neoprávněným přístupem nebo změnou vašich osobních údajů. Přestože se snažíme, žádná metoda přes internet nemůže být zaručena jako zcela bezpečná, proto nemůžeme zaručit absolutní bezpečnost.',
+        'Provádíme a udržujeme řadu robustních bezpečnostních opatření, abychom ochránili bezpečnost vašich osobních údajů. Vaše data jsou uložena na zabezpečených serverech a k ochraně dat přenášených do a z našich služeb používáme šifrování (například SSL/TLS). Pokud jste se zaregistrovali přímo pomocí hesla, je toto heslo uloženo v hashovaném formátu. Přestože podnikáme přiměřené kroky k ochraně vašich dat, žádná metoda přenosu přes internet ani metoda elektronického ukládání není 100% bezpečná. Proto nemůžeme zaručit jejich absolutní bezpečnost, ale zavazujeme se chránit vaše údaje podle našich nejlepších schopností.',
     },
     gdpr: {
       title: 'Vaše práva podle GDPR',
@@ -161,6 +173,13 @@ export const CS: Translations = {
       paragraph2:
         'Pro uplatnění těchto práv nás prosím kontaktujte pomocí informací uvedených níže. Všimněte si, že některé požadavky mohou vyžadovat ověření identity.',
     },
+    dataRetentionAndDeletion: {
+      title: 'Uchovávání a mazání dat',
+      paragraph1:
+        'Vaše osobní údaje uchováváme po dobu, po kterou je váš účet u nás aktivní, nebo po dobu nezbytnou k poskytování našich Služeb. Vaše údaje bezpečně vymažeme, jakmile již nebudou pro tyto účely potřebné.',
+      paragraph2:
+        'O vymazání svého účtu a souvisejících osobních údajů můžete požádat kdykoli. Chcete-li zahájit žádost o vymazání údajů, kontaktujte nás prosím přímo e-mailem na adrese gtomyasek@gmail.com s předmětem „Data Deletion Request“. Vaši žádost zpracujeme a potvrdíme vymazání vašich údajů z našich aktivních systémů v přiměřené lhůtě, s výhradou jakýchkoli zákonných nebo regulačních povinností uchovávat určité informace.',
+    },
     childrenPrivacy: {
       title: 'Ochrana soukromí dětí',
       paragraph1:
@@ -177,7 +196,7 @@ export const CS: Translations = {
         'Pokud máte dotazy nebo obavy týkající se našich Zásad ochrany osobních údajů nebo si přejete uplatnit svá práva, jak je popsáno výše, kontaktujte nás prosím prostřednictvím:',
       list: {
         element1: 'Bluesky: @authapex.net',
-        element2: 'Email: support@authapex.net',
+        element2: 'Email: gtomyasek@gmail.com',
       },
       paragraph2:
         'Poskytováním jasných kanálů pro komunikaci ohledně otázek soukromí a uplatňování práv GDPR usilujeme o udržení transparentnosti a důvěry s našimi uživateli a zároveň o dodržování platných zákonů a předpisů.',
