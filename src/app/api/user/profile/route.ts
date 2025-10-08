@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'No file was provided.' }, { status: 400 });
     }
 
-    const uuid = nanoid(32);
+    const uuid = nanoid();
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
     const cloudflareImage = await getServerState().cloudflareImages.createImageFromBuffer(
