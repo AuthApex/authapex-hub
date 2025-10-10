@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.3.10](https://github.com/AuthApex/authapex-hub/compare/v0.3.9...v0.3.10) (2025-10-08)
+
+
+### Bug Fixes
+
+* use default length for `nanoid` in profile route ([51b02d0](https://github.com/AuthApex/authapex-hub/commit/51b02d0ebf48bc9c4162400bc1e12775eb07ecb6))
+
 ### [0.3.9](https://github.com/AuthApex/authapex-hub/compare/v0.3.8...v0.3.9) (2025-10-07)
 
 
