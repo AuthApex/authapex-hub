@@ -20,7 +20,7 @@ export async function createSession() {
 
   cookieStore.set(sessionKey, session, {
     httpOnly: true,
-    secure: true,
+    secure: !process.env.DEVELOPMENT,
     expires: expiresAt,
     sameSite: 'lax',
     path: '/',

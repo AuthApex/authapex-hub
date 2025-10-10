@@ -11,7 +11,7 @@
     "start": "next start"
   },
   "dependencies": {
-    "@authapex/core": "^0.2.2",
+    "@authapex/core": "^0.2.7",
     "@heroicons/react": "^2.2.0",
     "@react-oauth/google": "^0.12.2",
     "@types/bcrypt": "^5.0.2",

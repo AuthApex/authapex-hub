@@ -24,3 +24,19 @@ export async function notifyUserUpdate(user: User): Promise<void> {
 
   await Promise.all(promisses);
 }
+
+export async function notifySessionDelete(userId: string, appName: string): Promise<void> {
+  const authorizedApps = await getAuthorizedApps();
+  const authorizedApp = authorizedApps.find((app) => app.name === appName && app.websocketEndpoint != null);
+  if (authorizedApp == null) {
+    return;
+  }
+  await axios
+    .post(authorizedApp.websocketEndpoint!, {
+      type: 'session-deleted',
+      data: {
+        userId,
+      },
+    } as WebSocketEvent)
+    .catch(console.error);
+}
