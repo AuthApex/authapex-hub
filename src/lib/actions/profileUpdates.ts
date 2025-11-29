@@ -45,9 +45,6 @@ export async function removeProfileImage(): Promise<void> {
   if (!auth.isAuth) {
     return;
   }
-  if (!auth.canChangeProfileImage) {
-    return;
-  }
   if (auth.user.profileImageId == null) {
     return;
   }

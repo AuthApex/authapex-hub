@@ -181,7 +181,6 @@ interface AuthResponseLoggedOut {
   isAuth: false;
   sessionId: null;
   expiresAt: null;
-  canChangeProfileImage: false;
   user: null;
 }
 
@@ -189,7 +188,6 @@ interface AuthResponseLoggedIn {
   isAuth: true;
   sessionId: string;
   expiresAt: Date;
-  canChangeProfileImage: boolean;
   user: User;
 }
 
@@ -197,19 +195,18 @@ export async function getAuth(): Promise<AuthResponse> {
   const session = await getRawSession();
 
   if (!session?.sessionId) {
-    return { isAuth: false, sessionId: null, user: null, expiresAt: null, canChangeProfileImage: false };
+    return { isAuth: false, sessionId: null, user: null, expiresAt: null };
   }
 
   const user = await getUserBySession(session.sessionId);
   if (!user) {
-    return { isAuth: false, sessionId: null, user: null, canChangeProfileImage: false, expiresAt: null };
+    return { isAuth: false, sessionId: null, user: null, expiresAt: null };
   }
 
   return {
     isAuth: true,
     sessionId: session.sessionId,
     expiresAt: new Date(session.expiresAt),
-    canChangeProfileImage: user.googleId == null,
     user: {
       userId: user.userId,
       email: user.email,

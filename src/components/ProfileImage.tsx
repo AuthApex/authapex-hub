@@ -8,7 +8,7 @@ export interface ProfileImageProps {
 }
 
 export function ProfileImage({ user, className, ...props }: ProfileImageProps) {
-  if (user.profileImageUrl != null) {
+  if (user.profileImageUrl != null && user.profileImageId == null) {
     return (
       // eslint-disable-next-line @next/next/no-img-element
       <img

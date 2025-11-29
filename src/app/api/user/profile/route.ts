@@ -11,9 +11,6 @@ export async function POST(request: NextRequest) {
   if (!auth.isAuth) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
-  if (!auth.canChangeProfileImage) {
-    return NextResponse.json({ error: 'Cannot set profile image to google account user' }, { status: 400 });
-  }
 
   try {
     const formData = await request.formData();
