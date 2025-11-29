@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.3.11](https://github.com/AuthApex/authapex-hub/compare/v0.3.10...v0.3.11) (2025-10-10)
+
+
+### Bug Fixes
+
+* add `notifySessionDelete` for session removal notifications, adjust `secure` cookie setting, and update `@authapex/core` to v0.2.7 ([a7c4f03](https://github.com/AuthApex/authapex-hub/commit/a7c4f031c1b68777fa6b60fbcb12b19f1172f657))
+
 ### [0.3.10](https://github.com/AuthApex/authapex-hub/compare/v0.3.9...v0.3.10) (2025-10-08)
 
 
