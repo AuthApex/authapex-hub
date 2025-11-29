@@ -21,7 +21,7 @@ export const EN: Translations = {
     save: 'Save',
   },
   sessions: {
-    button: 'Active app sessions',
+    button: 'Authorized applications',
     remove: 'Remove',
   },
   signin: {

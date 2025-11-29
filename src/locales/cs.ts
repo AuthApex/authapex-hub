@@ -21,7 +21,7 @@ export const CS: Translations = {
     save: 'Uložit',
   },
   sessions: {
-    button: 'Aktivní relace',
+    button: 'Autorizované aplikace',
     remove: 'Odstranit',
   },
   signin: {
