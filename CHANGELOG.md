@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.4.0](https://github.com/AuthApex/authapex-hub/compare/v0.3.11...v0.4.0) (2025-11-29)
+
+
+### Features
+
+* add user session handling and improve app authorization logic ([e397554](https://github.com/AuthApex/authapex-hub/commit/e397554185270d38fe074dd0d8ae174401020e5e))
+
+
+### Bug Fixes
+
+* update session button labels to "Authorized applications" in localization files ([e8859b6](https://github.com/AuthApex/authapex-hub/commit/e8859b61ce55b35603f15d4f82db91bc374e6b49))
+
 ### [0.3.11](https://github.com/AuthApex/authapex-hub/compare/v0.3.10...v0.3.11) (2025-10-10)
 
 
