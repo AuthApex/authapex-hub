@@ -5,14 +5,15 @@ import { TokenRefresher } from '@/components/client/TokenRefresher';
 import Image from 'next/image';
 import { Typography } from 'gtomy-lib';
 import { Footer } from '@/components/Footer';
-import { getAuthorizedAppsSanitized } from '@/lib/server/mongodb';
+import { getAuthorizedAppsSanitized, getUserAppSessions } from '@/lib/server/mongodb';
 
 export default async function Authorize({ params }: Readonly<{ params: Promise<{ lang: string }> }>) {
   const lang = (await params).lang;
   const trans = getTranslation(lang);
 
   const auth = await getAuth();
-  const verifiedApps = await getAuthorizedAppsSanitized();
+  const authorizedApps = await getAuthorizedAppsSanitized();
+  const userAppSessions = auth.user ? await getUserAppSessions(auth.user.userId) : [];
 
   return (
     <div className="flex min-h-svh flex-col items-center justify-center gap-6 p-6">
@@ -33,7 +34,13 @@ export default async function Authorize({ params }: Readonly<{ params: Promise<{
                 </Typography>
                 <Typography className="text-center">{trans.authorize.subtitle}</Typography>
               </div>
-              <AuthorizeCard trans={trans} isAuth={auth.isAuth} lang={lang} verifiedApps={verifiedApps} />
+              <AuthorizeCard
+                trans={trans}
+                isAuth={auth.isAuth}
+                lang={lang}
+                authorizedApps={authorizedApps}
+                userAppSessions={userAppSessions}
+              />
             </div>
           </div>
         </div>

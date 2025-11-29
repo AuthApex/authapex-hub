@@ -2,9 +2,9 @@
 
 import { Translations } from '@/locales/translation';
 import useCookie from 'react-use-cookie';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Button, Typography } from 'gtomy-lib';
+import { Button, LoadingState, Typography } from 'gtomy-lib';
 import { authorize } from '@/lib/actions/authorize';
 import Fuse from 'fuse.js';
 import { AUTHORIZATION_SERVICE } from '@/lib/consts';
@@ -24,10 +24,11 @@ export interface AuthorizeCardProps {
   lang: string;
   trans: Translations;
   isAuth: boolean;
-  verifiedApps: { name: string; displayName: string; url: string }[];
+  authorizedApps: { name: string; displayName: string; url: string }[];
+  userAppSessions: { app: string; userId: string; displayName?: string; url?: string; verified: boolean | null }[];
 }
 
-export function AuthorizeCard({ isAuth, trans, lang, verifiedApps }: AuthorizeCardProps) {
+export function AuthorizeCard({ isAuth, trans, lang, authorizedApps, userAppSessions }: AuthorizeCardProps) {
   const router = useRouter();
   const [rawAuthorizeData, setRawAuthorizeData, removeRawAuthorizeData] = useCookie('authorize-data', undefined);
   const searchParams = useSearchParams();
@@ -35,31 +36,61 @@ export function AuthorizeCard({ isAuth, trans, lang, verifiedApps }: AuthorizeCa
 
   const authorizeData = AUTHORIZATION_SERVICE.decodeAuthorizeData(rawAuthorizeData);
 
-  const fuse = new Fuse(verifiedApps, {
-    keys: ['name'],
-    threshold: 0.2,
-    ignoreDiacritics: true,
-  });
+  const fuse = useMemo(
+    () =>
+      new Fuse(authorizedApps, {
+        keys: ['name'],
+        threshold: 0.2,
+        ignoreDiacritics: true,
+      }),
+    [authorizedApps]
+  );
 
-  function getVerifiedStatus(appName: string, url: string): VerifiedStatusResponse {
-    const verifiedApp = verifiedApps.find((app) => app.name === appName);
-    if (!verifiedApp) {
-      const results = fuse.search(appName).map((result) => result.item);
-      if (results.length > 0) {
+  const getVerifiedStatus = useCallback(
+    (appName: string, url: string): VerifiedStatusResponse => {
+      const verifiedApp = authorizedApps.find((app) => app.name === appName);
+      if (!verifiedApp) {
+        const results = fuse.search(appName).map((result) => result.item);
+        if (results.length > 0) {
+          return {
+            status: VerifiedStatus.NOT_VERIFIED,
+          };
+        }
         return {
-          status: VerifiedStatus.NOT_VERIFIED,
+          status: VerifiedStatus.NO_DATA,
         };
       }
-      return {
-        status: VerifiedStatus.NO_DATA,
-      };
+      return url === verifiedApp.url
+        ? { status: VerifiedStatus.VERIFIED, displayName: verifiedApp.displayName }
+        : {
+            status: VerifiedStatus.NOT_VERIFIED,
+          };
+    },
+    [authorizedApps, fuse]
+  );
+
+  const isAppAlreadyAuthorized = useCallback(
+    (appName: string): boolean => {
+      return userAppSessions.some((session) => session.app === appName && session.verified === true);
+    },
+    [userAppSessions]
+  );
+
+  const onAuthorize = useCallback(async () => {
+    setIsLoading(true);
+    await authorize(lang);
+    setIsLoading(false);
+  }, [lang]);
+
+  const cancelAuthorize = useCallback(() => {
+    const redirectUrlOrigin = authorizeData == null ? null : new URL(authorizeData.redirectUrl).origin;
+    removeRawAuthorizeData();
+    if (redirectUrlOrigin) {
+      window.location.href = redirectUrlOrigin;
+    } else {
+      router.push('./');
     }
-    return url === verifiedApp.url
-      ? { status: VerifiedStatus.VERIFIED, displayName: verifiedApp.displayName }
-      : {
-          status: VerifiedStatus.NOT_VERIFIED,
-        };
-  }
+  }, [authorizeData, removeRawAuthorizeData, router]);
 
   useEffect(() => {
     const appData = searchParams.get('appData');
@@ -76,23 +107,29 @@ export function AuthorizeCard({ isAuth, trans, lang, verifiedApps }: AuthorizeCa
         router.push('./');
       } else if (!isAuth) {
         router.push('./signin');
+      } else if (authorizeData != null) {
+        const redirectUrlOrigin = new URL(authorizeData.redirectUrl).origin;
+        const { status } = getVerifiedStatus(authorizeData.app, redirectUrlOrigin);
+        const appAlreadyAuthorized = isAppAlreadyAuthorized(authorizeData.app);
+        if (status === VerifiedStatus.VERIFIED && appAlreadyAuthorized) {
+          onAuthorize();
+        }
       }
     }
-  }, [isAuth, rawAuthorizeData, router, searchParams, setRawAuthorizeData]);
-
-  const onAuthorize = async () => {
-    setIsLoading(true);
-    await authorize(lang);
-    setIsLoading(false);
-  };
-
-  const cancelAuthorize = () => {
-    removeRawAuthorizeData();
-    router.push('./');
-  };
+  }, [
+    authorizeData,
+    getVerifiedStatus,
+    isAppAlreadyAuthorized,
+    isAuth,
+    onAuthorize,
+    rawAuthorizeData,
+    router,
+    searchParams,
+    setRawAuthorizeData,
+  ]);
 
   if (!isAuth || !authorizeData) {
-    return null;
+    return <LoadingState />;
   }
 
   const redirectUrlOrigin = new URL(authorizeData.redirectUrl).origin;
@@ -100,6 +137,11 @@ export function AuthorizeCard({ isAuth, trans, lang, verifiedApps }: AuthorizeCa
     authorizeData.app,
     redirectUrlOrigin
   );
+  const appAlreadyAuthorized = isAppAlreadyAuthorized(authorizeData.app);
+
+  if (verifiedStatus === VerifiedStatus.VERIFIED && appAlreadyAuthorized) {
+    return <LoadingState />;
+  }
 
   return (
     <>
