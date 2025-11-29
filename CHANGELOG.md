@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.4.1](https://github.com/AuthApex/authapex-hub/compare/v0.4.0...v0.4.1) (2025-11-29)
+
+
+### Features
+
+* remove `canChangeProfileImage` checks and adjust related logic ([a48dbeb](https://github.com/AuthApex/authapex-hub/commit/a48dbeb68bb6690299c67f31f80b9381d2db5b6e))
+
 ## [0.4.0](https://github.com/AuthApex/authapex-hub/compare/v0.3.11...v0.4.0) (2025-11-29)
 
 
