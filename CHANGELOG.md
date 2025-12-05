@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.4.2](https://github.com/AuthApex/authapex-hub/compare/v0.4.1...v0.4.2) (2025-12-05)
+
+
+### Bug Fixes
+
+* update dependencies to latest versions in `package.json` and `package-lock.json` ([33386ca](https://github.com/AuthApex/authapex-hub/commit/33386ca67869cbce4270b01afdd2fdfffff8e5e3))
+
 ### [0.4.1](https://github.com/AuthApex/authapex-hub/compare/v0.4.0...v0.4.1) (2025-11-29)
 
 
