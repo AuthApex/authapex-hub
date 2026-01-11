@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.4.3](https://github.com/AuthApex/authapex-hub/compare/v0.4.2...v0.4.3) (2026-01-11)
+
+
+### Features
+
+* add health check API route and auto-deploy trigger for Coolify ([9c43ce6](https://github.com/AuthApex/authapex-hub/commit/9c43ce62003a0a47dde118ce301fc6a5a26f61ed))
+
 ### [0.4.2](https://github.com/AuthApex/authapex-hub/compare/v0.4.1...v0.4.2) (2025-12-05)
 
 
