@@ -16,3 +16,12 @@ jobs:
         run: docker build --pull --build-arg NEXT_PUBLIC_GOOGLE_CLIENT_ID=${{secrets.NEXT_PUBLIC_GOOGLE_CLIENT_ID}} -t "${{ secrets.CI_REGISTRY_IMAGE }}" .
       - name: Publish to Docker repository
         run: docker push "${{ secrets.CI_REGISTRY_IMAGE }}"
+  trigger:
+    name: Trigger deploy to Coolify
+    runs-on: ubuntu-latest
+    needs: [ publish ]
+    steps:
+      - run: |
+          curl --request GET \
+          --url 'https://${{ secrets.COOLIFY_API_URL }}/api/v1/deploy?uuid=${{ secrets.COOLIFY_API_FRONTEND_UUID }}&force=false' \
+          --header 'Authorization: Bearer ${{ secrets.COOLIFY_API_TOKEN }}'
