@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.5.3](https://github.com/AuthApex/authapex-hub/compare/v0.5.2...v0.5.3) (2026-01-16)
+
+
+### Features
+
+* add PencilIcon to save button in EditDisplayNameDialog and update button color to secondary ([c43c219](https://github.com/AuthApex/authapex-hub/commit/c43c219e0eab4ee8374da6cf3ec4794bab870566))
+
 ### [0.5.2](https://github.com/AuthApex/authapex-hub/compare/v0.5.1...v0.5.2) (2026-01-16)
 
 
