@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const formData = await request.formData();
-    const file = formData.get('file') as File | null;
+    const file = formData.get('file') as Blob | null;
 
     if (!file) {
       return NextResponse.json({ error: 'No file was provided.' }, { status: 400 });
@@ -47,7 +47,8 @@ export async function POST(request: NextRequest) {
       await getServerState().cloudflareImages.deleteImage(imageId);
       return NextResponse.json({ success: false });
     }
-  } catch {
+  } catch (e) {
+    console.error(e);
     return NextResponse.json({ error: 'Something went wrong during the upload.' }, { status: 500 });
   }
 }
