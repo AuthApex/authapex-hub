@@ -8,19 +8,11 @@ import { ScissorsIcon } from '@heroicons/react/24/outline';
 
 export interface ImageCropperDialogProps extends BaseDialogProps {
   imageUrl: string | undefined;
-  imageName: string | undefined;
   trans: Translations;
   onComplete: () => void;
 }
 
-export function ImageCropperDialog({
-  imageUrl,
-  imageName,
-  trans,
-  onOpenChange,
-  onComplete,
-  ...props
-}: ImageCropperDialogProps) {
+export function ImageCropperDialog({ imageUrl, trans, onOpenChange, onComplete, ...props }: ImageCropperDialogProps) {
   const [crop, setCrop] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [zoom, setZoom] = useState<number>(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
@@ -44,7 +36,7 @@ export function ImageCropperDialog({
       return;
     }
     const formData = new FormData();
-    formData.append('file', blob, imageName);
+    formData.append('file', blob);
 
     fetch('/api/user/profile', {
       method: 'POST',
@@ -121,17 +113,17 @@ export function ImageCropperDialog({
         {trans.home.cropProfileImage}
       </Typography>
 
-      <div className="h-96 w-full relative">
+      <div className="h-96 w-full my-3 relative bg-base-100/90 rounded-sm">
         <Cropper
           image={imageUrl}
           crop={crop}
-          zoom={zoom}
-          aspect={1}
           onCropChange={setCrop}
+          zoom={zoom}
+          onZoomChange={setZoom}
+          aspect={1}
           onCropComplete={(_, croppedAreaPixels) => {
             setCroppedAreaPixels(croppedAreaPixels);
           }}
-          onZoomChange={setZoom}
         />
       </div>
 

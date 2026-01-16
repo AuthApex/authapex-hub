@@ -82,7 +82,7 @@ export default async function Home({ params }: Readonly<{ params: Promise<{ lang
             <div className="flex flex-col md:flex-row justify-between gap-12 md:gap-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <EditDisplayNameButton user={user} trans={trans} />
-                <EditProfilePictureButtons trans={trans} />
+                <EditProfilePictureButtons user={user} trans={trans} />
                 <Button as={Link} href="/sessions" startIcon={SquaresPlusIcon}>
                   {trans.sessions.button}
                 </Button>

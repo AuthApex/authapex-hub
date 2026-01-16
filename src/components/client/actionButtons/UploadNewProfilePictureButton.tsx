@@ -23,7 +23,6 @@ export function UploadNewProfilePictureButton({ trans, setIsLoading, isLoading }
   const { openDialog, dialogElementProps } = useDialog(({ onOpenChange, ...props }) => (
     <ImageCropperDialog
       imageUrl={image.length > 0 ? image[0].dataURL : undefined}
-      imageName={image.length > 0 ? image[0].file?.name : undefined}
       trans={trans}
       onComplete={() => {
         setIsLoading(false);
