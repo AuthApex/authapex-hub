@@ -58,7 +58,7 @@ export default async function Admin({ params }: Readonly<{ params: Promise<{ lan
                 <li>
                   <Link href={getRoute(lang, '/admin/users')}>{trans.admin.users.title}</Link>
                 </li>
-                <li>{user.username}</li>
+                <li>{user.displayName}</li>
               </ul>
             </div>
 

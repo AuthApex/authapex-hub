@@ -75,7 +75,7 @@ export default async function Admin({ params }: Readonly<{ params: Promise<{ lan
                       <td>{app.url}</td>
                       <td>{app.websocketEndpoint}</td>
                       <td className="whitespace-nowrap">{app.apiKey.slice(0, 8) + '...'}</td>
-                      <td className="flex gap-2 flex-col justify-end">
+                      <td className="flex gap-2 flex-col justify-end w-max">
                         <CopyApiKeyButton apiKey={app.apiKey} trans={trans} />
                         <RemoveAuthorizedAppButton app={app.name} trans={trans} />
                       </td>
