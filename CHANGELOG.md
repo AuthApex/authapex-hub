@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.5.2](https://github.com/AuthApex/authapex-hub/compare/v0.5.1...v0.5.2) (2026-01-16)
+
+
+### Features
+
+* update profile picture handling with conditional button rendering and improved cropping logic ([10d96e3](https://github.com/AuthApex/authapex-hub/commit/10d96e3e6524fce35e746b924ddbb03701fcab5f))
+
+
+### Bug Fixes
+
+* rename "authorized" to "verified" in app-related localization strings ([f69dcfb](https://github.com/AuthApex/authapex-hub/commit/f69dcfbfc2937ae3715e3f65fba1edd40da5b364))
+
 ### [0.5.1](https://github.com/AuthApex/authapex-hub/compare/v0.5.0...v0.5.1) (2026-01-16)
 
 
