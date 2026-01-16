@@ -1,3 +1,5 @@
+import { ErrorTranslations } from 'gtomy-lib';
+
 export interface Translations {
   title: string;
   description: string;
@@ -15,6 +17,8 @@ export interface Translations {
     removingProfileImage: string;
     uploadNewProfileImage: string;
     uploadingNewProfileImage: string;
+    cropProfileImage: string;
+    crop: string;
     editDisplayName: string;
     displayName: string;
     save: string;
@@ -202,4 +206,5 @@ export interface Translations {
       addNewRole: string;
     };
   };
+  error: ErrorTranslations;
 }

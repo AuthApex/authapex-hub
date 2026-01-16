@@ -14,6 +14,8 @@ export const CS: Translations = {
     removingProfileImage: 'Odstraňuji...',
     uploadNewProfileImage: 'Nahrát profilový obrázek',
     uploadingNewProfileImage: 'Nahrávání...',
+    cropProfileImage: 'Ořízni profilový obrázek',
+    crop: 'Ořiznout',
     email: 'Email',
     userInformation: 'Uživatelské informace',
     permissions: 'Přístupy',
@@ -231,5 +233,11 @@ export const CS: Translations = {
       isAutorizedAppInRole: 'Je autorizovaná',
       addNewRole: 'Přidat novou roli',
     },
+  },
+  error: {
+    error: 'Něco se pokazilo. Zkuste to za chvíli znovu.',
+    retry: 'Zkusit znovu',
+    badGateway: 'Server není v tuto chvíli dostupný.',
+    noPermission: 'Uživateli chybí potřebné práva.',
   },
 };

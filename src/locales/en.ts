@@ -14,6 +14,8 @@ export const EN: Translations = {
     removingProfileImage: 'Removing...',
     uploadNewProfileImage: 'Upload profile image',
     uploadingNewProfileImage: 'Uploading...',
+    cropProfileImage: 'Crop profile image',
+    crop: 'Crop profile image',
     email: 'Email',
     userInformation: 'User information',
     permissions: 'Permissions',
@@ -231,5 +233,11 @@ export const EN: Translations = {
       isAutorizedAppInRole: 'Is authorized',
       addNewRole: 'Add new role',
     },
+  },
+  error: {
+    error: 'Something went wrong. Please try again later.',
+    retry: 'Try again',
+    badGateway: 'Server is down. Please try again later.',
+    noPermission: 'User does not have the required role.',
   },
 };
