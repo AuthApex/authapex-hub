@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.5.0](https://github.com/AuthApex/authapex-hub/compare/v0.4.6...v0.5.0) (2026-01-16)
+
+
+### Features
+
+* add image cropping dialog and enhance profile picture upload functionality with cropping logic and new dependencies ([ecc6129](https://github.com/AuthApex/authapex-hub/commit/ecc6129e662c96105856163059bd2e30dbf7d770))
+* rename and enhance profile picture-related buttons with improved loading states ([869417b](https://github.com/AuthApex/authapex-hub/commit/869417bd74babc4912bb414e66621b9a28306a3a))
+
 ### [0.4.6](https://github.com/AuthApex/authapex-hub/compare/v0.4.5...v0.4.6) (2026-01-16)
 
 
