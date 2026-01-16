@@ -227,6 +227,7 @@ export const CS: Translations = {
       roles: 'Role',
       removeRole: 'Odstranit roli',
       editUserRoles: 'Upravit role',
+      isAutorizedAppInRole: 'Je autorizovaná',
       addNewRole: 'Přidat novou roli',
     },
   },

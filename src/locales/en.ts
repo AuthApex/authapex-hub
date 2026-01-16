@@ -227,6 +227,7 @@ export const EN: Translations = {
       removeRole: 'Remove role',
       roles: 'Roles',
       editUserRoles: 'Edit roles',
+      isAutorizedAppInRole: 'Is authorized',
       addNewRole: 'Add new role',
     },
   },

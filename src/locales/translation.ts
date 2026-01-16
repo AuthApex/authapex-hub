@@ -197,6 +197,7 @@ export interface Translations {
       email: string;
       roles: string;
       editUserRoles: string;
+      isAutorizedAppInRole: string;
       addNewRole: string;
     };
   };

@@ -99,7 +99,7 @@ export default async function Admin({ params }: Readonly<{ params: Promise<{ lan
                 </Typography>
               </div>
               <div className="flex flex-col gap-2">
-                <EditUserRolesButton user={user} trans={trans} />
+                <EditUserRolesButton user={user} trans={trans} verifiedApps={verifiedApps} />
                 {/*<Button color="warning">Block user</Button>*/}
                 {/*<Button color="error">Remove user</Button>*/}
               </div>

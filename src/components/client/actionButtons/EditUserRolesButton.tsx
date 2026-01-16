@@ -10,14 +10,16 @@ import { PencilIcon } from '@heroicons/react/24/outline';
 export interface EditUserRolesButtonProps {
   trans: Translations;
   user: User;
+  verifiedApps: { name: string; displayName: string; url: string }[];
 }
 
-export function EditUserRolesButton({ trans, user }: EditUserRolesButtonProps) {
+export function EditUserRolesButton({ trans, user, verifiedApps }: EditUserRolesButtonProps) {
   const router = useRouter();
   const { dialogElementProps, openDialog } = useDialog(({ onOpenChange, ...props }) => (
     <EditUserRolesDialog
       trans={trans}
       user={user}
+      verifiedApps={verifiedApps}
       onOpenChange={(open) => {
         if (!open) {
           router.refresh();

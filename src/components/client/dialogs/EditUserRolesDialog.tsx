@@ -1,6 +1,15 @@
 'use client';
 
-import { BaseDialog, BaseDialogProps, Button, ButtonIcon, SelectInput, TextInput, Typography } from 'gtomy-lib';
+import {
+  BaseDialog,
+  BaseDialogProps,
+  Button,
+  ButtonIcon,
+  Checkbox,
+  SelectInput,
+  TextInput,
+  Typography,
+} from 'gtomy-lib';
 import { PermRoles, RoleModel, User } from '@authapex/core';
 import { Translations } from '@/locales/translation';
 import { ChangeEvent, useState } from 'react';
@@ -12,14 +21,20 @@ import { nanoid } from 'nanoid';
 export interface EditUserRolesDialogProps extends BaseDialogProps {
   user: User;
   trans: Translations;
+  verifiedApps: { name: string; displayName: string; url: string }[];
 }
 
-export function EditUserRolesDialog({ user, trans, ...props }: EditUserRolesDialogProps) {
+export function EditUserRolesDialog({ user, trans, verifiedApps, ...props }: EditUserRolesDialogProps) {
   const [errors, setErrors] = useState<ValidationResult['errors']>([]);
   const generalError = getErrorMessageForName('general', errors);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [roles, setRoles] = useState<(RoleModel & { id: string })[]>(
-    user.roles.map((role) => ({ application: role.application, role: role.role, id: nanoid() }))
+  const [roles, setRoles] = useState<(RoleModel & { id: string; isVerified: boolean })[]>(
+    user.roles.map((role) => ({
+      application: role.application,
+      role: role.role,
+      id: nanoid(),
+      isVerified: verifiedApps.some((app) => app.name === role.application),
+    }))
   );
 
   const onSubmit = async () => {
@@ -33,7 +48,7 @@ export function EditUserRolesDialog({ user, trans, ...props }: EditUserRolesDial
     setIsLoading(false);
   };
 
-  const onSelectChange = (index: number, e: ChangeEvent<HTMLSelectElement>) => {
+  const onSelectRoleChange = (index: number, e: ChangeEvent<HTMLSelectElement>) => {
     setRoles((oldRoles) => {
       const newRoles = [...oldRoles];
       newRoles[index].role = e.target.value as PermRoles;
@@ -49,6 +64,23 @@ export function EditUserRolesDialog({ user, trans, ...props }: EditUserRolesDial
     });
   };
 
+  const onSelectAppChange = (index: number, e: ChangeEvent<HTMLSelectElement>) => {
+    setRoles((oldRoles) => {
+      const newRoles = [...oldRoles];
+      newRoles[index].application = e.target.value;
+      return newRoles;
+    });
+  };
+
+  const onCheckboxChange = (index: number, e: ChangeEvent<HTMLInputElement>) => {
+    setRoles((oldRoles) => {
+      const newRoles = [...oldRoles];
+      newRoles[index].isVerified = e.target.checked;
+      newRoles[index].application = '';
+      return newRoles;
+    });
+  };
+
   return (
     <BaseDialog title={trans.admin.users.editUserRoles} maxWidth="sm" {...props}>
       <Typography size="2xl" weight="semibold">
@@ -57,16 +89,35 @@ export function EditUserRolesDialog({ user, trans, ...props }: EditUserRolesDial
       <div className="flex flex-col gap-4">
         {roles.map((role, index) => (
           <div key={role.id} className="grid grid-cols-2 gap-4">
-            <TextInput
-              label={trans.admin.authorizedApps.name}
-              onChange={(e) => onNameChange(index, e)}
-              value={role.application}
-            />
+            <div className="flex flex-col gap-1">
+              {role.isVerified ? (
+                <SelectInput
+                  label={trans.admin.authorizedApps.name}
+                  value={role.application}
+                  onChange={(e) => onSelectAppChange(index, e)}
+                  options={verifiedApps.map((app) => ({
+                    label: app.displayName,
+                    value: app.name,
+                  }))}
+                />
+              ) : (
+                <TextInput
+                  label={trans.admin.authorizedApps.name}
+                  onChange={(e) => onNameChange(index, e)}
+                  value={role.application}
+                />
+              )}
+              <Checkbox
+                checked={role.isVerified}
+                label={trans.admin.users.isAutorizedAppInRole}
+                onChange={(e) => onCheckboxChange(index, e)}
+              />
+            </div>
             <div className="flex items-end gap-4">
               <SelectInput
                 label={trans.admin.users.roles}
                 className="w-full"
-                onChange={(e) => onSelectChange(index, e)}
+                onChange={(e) => onSelectRoleChange(index, e)}
                 value={role.role}
                 options={[
                   {
@@ -105,7 +156,9 @@ export function EditUserRolesDialog({ user, trans, ...props }: EditUserRolesDial
           <Button
             startIcon={PlusIcon}
             disabled={isLoading}
-            onClick={() => setRoles((oldRoles) => [...oldRoles, { application: '', role: 'user', id: nanoid() }])}
+            onClick={() =>
+              setRoles((oldRoles) => [...oldRoles, { application: '', role: 'user', id: nanoid(), isVerified: true }])
+            }
           >
             {trans.admin.users.addNewRole}
           </Button>
