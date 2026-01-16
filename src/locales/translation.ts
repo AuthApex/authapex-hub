@@ -12,6 +12,7 @@ export interface Translations {
     permissions: string;
     email: string;
     removeProfileImage: string;
+    removingProfileImage: string;
     uploadNewProfileImage: string;
     uploadingNewProfileImage: string;
     editDisplayName: string;

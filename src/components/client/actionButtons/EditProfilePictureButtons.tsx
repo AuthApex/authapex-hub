@@ -5,11 +5,11 @@ import { UploadNewProfilePictureButton } from '@/components/client/actionButtons
 import { RemoveProfilePictureButton } from '@/components/client/actionButtons/RemoveProfilePictureButton';
 import { useState } from 'react';
 
-export interface ProfilePictureButtonsProps {
+export interface EditProfilePictureButtonsProps {
   trans: Translations;
 }
 
-export function ProfilePictureButtons({ trans }: ProfilePictureButtonsProps) {
+export function EditProfilePictureButtons({ trans }: EditProfilePictureButtonsProps) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   return (

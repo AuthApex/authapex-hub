@@ -2,7 +2,7 @@
 
 import { Button } from 'gtomy-lib';
 import { Translations } from '@/locales/translation';
-import { ChangeEvent, useRef } from 'react';
+import { ChangeEvent, useRef, useState } from 'react';
 import { ArrowUpTrayIcon } from '@heroicons/react/24/outline';
 import { useRouter } from 'next/navigation';
 
@@ -15,6 +15,7 @@ export interface UploadNewProfilePictureButtonProps {
 export function UploadNewProfilePictureButton({ trans, setIsLoading, isLoading }: UploadNewProfilePictureButtonProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
+  const [isUploading, setIsUploading] = useState<boolean>(false);
 
   const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -23,6 +24,7 @@ export function UploadNewProfilePictureButton({ trans, setIsLoading, isLoading }
     }
 
     setIsLoading(true);
+    setIsUploading(true);
     const formData = new FormData();
     formData.append('file', file);
 
@@ -42,6 +44,7 @@ export function UploadNewProfilePictureButton({ trans, setIsLoading, isLoading }
         fileInputRef.current.value = '';
       }
       setIsLoading(false);
+      setIsUploading(false);
       router.refresh();
     }
   };
@@ -60,8 +63,14 @@ export function UploadNewProfilePictureButton({ trans, setIsLoading, isLoading }
         style={{ display: 'none' }}
         disabled={isLoading}
       />
-      <Button startIcon={ArrowUpTrayIcon} color="primary" onClick={handleButtonClick} disabled={isLoading}>
-        {isLoading ? trans.home.uploadingNewProfileImage : trans.home.uploadNewProfileImage}
+      <Button
+        color="primary"
+        onClick={handleButtonClick}
+        loading={isUploading ? true : undefined}
+        startIcon={isUploading ? undefined : ArrowUpTrayIcon}
+        disabled={isLoading}
+      >
+        {isUploading ? trans.home.uploadingNewProfileImage : trans.home.uploadNewProfileImage}
       </Button>
     </>
   );

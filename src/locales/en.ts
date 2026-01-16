@@ -11,6 +11,7 @@ export const EN: Translations = {
     userId: 'Id',
     byUsing: 'By using, you agree to our',
     removeProfileImage: 'Remove profile image',
+    removingProfileImage: 'Removing...',
     uploadNewProfileImage: 'Upload profile image',
     uploadingNewProfileImage: 'Uploading...',
     email: 'Email',

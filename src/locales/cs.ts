@@ -11,6 +11,7 @@ export const CS: Translations = {
     userId: 'Id',
     byUsing: 'Využíváním souhlasíte s',
     removeProfileImage: 'Odstranit profilový obrázek',
+    removingProfileImage: 'Odstraňuji...',
     uploadNewProfileImage: 'Nahrát profilový obrázek',
     uploadingNewProfileImage: 'Nahrávání...',
     email: 'Email',
