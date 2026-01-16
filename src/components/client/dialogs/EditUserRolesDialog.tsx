@@ -99,6 +99,7 @@ export function EditUserRolesDialog({ user, trans, verifiedApps, ...props }: Edi
                     label: app.displayName,
                     value: app.name,
                   }))}
+                  allowEmpty
                 />
               ) : (
                 <TextInput
@@ -113,7 +114,7 @@ export function EditUserRolesDialog({ user, trans, verifiedApps, ...props }: Edi
                 onChange={(e) => onCheckboxChange(index, e)}
               />
             </div>
-            <div className="flex items-end gap-4">
+            <div className="flex items-start gap-4">
               <SelectInput
                 label={trans.admin.users.roles}
                 className="w-full"
@@ -147,6 +148,7 @@ export function EditUserRolesDialog({ user, trans, verifiedApps, ...props }: Edi
                 color="error"
                 title={trans.admin.users.removeRole}
                 onClick={() => setRoles((oldRoles) => oldRoles.filter((_, i) => i !== index))}
+                className="self-center"
               />
             </div>
           </div>
