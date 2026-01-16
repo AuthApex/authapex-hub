@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.4.5](https://github.com/AuthApex/authapex-hub/compare/v0.4.4...v0.4.5) (2026-01-16)
+
+
+### Features
+
+* enhance role editing with verified app selection and role validation logic ([361110f](https://github.com/AuthApex/authapex-hub/commit/361110f0cecd2e640387ab753d98ea5ce6cf3166))
+
+
+### Bug Fixes
+
+* adjust layout for authorized apps table and use displayName in user breadcrumb ([ce75a09](https://github.com/AuthApex/authapex-hub/commit/ce75a09be55cc21c84c8d1fd5b1b99a5d029dd31))
+
 ### [0.4.4](https://github.com/AuthApex/authapex-hub/compare/v0.4.3...v0.4.4) (2026-01-11)
 
 ### [0.4.3](https://github.com/AuthApex/authapex-hub/compare/v0.4.2...v0.4.3) (2026-01-11)
