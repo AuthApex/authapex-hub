@@ -6,6 +6,7 @@ import { Translations } from '@/locales/translation';
 import { updateDisplayName } from '@/lib/actions/profileUpdates';
 import { useState } from 'react';
 import { getErrorMessageForName, ValidationResult } from '@/lib/validations';
+import { PencilIcon } from '@heroicons/react/24/outline';
 
 export interface EditDisplayNameDialogProps extends BaseDialogProps {
   user: User;
@@ -40,7 +41,7 @@ export function EditDisplayNameDialog({ user, trans, ...props }: EditDisplayName
           error={getErrorMessageForName('displayName', errors)}
         />
         <div>
-          <Button color="primary" className="mt-4" type="submit" disabled={isLoading}>
+          <Button color="secondary" startIcon={PencilIcon} className="mt-4" type="submit" disabled={isLoading}>
             {trans.home.save}
           </Button>
         </div>
