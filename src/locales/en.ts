@@ -210,7 +210,7 @@ export const EN: Translations = {
   admin: {
     title: 'Administration',
     authorizedApps: {
-      title: 'Authorized apps',
+      title: 'Verified apps',
       displayName: 'Display name',
       name: 'Name',
       websocketEndpoint: 'Websocket endpoint',
@@ -230,7 +230,7 @@ export const EN: Translations = {
       removeRole: 'Remove role',
       roles: 'Roles',
       editUserRoles: 'Edit roles',
-      isAutorizedAppInRole: 'Is authorized',
+      isAutorizedAppInRole: 'Is verified',
       addNewRole: 'Add new role',
     },
   },
