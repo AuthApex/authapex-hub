@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.5.1](https://github.com/AuthApex/authapex-hub/compare/v0.5.0...v0.5.1) (2026-01-16)
+
+
+### Bug Fixes
+
+* improve error logging and update file type handling in API routes ([55f8511](https://github.com/AuthApex/authapex-hub/commit/55f85119461495aaa0049a236505a06ed20b638d))
+
 ## [0.5.0](https://github.com/AuthApex/authapex-hub/compare/v0.4.6...v0.5.0) (2026-01-16)
 
 
