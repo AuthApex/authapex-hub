@@ -8,9 +8,10 @@ import { getRoute } from '@/lib/getRoute';
 import { getAuth } from '@/lib/actions/auth';
 import { redirect } from 'next/navigation';
 import { PERMISSION_SERVICE } from '@/lib/consts';
-import { getUsers } from '@/lib/server/mongodb';
+import { getUsers, searchUsers } from '@/lib/server/mongodb';
 import { ProfileImage } from '@/components/ProfileImage';
 import { AdminUsersPagination } from '@/components/client/AdminUsersPagination';
+import { AdminUsersFilter } from '@/components/client/AdminUsersFilter';
 
 const PAGE_SIZE = 5;
 
@@ -19,10 +20,11 @@ export default async function Admin({
   searchParams,
 }: Readonly<{
   params: Promise<{ lang: string }>;
-  searchParams: Promise<{ page?: string }>;
+  searchParams: Promise<{ page?: string; q?: string }>;
 }>) {
   const lang = (await params).lang;
   const page = (await searchParams).page;
+  const query = (await searchParams).q;
   const trans = getTranslation(lang);
 
   const auth = await getAuth();
@@ -38,7 +40,12 @@ export default async function Admin({
   if (page != null && isNaN(+page)) {
     redirect(getRoute(lang, '/admin/users'));
   }
-  const users = await getUsers(+(page ?? 0), PAGE_SIZE);
+  let users;
+  if (query == null) {
+    users = await getUsers(+(page ?? 0), PAGE_SIZE);
+  } else {
+    users = await searchUsers(query);
+  }
 
   return (
     <div className="flex min-h-svh flex-col items-center justify-center gap-6 p-6">
@@ -63,6 +70,7 @@ export default async function Admin({
                 <li>{trans.admin.users.title}</li>
               </ul>
             </div>
+            <AdminUsersFilter query={query} trans={trans} />
             <div className="overflow-x-auto">
               <table className="table">
                 <thead>
@@ -74,7 +82,7 @@ export default async function Admin({
                   </tr>
                 </thead>
                 <tbody>
-                  {users.slice(0, PAGE_SIZE).map((user) => (
+                  {users.map((user) => (
                     <tr key={user.userId}>
                       <td className="flex flex-col lg:flex-row gap-4">
                         <ProfileImage user={user} className="size-12" />
@@ -97,7 +105,7 @@ export default async function Admin({
                 </tbody>
               </table>
             </div>
-            <AdminUsersPagination page={+(page ?? 0)} isLast={users.length <= PAGE_SIZE} />
+            {query == null && <AdminUsersPagination page={+(page ?? 0)} isLast={users.length <= PAGE_SIZE} />}
           </div>
         </div>
         <Footer lang={lang} trans={trans} isSignIn />

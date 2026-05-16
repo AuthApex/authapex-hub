@@ -232,6 +232,9 @@ export const CS: Translations = {
       editUserRoles: 'Upravit role',
       isAutorizedAppInRole: 'Je ověřená',
       addNewRole: 'Přidat novou roli',
+      search: 'Hledat',
+      clearQuery: 'Vymazat',
+      queryInput: 'Hledaný text',
     },
   },
   error: {

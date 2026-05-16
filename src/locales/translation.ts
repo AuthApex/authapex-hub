@@ -204,6 +204,9 @@ export interface Translations {
       editUserRoles: string;
       isAutorizedAppInRole: string;
       addNewRole: string;
+      search: string;
+      clearQuery: string;
+      queryInput: string;
     };
   };
   error: ErrorTranslations;

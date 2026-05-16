@@ -232,6 +232,9 @@ export const EN: Translations = {
       editUserRoles: 'Edit roles',
       isAutorizedAppInRole: 'Is verified',
       addNewRole: 'Add new role',
+      search: 'Search',
+      clearQuery: 'Clear',
+      queryInput: 'Search query',
     },
   },
   error: {

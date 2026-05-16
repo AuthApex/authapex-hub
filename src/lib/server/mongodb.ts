@@ -3,6 +3,7 @@ import { getServerState } from '@/lib/server/serverState';
 import { nanoid } from 'nanoid';
 import { UserWithPassword } from '@/lib/models/User';
 import { RoleModel, User } from '@authapex/core';
+import Fuse from 'fuse.js';
 
 export interface DbUpdateResult {
   success: boolean;
@@ -374,6 +375,34 @@ export async function getUsers(page: number, usersPerPage: number): Promise<User
       .limit(usersPerPage + 1)
       .toArray();
     return users.map((user) => ({
+      userId: user.userId,
+      email: user.email,
+      displayName: user.displayName,
+      username: user.username,
+      roles: user.roles,
+      profileImageId: user.profileImageId,
+      profileImageUrl: user.profileImageUrl,
+    }));
+  } catch {
+    return [];
+  }
+}
+
+export async function searchUsers(query: string): Promise<User[]> {
+  try {
+    const serverState = getServerState();
+    const db = serverState.mongoClient.db(serverState.mongoDbName);
+    const users = await db.collection('users').find({}).toArray();
+    const fuse = new Fuse(users, {
+      keys: ['displayName', 'username', 'email'],
+      threshold: 0.2,
+      ignoreDiacritics: true,
+    });
+
+    const searchedUsersById = users.filter((user) => user.userId === query);
+    const searchedUsers = fuse.search(query).map((result) => result.item);
+
+    return [...searchedUsersById, ...searchedUsers].map((user) => ({
       userId: user.userId,
       email: user.email,
       displayName: user.displayName,
