@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.5.4](https://github.com/AuthApex/authapex-hub/compare/v0.5.3...v0.5.4) (2026-05-16)
+
+
+### Features
+
+* add user search functionality with query-based filtering in admin users page ([7d244ec](https://github.com/AuthApex/authapex-hub/commit/7d244ecc24a6931fc536fc50bc9f70502b38b850))
+
 ### [0.5.3](https://github.com/AuthApex/authapex-hub/compare/v0.5.2...v0.5.3) (2026-01-16)
 
 
