@@ -4,6 +4,7 @@ import { nanoid } from 'nanoid';
 import { UserWithPassword } from '@/lib/models/User';
 import { RoleModel, User } from '@authapex/core';
 import Fuse from 'fuse.js';
+import { VerifiedStatus } from '@/lib/getVerifiedStatus';
 
 export interface DbUpdateResult {
   success: boolean;
@@ -226,18 +227,24 @@ export async function createUser({
   }
 }
 
-export async function insertAuthCode(authCode: string, userId: string): Promise<DbUpdateResult> {
+export async function insertAuthCode(
+  authCode: string,
+  userId: string,
+  status: VerifiedStatus
+): Promise<DbUpdateResult> {
   try {
     const serverState = getServerState();
     const db = serverState.mongoClient.db(serverState.mongoDbName);
-    await db.collection('authCodes').insertOne({ authCode, userId });
+    await db.collection('authCodes').insertOne({ authCode, userId, status });
     return { success: true };
   } catch {
     return { success: false };
   }
 }
 
-export async function getUserIdByAuthCode(authCode: string): Promise<string | null> {
+export async function getUserIdByAuthCode(
+  authCode: string
+): Promise<{ userId: string; status: VerifiedStatus } | null> {
   try {
     const serverState = getServerState();
     const db = serverState.mongoClient.db(serverState.mongoDbName);
@@ -245,7 +252,10 @@ export async function getUserIdByAuthCode(authCode: string): Promise<string | nu
     if (!authCodeDoc) {
       return null;
     }
-    return authCodeDoc.userId;
+    return {
+      userId: authCodeDoc.userId,
+      status: authCodeDoc.status,
+    };
   } catch {
     return null;
   }
@@ -275,14 +285,30 @@ export async function isAppAuthorizedToSeeUser(
 export async function authorizeAppToSeeUser(
   app: string,
   apiKey: string | null | undefined,
-  userId: string
+  userId: string,
+  status: VerifiedStatus
 ): Promise<DbUpdateResult> {
   try {
     const serverState = getServerState();
     const db = serverState.mongoClient.db(serverState.mongoDbName);
 
     const authorizedApp = await db.collection('authorizedApps').findOne({ name: app });
-    const verified = authorizedApp ? authorizedApp.apiKey === apiKey : null;
+
+    let verified: boolean | null;
+    if (status === VerifiedStatus.VERIFIED) {
+      if (authorizedApp != null && authorizedApp.apiKey === apiKey) {
+        verified = true;
+      } else {
+        return { success: false };
+      }
+    } else if (status === VerifiedStatus.CONFLICT) {
+      verified = false;
+    } else {
+      if (authorizedApp != null) {
+        return { success: false };
+      }
+      verified = null;
+    }
 
     const existingUserSession = await db.collection('userAppSessions').findOne({ app, userId, verified });
     if (existingUserSession) {

@@ -58,7 +58,9 @@ export const CS: Translations = {
     verified: 'Ověřeno',
     verifiedTooltip: 'Tato aplikace je ověřená.',
     notVerified: 'Neověřeno',
-    notVerifiedTooltip: 'Tuto aplikaci nebylo možné ověřit, postupujte opatrně!',
+    notVerifiedTooltip: 'Tato aplikace není ověřená, postupujte opatrně.',
+    conflict: 'Konflikt',
+    conflictTooltip: 'Tato aplikace má konflikt s jinou ověřenou aplikací, doporučujeme jí neautorizovat!',
   },
   terms: {
     title: 'Podmínky využití služby',

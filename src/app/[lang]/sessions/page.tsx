@@ -67,14 +67,17 @@ export default async function Home({ params }: Readonly<{ params: Promise<{ lang
                         )}
                       </td>
                       <td>
-                        {session.verified && (
+                        {session.verified == null ? (
+                          <div className="tooltip tooltip-warning" data-tip={trans.authorize.notVerifiedTooltip}>
+                            <div className="badge badge-warning badge-sm">{trans.authorize.notVerified}</div>
+                          </div>
+                        ) : session.verified ? (
                           <div className="tooltip tooltip-success" data-tip={trans.authorize.verifiedTooltip}>
                             <div className="badge badge-success badge-sm">{trans.authorize.verified}</div>
                           </div>
-                        )}
-                        {session.verified === false && (
-                          <div className="tooltip tooltip-error" data-tip={trans.authorize.notVerifiedTooltip}>
-                            <div className="badge badge-error badge-sm">{trans.authorize.notVerified}</div>
+                        ) : (
+                          <div className="tooltip tooltip-error" data-tip={trans.authorize.conflictTooltip}>
+                            <div className="badge badge-error badge-sm">{trans.authorize.conflict}</div>
                           </div>
                         )}
                       </td>

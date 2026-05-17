@@ -22,10 +22,11 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Missing auth code or app' }, { status: 400 });
   }
 
-  const userId = await getUserIdByAuthCode(payload.authCode);
-  if (userId == null) {
+  const authCodeData = await getUserIdByAuthCode(payload.authCode);
+  if (authCodeData == null) {
     return NextResponse.json({ error: 'Auth code not valid' }, { status: 401 });
   }
+  const { userId, status } = authCodeData;
 
   const user = await getUserByUserId(userId);
   if (!user) {
@@ -33,7 +34,7 @@ export async function POST(request: NextRequest) {
   }
 
   await removeAuthCode(payload.authCode);
-  const result = await authorizeAppToSeeUser(payload.app, payload.apiKey, userId);
+  const result = await authorizeAppToSeeUser(payload.app, payload.apiKey, userId, status);
   if (!result.success) {
     return NextResponse.json({ error: 'Cannot create user session' }, { status: 500 });
   }

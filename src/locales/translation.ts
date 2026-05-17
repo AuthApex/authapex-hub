@@ -59,6 +59,8 @@ export interface Translations {
     verifiedTooltip: string;
     notVerified: string;
     notVerifiedTooltip: string;
+    conflict: string;
+    conflictTooltip: string;
   };
   terms: {
     title: string;

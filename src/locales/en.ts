@@ -58,7 +58,10 @@ export const EN: Translations = {
     verified: 'Verified',
     verifiedTooltip: 'This application is verified.',
     notVerified: 'Not verified',
-    notVerifiedTooltip: 'This application could not be verified, proceed with caution!',
+    notVerifiedTooltip: 'This application is not verified, proceed with caution.',
+    conflict: 'Conflict',
+    conflictTooltip:
+      'This application has a conflict with another verified application, we recommend not authorizing it!',
   },
   terms: {
     title: 'Terms of Service',
