@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.6.0](https://github.com/AuthApex/authapex-hub/compare/v0.5.4...v0.6.0) (2026-05-17)
+
+
+### Features
+
+* add conflict status for app verification and update tooltips, badges, and localization ([0b2e48a](https://github.com/AuthApex/authapex-hub/commit/0b2e48ad85b48aab052c623a2aa0e7e8727bde7f))
+* refactor session management to use full session objects and enhance WebSocket handling ([d0dc4ca](https://github.com/AuthApex/authapex-hub/commit/d0dc4cad2f9855f09fda801c845f5c9b11cd35ac))
+
+
+### Bug Fixes
+
+* refactor consts to initialize services with config objects ([5e603fa](https://github.com/AuthApex/authapex-hub/commit/5e603faadc034006bc28dcecfc8fa4554caff8aa))
+
 ### [0.5.4](https://github.com/AuthApex/authapex-hub/compare/v0.5.3...v0.5.4) (2026-05-16)
 
 
