@@ -58,8 +58,6 @@ export async function removeActiveSession(app: string, verified: boolean | null)
   if (!auth.isAuth) {
     return;
   }
+  await notifySessionDelete(auth.user.userId, app, verified);
   await removeUserAppSession(auth.user.userId, app, verified);
-  if (verified) {
-    await notifySessionDelete(auth.user.userId, app);
-  }
 }

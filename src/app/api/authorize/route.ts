@@ -1,13 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { authorizeAppToSeeUser, getUserByUserId, getUserIdByAuthCode, removeAuthCode } from '@/lib/server/mongodb';
-import { User } from '@authapex/core';
+import { TokenRequest, User } from '@authapex/core';
 import { object, string } from 'yup';
-
-interface TokenRequest {
-  authCode: string;
-  app: string;
-  apiKey?: string | null;
-}
 
 export async function POST(request: NextRequest) {
   const payload: TokenRequest = await request.json();
@@ -16,6 +10,7 @@ export async function POST(request: NextRequest) {
     authCode: string().required(),
     app: string().required(),
     apiKey: string().optional().nullable(),
+    websocketEndpoint: string().optional().nullable(),
   }).isValid(payload);
 
   if (!isValid) {
@@ -34,7 +29,7 @@ export async function POST(request: NextRequest) {
   }
 
   await removeAuthCode(payload.authCode);
-  const result = await authorizeAppToSeeUser(payload.app, payload.apiKey, userId, status);
+  const result = await authorizeAppToSeeUser(payload, userId, status);
   if (!result.success) {
     return NextResponse.json({ error: 'Cannot create user session' }, { status: 500 });
   }

@@ -2,7 +2,7 @@ import 'server-only';
 import { getServerState } from '@/lib/server/serverState';
 import { nanoid } from 'nanoid';
 import { UserWithPassword } from '@/lib/models/User';
-import { RoleModel, User } from '@authapex/core';
+import { RoleModel, TokenRequest, User } from '@authapex/core';
 import Fuse from 'fuse.js';
 import { VerifiedStatus } from '@/lib/getVerifiedStatus';
 
@@ -76,6 +76,34 @@ export async function insertSession({
     return { success: true };
   } catch {
     return { success: false };
+  }
+}
+
+export async function getUserRawSession(
+  app: string,
+  userId: string,
+  verified: boolean | null
+): Promise<{
+  app: string;
+  userId: string;
+  websocketEndpoint?: string | null;
+  verified: boolean | null;
+} | null> {
+  try {
+    const serverState = getServerState();
+    const db = serverState.mongoClient.db(serverState.mongoDbName);
+    const session = await db.collection('userAppSessions').findOne({ app, userId, verified });
+    if (session == null) {
+      return null;
+    }
+    return {
+      app: session.app,
+      userId: session.userId,
+      verified: session.verified,
+      websocketEndpoint: session.websocketEndpoint,
+    };
+  } catch {
+    return null;
   }
 }
 
@@ -267,15 +295,12 @@ export async function isAppAuthorizedToSeeUser(
   userId: string
 ): Promise<boolean> {
   try {
-    const serverState = getServerState();
-    const db = serverState.mongoClient.db(serverState.mongoDbName);
-
-    const authorizedApp = await db.collection('authorizedApps').findOne({ name: app });
-    if (authorizedApp && authorizedApp.apiKey !== apiKey) {
+    const authorizedApp = await getAuthorizedApp(app);
+    if (authorizedApp != null && authorizedApp.apiKey !== apiKey) {
       return false;
     }
 
-    const userAppSession = await db.collection('userAppSessions').findOne({ app, userId });
+    const userAppSession = await getUserRawSession(app, userId, authorizedApp == null ? null : true);
     return !!userAppSession;
   } catch {
     return false;
@@ -283,8 +308,7 @@ export async function isAppAuthorizedToSeeUser(
 }
 
 export async function authorizeAppToSeeUser(
-  app: string,
-  apiKey: string | null | undefined,
+  payload: TokenRequest,
   userId: string,
   status: VerifiedStatus
 ): Promise<DbUpdateResult> {
@@ -292,11 +316,11 @@ export async function authorizeAppToSeeUser(
     const serverState = getServerState();
     const db = serverState.mongoClient.db(serverState.mongoDbName);
 
-    const authorizedApp = await db.collection('authorizedApps').findOne({ name: app });
+    const authorizedApp = await getAuthorizedApp(payload.app);
 
     let verified: boolean | null;
     if (status === VerifiedStatus.VERIFIED) {
-      if (authorizedApp != null && authorizedApp.apiKey === apiKey) {
+      if (authorizedApp != null && authorizedApp.apiKey === payload.apiKey) {
         verified = true;
       } else {
         return { success: false };
@@ -310,11 +334,13 @@ export async function authorizeAppToSeeUser(
       verified = null;
     }
 
-    const existingUserSession = await db.collection('userAppSessions').findOne({ app, userId, verified });
+    const existingUserSession = await getUserRawSession(payload.app, userId, verified);
     if (existingUserSession) {
       return { success: true };
     }
-    await db.collection('userAppSessions').insertOne({ app, userId, verified });
+    await db
+      .collection('userAppSessions')
+      .insertOne({ app: payload.app, userId, websocketEndpoint: payload.websocketEndpoint, verified });
 
     return { success: true };
   } catch {
@@ -322,14 +348,41 @@ export async function authorizeAppToSeeUser(
   }
 }
 
-export async function getUserAppSessions(
-  userId: string
-): Promise<{ app: string; userId: string; displayName?: string; url?: string; verified: boolean | null }[]> {
+export async function getUserAppSession(userId: string, app: string, verified: boolean | null) {
+  try {
+    const session = await getUserRawSession(app, userId, verified);
+    if (!session) {
+      return null;
+    }
+    const authorizedApp = await getAuthorizedApp(app);
+    return {
+      app: session.app,
+      userId: session.userId,
+      displayName: authorizedApp?.displayName,
+      url: authorizedApp?.url,
+      verified: session.verified,
+      websocketEndpoint: session.websocketEndpoint ?? authorizedApp?.websocketEndpoint,
+    };
+  } catch {
+    return null;
+  }
+}
+
+export async function getUserAppSessions(userId: string): Promise<
+  {
+    app: string;
+    userId: string;
+    displayName?: string;
+    url?: string;
+    websocketEndpoint?: string | null;
+    verified: boolean | null;
+  }[]
+> {
   try {
     const serverState = getServerState();
     const db = serverState.mongoClient.db(serverState.mongoDbName);
     const userAppSessions = await db.collection('userAppSessions').find({ userId }).toArray();
-    const authorizedApps = await db.collection('authorizedApps').find({}).toArray();
+    const authorizedApps = await getAuthorizedApps();
 
     return userAppSessions.map((session) => {
       const authorizedApp = authorizedApps.find((app) => app.name === session.app);
@@ -339,6 +392,7 @@ export async function getUserAppSessions(
         displayName: authorizedApp?.displayName,
         url: authorizedApp?.url,
         verified: session.verified,
+        websocketEndpoint: session.websocketEndpoint ?? authorizedApp?.websocketEndpoint,
       };
     });
   } catch {
@@ -358,6 +412,32 @@ export async function removeUserAppSession(
     return { success: true };
   } catch {
     return { success: false };
+  }
+}
+
+export async function getAuthorizedApp(appName: string): Promise<{
+  name: string;
+  displayName: string;
+  url: string;
+  apiKey: string;
+  websocketEndpoint?: string | null;
+} | null> {
+  try {
+    const serverState = getServerState();
+    const db = serverState.mongoClient.db(serverState.mongoDbName);
+    const app = await db.collection('authorizedApps').findOne({ name: appName });
+    if (app == null) {
+      return null;
+    }
+    return {
+      name: app.name,
+      displayName: app.displayName,
+      url: app.url,
+      apiKey: app.apiKey,
+      websocketEndpoint: app.websocketEndpoint,
+    };
+  } catch {
+    return null;
   }
 }
 

@@ -1,19 +1,16 @@
 import 'server-only';
 import { User, WebSocketEvent } from '@authapex/core';
-import { getAuthorizedApps, getUserAppSessions } from '@/lib/server/mongodb';
+import { getUserAppSession, getUserAppSessions } from '@/lib/server/mongodb';
 import axios from 'axios';
 
 export async function notifyUserUpdate(user: User): Promise<void> {
-  const authorizedApps = await getAuthorizedApps();
   const userAppSessions = await getUserAppSessions(user.userId);
-
   const promisses = userAppSessions.map((session) => {
-    const authorizedApp = authorizedApps.find((app) => app.name === session.app && app.websocketEndpoint != null);
-    if (authorizedApp == null) {
+    if (session.websocketEndpoint == null) {
       return;
     }
     return axios
-      .post(authorizedApp.websocketEndpoint!, {
+      .post(session.websocketEndpoint, {
         type: 'user-update',
         data: {
           userId: user.userId,
@@ -25,14 +22,13 @@ export async function notifyUserUpdate(user: User): Promise<void> {
   await Promise.all(promisses);
 }
 
-export async function notifySessionDelete(userId: string, appName: string): Promise<void> {
-  const authorizedApps = await getAuthorizedApps();
-  const authorizedApp = authorizedApps.find((app) => app.name === appName && app.websocketEndpoint != null);
-  if (authorizedApp == null) {
+export async function notifySessionDelete(userId: string, app: string, verified: boolean | null): Promise<void> {
+  const session = await getUserAppSession(userId, app, verified);
+  if (session?.websocketEndpoint == null) {
     return;
   }
   await axios
-    .post(authorizedApp.websocketEndpoint!, {
+    .post(session.websocketEndpoint, {
       type: 'session-deleted',
       data: {
         userId,
