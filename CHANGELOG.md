@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.6.4](https://github.com/AuthApex/authapex-hub/compare/v0.6.3...v0.6.4) (2026-05-24)
+
+
+### Bug Fixes
+
+* reorder `usersPerPage` SelectInput for consistent layout in AdminUsersFilter ([b7a3536](https://github.com/AuthApex/authapex-hub/commit/b7a3536c721ac291a5c1d9ed17d997213a6d1978))
+* reorder sort options in AdminUsersFilter for consistency ([56ffe49](https://github.com/AuthApex/authapex-hub/commit/56ffe49bd178e19bac2221b9cdf9c8a68345a4a6))
+
 ### [0.6.3](https://github.com/AuthApex/authapex-hub/compare/v0.6.2...v0.6.3) (2026-05-24)
 
 
