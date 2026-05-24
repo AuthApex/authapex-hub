@@ -45,7 +45,7 @@ export function AdminUsersFilter({ query, usersPerPage, trans, sortOrder, sortBy
   }, [query]);
 
   return (
-    <div className="flex flex-col lg:flex-row gap-2 lg:items-center lg:justify-between">
+    <div className="flex flex-col lg:flex-row gap-4 lg:items-center lg:justify-between">
       <div className="flex flex-col lg:flex-row gap-2 lg:items-center">
         <TextInput
           className="lg:w-64"
@@ -84,42 +84,44 @@ export function AdminUsersFilter({ query, usersPerPage, trans, sortOrder, sortBy
             ]}
             onChange={onSortByChange}
           />
-          <SelectInput
-            value={sortOrder}
-            options={[
-              {
-                value: 'asc',
-                label: trans.admin.users.sortOrderAsc,
-              },
-              {
-                value: 'desc',
-                label: trans.admin.users.sortOrderDesc,
-              },
-            ]}
-            onChange={onSortOrderChange}
-          />
-          <SelectInput
-            value={usersPerPage}
-            options={[
-              {
-                value: '5',
-                label: '5',
-              },
-              {
-                value: '10',
-                label: '10',
-              },
-              {
-                value: '25',
-                label: '25',
-              },
-              {
-                value: '100',
-                label: '100',
-              },
-            ]}
-            onChange={onNumberOfUsersPerPageChange}
-          />
+          <div className="flex gap-2 items-center">
+            <SelectInput
+              value={sortOrder}
+              options={[
+                {
+                  value: 'asc',
+                  label: trans.admin.users.sortOrderAsc,
+                },
+                {
+                  value: 'desc',
+                  label: trans.admin.users.sortOrderDesc,
+                },
+              ]}
+              onChange={onSortOrderChange}
+            />
+            <SelectInput
+              value={usersPerPage}
+              options={[
+                {
+                  value: '5',
+                  label: '5',
+                },
+                {
+                  value: '10',
+                  label: '10',
+                },
+                {
+                  value: '25',
+                  label: '25',
+                },
+                {
+                  value: '100',
+                  label: '100',
+                },
+              ]}
+              onChange={onNumberOfUsersPerPageChange}
+            />
+          </div>
         </div>
       )}
     </div>
