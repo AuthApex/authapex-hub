@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.6.3](https://github.com/AuthApex/authapex-hub/compare/v0.6.2...v0.6.3) (2026-05-24)
+
+
+### Bug Fixes
+
+* update user list logic to apply query-based filtering on admin users page ([1e18530](https://github.com/AuthApex/authapex-hub/commit/1e18530f62540cb802e285ad1fb2bf07ce1f9e78))
+
 ### [0.6.2](https://github.com/AuthApex/authapex-hub/compare/v0.6.1...v0.6.2) (2026-05-24)
 
 
