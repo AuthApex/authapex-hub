@@ -21,11 +21,11 @@ export default async function Admin({
   searchParams: Promise<{ page?: string; size?: string; sortBy?: string; sortOrder?: string; q?: string }>;
 }>) {
   const lang = (await params).lang;
-  const page = (await searchParams).page;
-  const usersPerPage = (await searchParams).size;
-  const sortBy = (await searchParams).sortBy;
-  const sortOrder = (await searchParams).sortOrder;
-  const query = (await searchParams).q;
+  const page = +((await searchParams).page ?? 0);
+  const usersPerPage = +((await searchParams).size ?? 5);
+  const sortBy = (await searchParams).sortBy ?? '_id';
+  const sortOrder = (await searchParams).sortOrder ?? 'asc';
+  const query = (await searchParams).q ?? '';
   const trans = getTranslation(lang);
 
   const auth = await getAuth();
@@ -38,29 +38,20 @@ export default async function Admin({
     redirect(getRoute(lang, '/'));
   }
 
-  if (page != null && isNaN(+page)) {
-    redirect(getRoute(lang, '/admin/users'));
-  }
-  if (usersPerPage != null && isNaN(+usersPerPage)) {
-    redirect(getRoute(lang, '/admin/users'));
-  }
-  if (sortBy != null && !['_id', 'username', 'displayName', 'email'].includes(sortBy)) {
-    redirect(getRoute(lang, '/admin/users'));
-  }
-  if (sortOrder != null && !['asc', 'desc'].includes(sortOrder)) {
+  if (
+    isNaN(page) ||
+    isNaN(usersPerPage) ||
+    !['_id', 'username', 'displayName', 'email'].includes(sortBy) ||
+    !['asc', 'desc'].includes(sortOrder)
+  ) {
     redirect(getRoute(lang, '/admin/users'));
   }
 
   let users;
-  if (query == null) {
-    users = await getUsers(
-      +(page ?? 0),
-      +(usersPerPage ?? 5),
-      (sortBy ?? '_id') as never,
-      (sortOrder ?? 'desc') as never
-    );
-  } else {
+  if (query) {
     users = await searchUsers(query);
+  } else {
+    users = await getUsers(page, usersPerPage, sortBy as never, sortOrder as never);
   }
 
   return (
@@ -87,10 +78,10 @@ export default async function Admin({
               </ul>
             </div>
             <AdminUsersFilter
-              query={query ?? ''}
-              usersPerPage={+(usersPerPage ?? 5)}
-              sortBy={sortBy ?? '_id'}
-              sortOrder={sortOrder ?? 'desc'}
+              query={query}
+              usersPerPage={String(usersPerPage)}
+              sortBy={sortBy}
+              sortOrder={sortOrder}
               trans={trans}
             />
             <div className="overflow-x-auto">
@@ -104,7 +95,7 @@ export default async function Admin({
                   </tr>
                 </thead>
                 <tbody>
-                  {users.map((user) => (
+                  {users.slice(0, usersPerPage).map((user) => (
                     <tr key={user.userId}>
                       <td className="flex flex-col lg:flex-row gap-4">
                         <ProfileImage user={user} className="size-12" />
@@ -127,9 +118,7 @@ export default async function Admin({
                 </tbody>
               </table>
             </div>
-            {query == null && (
-              <AdminUsersPagination page={+(page ?? 0)} isLast={users.length <= +(usersPerPage ?? 5)} />
-            )}
+            {!query && <AdminUsersPagination page={page} isLast={users.length <= usersPerPage} />}
           </div>
         </div>
         <Footer lang={lang} trans={trans} isSignIn />

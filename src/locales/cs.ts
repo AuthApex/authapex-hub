@@ -237,7 +237,6 @@ export const CS: Translations = {
       search: 'Hledat',
       clearQuery: 'Vymazat',
       queryInput: 'Hledaný text',
-      usersPerPageInput: 'Uživatelů na stránce',
       sortById: 'Podle id',
       sortByUsername: 'Podle jména',
       sortByDisplayName: 'Podle zobrazovaného jména',

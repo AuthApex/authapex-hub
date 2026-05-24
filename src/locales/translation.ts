@@ -209,7 +209,6 @@ export interface Translations {
       search: string;
       clearQuery: string;
       queryInput: string;
-      usersPerPageInput: string;
       sortById: string;
       sortByUsername: string;
       sortByDisplayName: string;

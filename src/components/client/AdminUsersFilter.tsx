@@ -11,25 +11,23 @@ export interface AdminUsersFilterProps {
   trans: Translations;
   sortBy: string;
   sortOrder: string;
-  usersPerPage: number;
+  usersPerPage: string;
 }
 
 export function AdminUsersFilter({ query, usersPerPage, trans, sortOrder, sortBy }: AdminUsersFilterProps) {
   const [queryValue, setQueryValue] = useState<string>(() => query);
-  const [usersPerPageValue, setUsersPerPageValue] = useState<string>(() => String(usersPerPage));
   const { push } = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
   const onSearch = () => {
-    const queryStr1 = createQueryString(new ReadonlyURLSearchParams(), 'q', queryValue.trim());
-    const size = +usersPerPageValue;
-    const queryStr2 = createQueryString(
-      new ReadonlyURLSearchParams(queryStr1),
-      'size',
-      isNaN(size) || size === 5 ? '' : String(size)
-    );
-    push(`${pathname}?${queryStr2}`);
+    const queryStr = createQueryString(new ReadonlyURLSearchParams(), 'q', queryValue.trim());
+    push(`${pathname}?${queryStr}`);
+  };
+
+  const onNumberOfUsersPerPageChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    const queryStr = createQueryString(searchParams, 'size', e.target.value);
+    push(`${pathname}?${queryStr}`);
   };
 
   const onSortByChange = (e: ChangeEvent<HTMLSelectElement>) => {
@@ -46,10 +44,6 @@ export function AdminUsersFilter({ query, usersPerPage, trans, sortOrder, sortBy
     setQueryValue(query);
   }, [query]);
 
-  useEffect(() => {
-    setUsersPerPageValue(String(usersPerPage));
-  }, [usersPerPage]);
-
   return (
     <div className="flex flex-col lg:flex-row gap-2 lg:items-center lg:justify-between">
       <div className="flex flex-col lg:flex-row gap-2 lg:items-center">
@@ -59,59 +53,75 @@ export function AdminUsersFilter({ query, usersPerPage, trans, sortOrder, sortBy
           placeholder={trans.admin.users.queryInput}
           onChange={(e) => setQueryValue(e.target.value)}
         />
-        <TextInput
-          className="lg:w-64"
-          type="number"
-          step="1"
-          value={usersPerPageValue}
-          placeholder={trans.admin.users.usersPerPageInput}
-          onChange={(e) => setUsersPerPageValue(e.target.value)}
-        />
         <Button onClick={onSearch}>{trans.admin.users.search}</Button>
-        {(query != null || usersPerPage !== 5) && (
+        {query && (
           <Button color="error" onClick={() => push(pathname)}>
             {trans.admin.users.clearQuery}
           </Button>
         )}
       </div>
-      <div className="flex flex-col lg:flex-row gap-2 lg:items-center">
-        <SelectInput
-          value={sortBy}
-          options={[
-            {
-              value: '_id',
-              label: trans.admin.users.sortById,
-            },
-            {
-              value: 'username',
-              label: trans.admin.users.sortByUsername,
-            },
-            {
-              value: 'displayName',
-              label: trans.admin.users.sortByDisplayName,
-            },
-            {
-              value: 'email',
-              label: trans.admin.users.sortByEmail,
-            },
-          ]}
-          onChange={onSortByChange}
-        />
-        <SelectInput
-          value={sortOrder}
-          options={[
-            {
-              value: 'desc',
-              label: trans.admin.users.sortOrderDesc,
-            },
-            {
-              value: 'asc',
-              label: trans.admin.users.sortOrderAsc,
-            },
-          ]}
-          onChange={onSortOrderChange}
-        />
-      </div>
+      {!query && (
+        <div className="flex flex-col lg:flex-row gap-2 lg:items-center">
+          <SelectInput
+            value={usersPerPage}
+            options={[
+              {
+                value: '5',
+                label: '5',
+              },
+              {
+                value: '10',
+                label: '10',
+              },
+              {
+                value: '25',
+                label: '25',
+              },
+              {
+                value: '100',
+                label: '100',
+              },
+            ]}
+            onChange={onNumberOfUsersPerPageChange}
+          />
+          <SelectInput
+            value={sortBy}
+            options={[
+              {
+                value: '_id',
+                label: trans.admin.users.sortById,
+              },
+              {
+                value: 'username',
+                label: trans.admin.users.sortByUsername,
+              },
+              {
+                value: 'displayName',
+                label: trans.admin.users.sortByDisplayName,
+              },
+              {
+                value: 'email',
+                label: trans.admin.users.sortByEmail,
+              },
+            ]}
+            onChange={onSortByChange}
+          />
+          <SelectInput
+            value={sortOrder}
+            options={[
+              {
+                value: 'desc',
+                label: trans.admin.users.sortOrderDesc,
+              },
+              {
+                value: 'asc',
+                label: trans.admin.users.sortOrderAsc,
+              },
+            ]}
+            onChange={onSortOrderChange}
+          />
+        </div>
+      )}
     </div>
   );
 }
