@@ -110,12 +110,12 @@ export function AdminUsersFilter({ query, usersPerPage, trans, sortOrder, sortBy
             value={sortOrder}
             options={[
               {
-                value: 'desc',
-                label: trans.admin.users.sortOrderDesc,
-              },
-              {
                 value: 'asc',
                 label: trans.admin.users.sortOrderAsc,
+              },
+              {
+                value: 'desc',
+                label: trans.admin.users.sortOrderDesc,
               },
             ]}
             onChange={onSortOrderChange}
