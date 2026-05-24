@@ -43,8 +43,12 @@ export function AdminUsersFilter({ query, usersPerPage, trans, sortOrder, sortBy
   };
 
   useEffect(() => {
-    setQueryValue(query ?? '');
+    setQueryValue(query);
   }, [query]);
+
+  useEffect(() => {
+    setUsersPerPageValue(String(usersPerPage));
+  }, [usersPerPage]);
 
   return (
     <div className="flex flex-col lg:flex-row gap-2 lg:items-center lg:justify-between">
