@@ -470,16 +470,26 @@ export async function getAuthorizedAppsSanitized(): Promise<{ name: string; disp
   }
 }
 
-export async function getUsers(page: number, usersPerPage: number): Promise<User[]> {
+export async function getUsers(
+  page: number,
+  usersPerPage: number,
+  sortBy: '_id' | 'username' | 'displayName' | 'email',
+  sortOrder: 'asc' | 'desc'
+): Promise<User[]> {
   try {
     const serverState = getServerState();
     const db = serverState.mongoClient.db(serverState.mongoDbName);
+
+    const sortDirection = sortOrder === 'desc' ? -1 : 1;
+
     const users = await db
       .collection('users')
       .find({})
+      .sort({ [sortBy]: sortDirection })
       .skip(page * usersPerPage)
       .limit(usersPerPage + 1)
       .toArray();
+
     return users.map((user) => ({
       userId: user.userId,
       email: user.email,

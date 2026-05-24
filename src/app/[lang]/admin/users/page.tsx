@@ -13,17 +13,18 @@ import { ProfileImage } from '@/components/ProfileImage';
 import { AdminUsersPagination } from '@/components/client/AdminUsersPagination';
 import { AdminUsersFilter } from '@/components/client/AdminUsersFilter';
 
-const PAGE_SIZE = 5;
-
 export default async function Admin({
   params,
   searchParams,
 }: Readonly<{
   params: Promise<{ lang: string }>;
-  searchParams: Promise<{ page?: string; q?: string }>;
+  searchParams: Promise<{ page?: string; size?: string; sortBy?: string; sortOrder?: string; q?: string }>;
 }>) {
   const lang = (await params).lang;
   const page = (await searchParams).page;
+  const usersPerPage = (await searchParams).size;
+  const sortBy = (await searchParams).sortBy;
+  const sortOrder = (await searchParams).sortOrder;
   const query = (await searchParams).q;
   const trans = getTranslation(lang);
 
@@ -40,9 +41,24 @@ export default async function Admin({
   if (page != null && isNaN(+page)) {
     redirect(getRoute(lang, '/admin/users'));
   }
+  if (usersPerPage != null && isNaN(+usersPerPage)) {
+    redirect(getRoute(lang, '/admin/users'));
+  }
+  if (sortBy != null && !['_id', 'username', 'displayName', 'email'].includes(sortBy)) {
+    redirect(getRoute(lang, '/admin/users'));
+  }
+  if (sortOrder != null && !['asc', 'desc'].includes(sortOrder)) {
+    redirect(getRoute(lang, '/admin/users'));
+  }
+
   let users;
   if (query == null) {
-    users = await getUsers(+(page ?? 0), PAGE_SIZE);
+    users = await getUsers(
+      +(page ?? 0),
+      +(usersPerPage ?? 5),
+      (sortBy ?? '_id') as never,
+      (sortOrder ?? 'desc') as never
+    );
   } else {
     users = await searchUsers(query);
   }
@@ -70,7 +86,13 @@ export default async function Admin({
                 <li>{trans.admin.users.title}</li>
               </ul>
             </div>
-            <AdminUsersFilter query={query} trans={trans} />
+            <AdminUsersFilter
+              query={query ?? ''}
+              usersPerPage={+(usersPerPage ?? 5)}
+              sortBy={sortBy ?? '_id'}
+              sortOrder={sortOrder ?? 'desc'}
+              trans={trans}
+            />
             <div className="overflow-x-auto">
               <table className="table">
                 <thead>
@@ -105,7 +127,9 @@ export default async function Admin({
                 </tbody>
               </table>
             </div>
-            {query == null && <AdminUsersPagination page={+(page ?? 0)} isLast={users.length <= PAGE_SIZE} />}
+            {query == null && (
+              <AdminUsersPagination page={+(page ?? 0)} isLast={users.length <= +(usersPerPage ?? 5)} />
+            )}
           </div>
         </div>
         <Footer lang={lang} trans={trans} isSignIn />

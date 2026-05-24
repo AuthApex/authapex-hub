@@ -1,20 +1,21 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { createQueryString } from '@/lib/createQueryString';
 
 export function AdminUsersPagination({ page, isLast }: { page: number; isLast: boolean }) {
   const { push } = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
 
   const onPreviousPage = () => {
-    if (page > 1) {
-      push('/admin/users?page=' + (page - 1));
-    } else {
-      push('/admin/users');
-    }
+    const queryStr = createQueryString(searchParams, 'page', page - 1);
+    push(`${pathname}?${queryStr}`);
   };
 
   const onNextPage = () => {
-    push('/admin/users?page=' + (page + 1));
+    const queryStr = createQueryString(searchParams, 'page', page + 1);
+    push(`${pathname}?${queryStr}`);
   };
 
   return (

@@ -238,6 +238,13 @@ export const EN: Translations = {
       search: 'Search',
       clearQuery: 'Clear',
       queryInput: 'Search query',
+      usersPerPageInput: 'Users per page',
+      sortById: 'By id',
+      sortByUsername: 'By username',
+      sortByDisplayName: 'By display name',
+      sortByEmail: 'By email',
+      sortOrderDesc: 'Descending',
+      sortOrderAsc: 'Ascending',
     },
   },
   error: {
