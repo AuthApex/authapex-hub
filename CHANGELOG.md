@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.6.2](https://github.com/AuthApex/authapex-hub/compare/v0.6.1...v0.6.2) (2026-05-24)
+
+
+### Bug Fixes
+
+* adjust `trans` initialization to prevent unnecessary reassignment in admin users page ([2f9d658](https://github.com/AuthApex/authapex-hub/commit/2f9d6580a69966951e47700865036e4770edf6f0))
+* simplify AdminUsersFilter logic and improve `usersPerPage` handling in admin users page ([74025ab](https://github.com/AuthApex/authapex-hub/commit/74025ab59aa84c39948a48be4e70a8f44bbf1fbf))
+
 ### [0.6.1](https://github.com/AuthApex/authapex-hub/compare/v0.6.0...v0.6.1) (2026-05-24)
 
 
