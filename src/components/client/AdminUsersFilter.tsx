@@ -63,28 +63,6 @@ export function AdminUsersFilter({ query, usersPerPage, trans, sortOrder, sortBy
       {!query && (
         <div className="flex flex-col lg:flex-row gap-2 lg:items-center">
           <SelectInput
-            value={usersPerPage}
-            options={[
-              {
-                value: '5',
-                label: '5',
-              },
-              {
-                value: '10',
-                label: '10',
-              },
-              {
-                value: '25',
-                label: '25',
-              },
-              {
-                value: '100',
-                label: '100',
-              },
-            ]}
-            onChange={onNumberOfUsersPerPageChange}
-          />
-          <SelectInput
             value={sortBy}
             options={[
               {
@@ -119,6 +97,28 @@ export function AdminUsersFilter({ query, usersPerPage, trans, sortOrder, sortBy
               },
             ]}
             onChange={onSortOrderChange}
+          />
+          <SelectInput
+            value={usersPerPage}
+            options={[
+              {
+                value: '5',
+                label: '5',
+              },
+              {
+                value: '10',
+                label: '10',
+              },
+              {
+                value: '25',
+                label: '25',
+              },
+              {
+                value: '100',
+                label: '100',
+              },
+            ]}
+            onChange={onNumberOfUsersPerPageChange}
           />
         </div>
       )}
