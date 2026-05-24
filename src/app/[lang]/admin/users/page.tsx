@@ -21,12 +21,13 @@ export default async function Admin({
   searchParams: Promise<{ page?: string; size?: string; sortBy?: string; sortOrder?: string; q?: string }>;
 }>) {
   const lang = (await params).lang;
+  const trans = getTranslation(lang);
+
   const page = +((await searchParams).page ?? 0);
   const usersPerPage = +((await searchParams).size ?? 5);
   const sortBy = (await searchParams).sortBy ?? '_id';
   const sortOrder = (await searchParams).sortOrder ?? 'asc';
   const query = (await searchParams).q ?? '';
-  const trans = getTranslation(lang);
 
   const auth = await getAuth();
 
