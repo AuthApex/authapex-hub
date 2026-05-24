@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.6.5](https://github.com/AuthApex/authapex-hub/compare/v0.6.4...v0.6.5) (2026-05-24)
+
+
+### Bug Fixes
+
+* adjust gap and group SelectInputs for better layout in AdminUsersFilter ([34fe8b0](https://github.com/AuthApex/authapex-hub/commit/34fe8b0076a380e4bf4a2fc5ed3c5191501f2f49))
+
 ### [0.6.4](https://github.com/AuthApex/authapex-hub/compare/v0.6.3...v0.6.4) (2026-05-24)
 
 
