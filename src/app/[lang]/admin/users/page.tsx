@@ -96,7 +96,7 @@ export default async function Admin({
                   </tr>
                 </thead>
                 <tbody>
-                  {users.slice(0, usersPerPage).map((user) => (
+                  {users.slice(0, query ? users.length : usersPerPage).map((user) => (
                     <tr key={user.userId}>
                       <td className="flex flex-col lg:flex-row gap-4">
                         <ProfileImage user={user} className="size-12" />
