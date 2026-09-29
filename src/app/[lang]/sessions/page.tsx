@@ -7,8 +7,10 @@ import { getRoute } from '@/lib/getRoute';
 import { TokenRefresher } from '@/components/client/TokenRefresher';
 import { Footer } from '@/components/Footer';
 import { getUserAppSessions } from '@/lib/server/mongodb';
+import { getOidcGrants } from '@/lib/server/oidcMongodb';
 import Link from 'next/link';
 import { RemoveUserSessionButton } from '@/components/client/actionButtons/RemoveUserSessionButton';
+import { RemoveOidcGrantButton } from '@/components/client/actionButtons/RemoveOidcGrantButton';
 
 export default async function Home({ params }: Readonly<{ params: Promise<{ lang: string }> }>) {
   const lang = (await params).lang;
@@ -21,6 +23,7 @@ export default async function Home({ params }: Readonly<{ params: Promise<{ lang
   }
   const user = auth.user;
   const userAppSessions = await getUserAppSessions(user.userId);
+  const oidcGrants = await getOidcGrants(user.userId);
 
   return (
     <div className="flex min-h-svh flex-col items-center justify-center gap-6 p-6">
@@ -89,6 +92,36 @@ export default async function Home({ params }: Readonly<{ params: Promise<{ lang
                 </tbody>
               </table>
             </div>
+
+            <Typography size="lg" weight="semibold">
+              {trans.sessions.oidcApps}
+            </Typography>
+            {oidcGrants.length === 0 ? (
+              <Typography>{trans.sessions.oidcAppsEmpty}</Typography>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="table">
+                  <thead>
+                    <tr>
+                      <th>{trans.authorize.appName}</th>
+                      <th>{trans.admin.oidcClients.scopes}</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {oidcGrants.map((grant) => (
+                      <tr key={grant.clientId}>
+                        <td>{grant.displayName ?? grant.clientId}</td>
+                        <td>{grant.scope}</td>
+                        <td className="flex justify-end">
+                          <RemoveOidcGrantButton clientId={grant.clientId} trans={trans} />
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
         </div>
         <Footer lang={lang} trans={trans} isSignIn />

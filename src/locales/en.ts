@@ -26,6 +26,8 @@ export const EN: Translations = {
   sessions: {
     button: 'Authorized applications',
     remove: 'Remove',
+    oidcApps: 'OAuth2 / OIDC applications',
+    oidcAppsEmpty: 'You have not authorized any OAuth2 application yet.',
   },
   signin: {
     title: 'Welcome back',
@@ -62,6 +64,29 @@ export const EN: Translations = {
     conflict: 'Conflict',
     conflictTooltip:
       'This application has a conflict with another verified application, we recommend not authorizing it!',
+  },
+  oidc: {
+    consent: {
+      title: 'Sign in to application',
+      subtitle: 'This application is requesting access to your AuthApex account.',
+      appName: 'Application name',
+      appUrl: 'Application URL',
+      permissions: 'The application will be able to access:',
+      button: 'Allow access',
+      cancelButton: 'Cancel',
+      scopes: {
+        openid: 'Your unique identifier',
+        profile: 'Your name and profile picture',
+        email: 'Your email address',
+        groups: 'Your roles and groups',
+        offlineAccess: 'Continued access while you are signed out',
+      },
+    },
+    error: {
+      title: 'Invalid request',
+      description: 'The sign in request is not valid or has expired. Please try signing in from the application again.',
+      backHome: 'Back to home page',
+    },
   },
   terms: {
     title: 'Terms of Service',
@@ -222,6 +247,20 @@ export const EN: Translations = {
       addNewApp: 'Add new app',
       copyApiKey: 'Copy key',
       remove: 'Remove',
+    },
+    oidcClients: {
+      title: 'OAuth2 / OIDC clients',
+      clientId: 'Client ID',
+      clientSecret: 'Client secret',
+      displayName: 'Display name',
+      redirectUris: 'Redirect URIs',
+      redirectUrisHint: 'One URI per line',
+      scopes: 'Scopes',
+      scopesHint: 'Space separated, e.g. openid profile email',
+      addNewClient: 'Add new client',
+      remove: 'Remove',
+      copyClientId: 'Copy client ID',
+      copyClientSecret: 'Copy secret',
     },
     users: {
       title: 'Users',

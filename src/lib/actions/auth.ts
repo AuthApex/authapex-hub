@@ -18,6 +18,9 @@ import {
 import { getGoogleSessionFromToken } from '@/lib/server/googleClient';
 import { User } from '@authapex/core';
 import { notifyUserUpdate } from '@/lib/server/websockets';
+import { getOidcRequestParams } from '@/lib/server/oidc/authorizationRequest';
+import { getOidcIssuer } from '@/lib/server/oidc/config';
+import { removeOidcUserTokens } from '@/lib/server/oidcMongodb';
 
 export async function signinWithGoogle(credentials: CredentialResponse): Promise<void> {
   if (!credentials.credential) {
@@ -170,6 +173,7 @@ export async function logout(): Promise<void> {
   const auth = await getAuth();
   if (auth.isAuth) {
     await invalidateSession({ sessionId: auth.sessionId });
+    await removeOidcUserTokens(auth.user.userId);
   }
   await deleteSession();
   redirect('./signin');
@@ -221,6 +225,11 @@ export async function getAuth(): Promise<AuthResponse> {
 
 // TODO: lang redirects dont seem to work
 async function handleAuthorizeRedirect(): Promise<void> {
+  const oidcRequestParams = await getOidcRequestParams();
+  if (oidcRequestParams) {
+    redirect(`${getOidcIssuer()}/api/oidc/authorize?${oidcRequestParams}`);
+  }
+
   const authorizeData = await getAuthorizeData();
   if (authorizeData) {
     redirect('../authorize');

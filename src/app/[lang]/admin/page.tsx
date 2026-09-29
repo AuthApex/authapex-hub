@@ -50,6 +50,9 @@ export default async function Admin({ params }: Readonly<{ params: Promise<{ lan
               <Button as={Link} href={getRoute(lang, '/admin/authorized-apps')}>
                 {trans.admin.authorizedApps.title}
               </Button>
+              <Button as={Link} href={getRoute(lang, '/admin/oidc-clients')}>
+                {trans.admin.oidcClients.title}
+              </Button>
             </div>
           </div>
         </div>

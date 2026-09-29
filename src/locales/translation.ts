@@ -26,6 +26,8 @@ export interface Translations {
   sessions: {
     button: string;
     remove: string;
+    oidcApps: string;
+    oidcAppsEmpty: string;
   };
   signin: {
     title: string;
@@ -61,6 +63,29 @@ export interface Translations {
     notVerifiedTooltip: string;
     conflict: string;
     conflictTooltip: string;
+  };
+  oidc: {
+    consent: {
+      title: string;
+      subtitle: string;
+      appName: string;
+      appUrl: string;
+      permissions: string;
+      button: string;
+      cancelButton: string;
+      scopes: {
+        openid: string;
+        profile: string;
+        email: string;
+        groups: string;
+        offlineAccess: string;
+      };
+    };
+    error: {
+      title: string;
+      description: string;
+      backHome: string;
+    };
   };
   terms: {
     title: string;
@@ -193,6 +218,20 @@ export interface Translations {
       remove: string;
       copyApiKey: string;
       addNewApp: string;
+    };
+    oidcClients: {
+      title: string;
+      clientId: string;
+      clientSecret: string;
+      displayName: string;
+      redirectUris: string;
+      redirectUrisHint: string;
+      scopes: string;
+      scopesHint: string;
+      addNewClient: string;
+      remove: string;
+      copyClientId: string;
+      copyClientSecret: string;
     };
     users: {
       title: string;

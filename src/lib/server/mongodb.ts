@@ -589,6 +589,7 @@ export async function getUserByUserId(userId: string): Promise<UserWithPassword 
       roles: user.roles,
       profileImageId: user.profileImageId,
       profileImageUrl: user.profileImageUrl,
+      emailVerified: user.emailVerified,
     };
   } catch {
     return null;

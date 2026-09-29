@@ -57,6 +57,12 @@ export const adminAddNewAppSchema = object({
   websocketEndpoint: string().nullable().optional(),
 });
 
+export const adminAddOidcClientSchema = object({
+  displayName: string().required('Toto pole je vyžadované'),
+  redirectUris: string().required('Toto pole je vyžadované'),
+  scopes: string().nullable().optional(),
+});
+
 export const adminEditUserRoles = object({
   roles: array().of(
     object({

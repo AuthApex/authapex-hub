@@ -26,6 +26,8 @@ export const CS: Translations = {
   sessions: {
     button: 'Autorizované aplikace',
     remove: 'Odstranit',
+    oidcApps: 'OAuth2 / OIDC aplikace',
+    oidcAppsEmpty: 'Zatím jste neautorizovali žádnou OAuth2 aplikaci.',
   },
   signin: {
     title: 'Vítej zpátky',
@@ -61,6 +63,29 @@ export const CS: Translations = {
     notVerifiedTooltip: 'Tato aplikace není ověřená, postupujte opatrně.',
     conflict: 'Konflikt',
     conflictTooltip: 'Tato aplikace má konflikt s jinou ověřenou aplikací, doporučujeme jí neautorizovat!',
+  },
+  oidc: {
+    consent: {
+      title: 'Přihlásit se do aplikace',
+      subtitle: 'Tato aplikace žádá o přístup k vašemu účtu AuthApex.',
+      appName: 'Jméno aplikace',
+      appUrl: 'URL aplikace',
+      permissions: 'Aplikace bude mít přístup k:',
+      button: 'Povolit přístup',
+      cancelButton: 'Zrušit',
+      scopes: {
+        openid: 'Vašemu jedinečnému identifikátoru',
+        profile: 'Vašemu jménu a profilovému obrázku',
+        email: 'Vaší emailové adrese',
+        groups: 'Vašim rolím a skupinám',
+        offlineAccess: 'Trvalému přístupu i když nejste přihlášeni',
+      },
+    },
+    error: {
+      title: 'Neplatný požadavek',
+      description: 'Požadavek na přihlášení není platný nebo vypršel. Zkuste se přihlásit z aplikace znovu.',
+      backHome: 'Zpátky na hlavní stránku',
+    },
   },
   terms: {
     title: 'Podmínky využití služby',
@@ -221,6 +246,20 @@ export const CS: Translations = {
       websocketEndpoint: 'Websocket endpoint',
       remove: 'Odstranit',
       copyApiKey: 'Kopírovat klíč',
+    },
+    oidcClients: {
+      title: 'OAuth2 / OIDC klienti',
+      clientId: 'Client ID',
+      clientSecret: 'Client secret',
+      displayName: 'Zobrazované jméno',
+      redirectUris: 'Redirect URI',
+      redirectUrisHint: 'Jedna URI na řádek',
+      scopes: 'Scopes',
+      scopesHint: 'Oddělené mezerou, např. openid profile email',
+      addNewClient: 'Přidat nového klienta',
+      remove: 'Odstranit',
+      copyClientId: 'Kopírovat client ID',
+      copyClientSecret: 'Kopírovat secret',
     },
     users: {
       title: 'Uživatelé',

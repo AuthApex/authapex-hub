@@ -3,6 +3,7 @@
 import { mapValidationErrorToValidationResult, updateDisplayNameSchema, ValidationResult } from '@/lib/validations';
 import { getAuth } from '@/lib/actions/auth';
 import { removeUserAppSession, setDisplayName, setProfileImageId } from '@/lib/server/mongodb';
+import { removeOidcGrant } from '@/lib/server/oidcMongodb';
 import { notifySessionDelete, notifyUserUpdate } from '@/lib/server/websockets';
 
 export async function updateDisplayName(formData: FormData): Promise<ValidationResult> {
@@ -60,4 +61,12 @@ export async function removeActiveSession(app: string, verified: boolean | null)
   }
   await notifySessionDelete(auth.user.userId, app, verified);
   await removeUserAppSession(auth.user.userId, app, verified);
+}
+
+export async function removeOidcApp(clientId: string): Promise<void> {
+  const auth = await getAuth();
+  if (!auth.isAuth) {
+    return;
+  }
+  await removeOidcGrant(clientId, auth.user.userId);
 }

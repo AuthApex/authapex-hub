@@ -5,7 +5,7 @@ import { addMonths } from 'date-fns';
 import { nanoid } from 'nanoid';
 import { decrypt, encrypt } from '@/lib/server/encryption';
 
-const sessionKey = 'session';
+export const sessionKey = 'session';
 export interface SessionPayload extends JWTPayload {
   sessionId: string;
   expiresAt: string;
