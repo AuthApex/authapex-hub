@@ -29,10 +29,8 @@ RSA keys are signed with `RS256`, EC keys (`P-256`, `P-384`, `P-521`) with `ES25
 | Authorization | `/api/oidc/authorize`                   |
 | Token         | `/api/oidc/token`                       |
 | UserInfo      | `/api/oidc/userinfo`                    |
-| End session   | `/api/oidc/logout`                      |
 
 Supported: the authorization code flow, the refresh token grant (requires the `offline_access` scope),
-`client_secret_basic` and `client_secret_post` client authentication and RP initiated logout. PKCE is not implemented.
 
 ### Scopes and claims
 
