@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.7.0](https://github.com/AuthApex/authapex-hub/compare/v0.6.5...v0.7.0) (2026-09-29)
+
+
+### Features
+
+* add OpenID Connect (OIDC) support ([367fe8d](https://github.com/AuthApex/authapex-hub/commit/367fe8d7473ad7908e75e3f1d163441221123070))
+
 ### [0.6.5](https://github.com/AuthApex/authapex-hub/compare/v0.6.4...v0.6.5) (2026-05-24)
 
 
