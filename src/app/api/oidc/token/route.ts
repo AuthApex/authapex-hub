@@ -151,7 +151,8 @@ export async function POST(request: NextRequest) {
       return await handleRefreshTokenGrant(client, body);
     }
     return tokenError('unsupported_grant_type', 'The requested grant type is not supported.');
-  } catch {
+  } catch (error) {
+    console.error('[OIDC Token Endpoint Error]:', error);
     return tokenError('server_error', 'The token could not be issued.', 500);
   }
 }
