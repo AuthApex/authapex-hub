@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.2](https://github.com/AuthApex/authapex-hub/compare/v0.7.1...v0.7.2) (2026-09-29)
+
+
+### Bug Fixes
+
+* remove oidc logout logic ([12efb6c](https://github.com/AuthApex/authapex-hub/commit/12efb6cdceddcfd9acd7595afe96f419910c7bda))
+
 ### [0.7.1](https://github.com/AuthApex/authapex-hub/compare/v0.7.0...v0.7.1) (2026-09-29)
 
 
