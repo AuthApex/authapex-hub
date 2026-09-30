@@ -64,18 +64,34 @@ export async function insertSession({
   userId,
   sessionId,
   expiresAt,
+  authTime,
 }: {
   userId: string;
   sessionId: string;
   expiresAt: Date;
+  // When the user actually authenticated. Rotated sessions keep the original value.
+  authTime: Date | null;
 }): Promise<DbUpdateResult> {
   try {
     const serverState = getServerState();
     const db = serverState.mongoClient.db(serverState.mongoDbName);
-    await db.collection('sessions').insertOne({ userId, sessionId, expiresAt });
+    await db.collection('sessions').insertOne({ userId, sessionId, expiresAt, authTime });
     return { success: true };
   } catch {
     return { success: false };
+  }
+}
+
+export async function getSessionAuthTime(sessionId: string): Promise<Date | null> {
+  try {
+    const serverState = getServerState();
+    const db = serverState.mongoClient.db(serverState.mongoDbName);
+    const session = await db
+      .collection('sessions')
+      .findOne({ sessionId, expiresAt: { $gt: new Date() } }, { projection: { authTime: 1 } });
+    return session?.authTime instanceof Date ? session.authTime : null;
+  } catch {
+    return null;
   }
 }
 

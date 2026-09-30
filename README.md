@@ -34,6 +34,15 @@ RSA keys are signed with `RS256`, EC keys (`P-256`, `P-384`, `P-521`) with `ES25
 Supported: the authorization code flow with optional PKCE (`S256` only), the refresh token grant (requires the
 `offline_access` scope) and `client_secret_basic` / `client_secret_post` client authentication.
 
+- `prompt` supports `none`, `login`, `consent` and `select_account`. `login`, `select_account` and an exceeded
+  `max_age` end the current hub session and ask the user to sign in again.
+- `auth_time` is the time the user actually signed in, it is kept when the hub session is rotated.
+- Refresh tokens rotate on every use. Reusing an already used refresh token or authorization code revokes all refresh
+  tokens issued from the same authorization. A refresh request may narrow the scope, the new refresh token keeps the
+  original one.
+- Logging out of the hub does not revoke refresh tokens, users revoke applications on the **Authorized applications**
+  page.
+
 ### Scopes and claims
 
 | Scope            | Claims                                                  |
@@ -50,7 +59,13 @@ Clients are managed in the admin section under **OAuth2 / OIDC clients** (`/admi
 generated `client_id` and `client_secret`, an explicit list of allowed redirect URIs and the scopes it may request.
 The client secret is stored only as a SHA-256 hash and is shown once, when the client is created. If it gets lost, it
 can be regenerated in the admin section (the application then has to be updated with the new secret). Authorization
-codes and refresh tokens are stored hashed as well. Records created before hashing was introduced are migrated
-automatically on the first OIDC database access.
+codes and refresh tokens are stored hashed as well.
+
+Redirect URIs must be `https://`, `http://` only for `localhost`, `127.0.0.1` or `[::1]`, or a private-use scheme of a
+native app containing a dot (e.g. `app.immich:///oauth-callback`). URIs with a `#fragment` or credentials are rejected.
+
+Used authorization codes and refresh tokens are kept (with a `usedAt` field) to detect replays. Documents in
+`oidcAuthCodes` and `oidcRefreshTokens` can be removed once `expiresAt` is in the past.
+
 Users see a consent screen the first time an application asks for access and can revoke it later on the
 **Authorized applications** page.

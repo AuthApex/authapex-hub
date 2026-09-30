@@ -9,6 +9,7 @@ import {
 } from '@/lib/validations';
 import { addAuthorizedApp, deleteAuthorizedApp, setUserRoles } from '@/lib/server/mongodb';
 import { addOidcClient, deleteOidcClient, regenerateOidcClientSecret } from '@/lib/server/oidcMongodb';
+import { isAllowedOidcRedirectUri } from '@/lib/server/oidc/redirectUri';
 import { getAuth } from '@/lib/actions/auth';
 import { PERMISSION_SERVICE } from '@/lib/consts';
 import { RoleModel } from '@authapex/core';
@@ -108,22 +109,14 @@ export async function createNewOidcClient(formData: FormData): Promise<OidcClien
     };
   }
 
-  const hasInvalidRedirectUri = redirectUris.some((redirectUri) => {
-    try {
-      new URL(redirectUri);
-      return false;
-    } catch {
-      return true;
-    }
-  });
-
-  if (hasInvalidRedirectUri) {
+  const invalidRedirectUri = redirectUris.find((redirectUri) => !isAllowedOidcRedirectUri(redirectUri));
+  if (invalidRedirectUri != null) {
     return {
       success: false,
       errors: [
         {
           path: 'redirectUris',
-          message: 'Toto pole musí obsahovat platné absolutní URI',
+          message: `Neplatná URI ${invalidRedirectUri}: povoleno je https://, http:// pouze pro localhost a vlastní schéma aplikace s tečkou (např. app.example:/callback), bez #fragmentu`,
         },
       ],
     };

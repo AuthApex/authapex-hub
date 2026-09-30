@@ -8,9 +8,10 @@ import { Translations } from '@/locales/translation';
 
 export interface LoginFormProps {
   trans: Translations;
+  flow?: string | null;
 }
 
-export function LoginForm({ trans }: LoginFormProps) {
+export function LoginForm({ trans, flow }: LoginFormProps) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errors, setErrors] = useState<ValidationResult['errors']>([]);
   const generalError = getErrorMessageForName('general', errors);
@@ -25,6 +26,7 @@ export function LoginForm({ trans }: LoginFormProps) {
   };
   return (
     <form action={onSubmit} className="flex flex-col gap-2">
+      {flow && <input type="hidden" name="flow" value={flow} />}
       <TextInput
         label="Email"
         name="email"

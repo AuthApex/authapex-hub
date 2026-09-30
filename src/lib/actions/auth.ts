@@ -18,11 +18,11 @@ import {
 import { getGoogleSessionFromToken } from '@/lib/server/googleClient';
 import { User } from '@authapex/core';
 import { notifyUserUpdate } from '@/lib/server/websockets';
-import { getOidcRequestParams } from '@/lib/server/oidc/authorizationRequest';
+import { clearOidcRequestCookie, getOidcRequestParams } from '@/lib/server/oidc/authorizationRequest';
 import { getOidcIssuer } from '@/lib/server/oidc/config';
-import { removeOidcUserTokens } from '@/lib/server/oidcMongodb';
+import { OIDC_SIGNIN_FLOW } from '@/lib/consts';
 
-export async function signinWithGoogle(credentials: CredentialResponse): Promise<void> {
+export async function signinWithGoogle(credentials: CredentialResponse, flow?: string | null): Promise<void> {
   if (!credentials.credential) {
     return;
   }
@@ -54,8 +54,9 @@ export async function signinWithGoogle(credentials: CredentialResponse): Promise
     sessionId: session.sessionId,
     userId: user.userId,
     expiresAt: session.expiresAt,
+    authTime: new Date(),
   });
-  await handleAuthorizeRedirect();
+  await handleAuthorizeRedirect(flow);
 }
 
 export async function signin(formData: FormData): Promise<ValidationResult> {
@@ -105,9 +106,10 @@ export async function signin(formData: FormData): Promise<ValidationResult> {
     sessionId: session.sessionId,
     userId: user.userId,
     expiresAt: session.expiresAt,
+    authTime: new Date(),
   });
   if (result.success) {
-    await handleAuthorizeRedirect();
+    await handleAuthorizeRedirect(formData.get('flow'));
     return { success: true, errors: [] };
   } else {
     return { success: false, errors: [] };
@@ -159,10 +161,11 @@ export async function signup(formData: FormData): Promise<ValidationResult> {
     sessionId: session.sessionId,
     userId: user.userId,
     expiresAt: session.expiresAt,
+    authTime: new Date(),
   });
 
   if (result.success) {
-    await handleAuthorizeRedirect();
+    await handleAuthorizeRedirect(formData.get('flow'));
     return { success: true, errors: [] };
   } else {
     return { success: false, errors: [] };
@@ -173,9 +176,9 @@ export async function logout(): Promise<void> {
   const auth = await getAuth();
   if (auth.isAuth) {
     await invalidateSession({ sessionId: auth.sessionId });
-    await removeOidcUserTokens(auth.user.userId);
   }
   await deleteSession();
+  await clearOidcRequestCookie();
   redirect('./signin');
 }
 
@@ -224,10 +227,16 @@ export async function getAuth(): Promise<AuthResponse> {
 }
 
 // TODO: lang redirects dont seem to work
-async function handleAuthorizeRedirect(): Promise<void> {
-  const oidcRequestParams = await getOidcRequestParams();
-  if (oidcRequestParams) {
-    redirect(`${getOidcIssuer()}/api/oidc/authorize?${oidcRequestParams}`);
+async function handleAuthorizeRedirect(flow: unknown): Promise<void> {
+  // A pending OIDC request is only resumed when the sign in was started by the authorize endpoint. Otherwise an
+  // abandoned OIDC flow would hijack a later, unrelated sign in.
+  if (flow === OIDC_SIGNIN_FLOW) {
+    const oidcRequestParams = await getOidcRequestParams();
+    if (oidcRequestParams) {
+      redirect(`${getOidcIssuer()}/api/oidc/authorize?${oidcRequestParams}`);
+    }
+  } else {
+    await clearOidcRequestCookie();
   }
 
   const authorizeData = await getAuthorizeData();

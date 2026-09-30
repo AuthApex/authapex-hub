@@ -8,10 +8,15 @@ import Link from 'next/link';
 import { getRoute } from '@/lib/getRoute';
 import { getAuth } from '@/lib/actions/auth';
 import { redirect } from 'next/navigation';
+import { OIDC_SIGNIN_FLOW } from '@/lib/consts';
 
-export default async function Signin({ params }: Readonly<{ params: Promise<{ lang: string }> }>) {
+export default async function Signin({
+  params,
+  searchParams,
+}: Readonly<{ params: Promise<{ lang: string }>; searchParams: Promise<{ flow?: string | string[] }> }>) {
   const lang = (await params).lang;
   const trans = getTranslation(lang);
+  const flow = (await searchParams).flow === OIDC_SIGNIN_FLOW ? OIDC_SIGNIN_FLOW : null;
 
   const auth = await getAuth();
 
@@ -35,13 +40,13 @@ export default async function Signin({ params }: Readonly<{ params: Promise<{ la
             </Typography>
             <Typography className="text-center">{trans.signin.subtitle}</Typography>
             <div className="flex flex-col gap-4 mt-6 mb-4 items-center">
-              <GoogleLoginButton />
+              <GoogleLoginButton flow={flow} />
             </div>
             <div className="divider">{trans.signin.divider}</div>
-            <LoginForm trans={trans} />
+            <LoginForm trans={trans} flow={flow} />
             <Typography className="text-center mt-2">
               {trans.signin.dontHaveAnAccount}{' '}
-              <Link href={getRoute(lang, '/signup')} className="link">
+              <Link href={getRoute(lang, flow ? `/signup?flow=${flow}` : '/signup')} className="link">
                 {trans.signup.button}
               </Link>
             </Typography>

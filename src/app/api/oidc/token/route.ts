@@ -20,16 +20,27 @@ function tokenError(error: string, description: string, status = 400) {
   return NextResponse.json({ error, error_description: description }, { status, headers: NO_STORE_HEADERS });
 }
 
+function parseScope(scope: string | null | undefined): string[] {
+  return [...new Set((scope ?? '').split(/\s+/).filter(Boolean))];
+}
+
 async function buildTokenResponse({
   client,
   userId,
-  scope,
+  familyId,
+  scopes,
+  refreshTokenScopes,
   nonce,
   authTime,
 }: {
   client: OidcClient;
   userId: string;
-  scope: string;
+  familyId: string;
+  // Scopes of the issued access and ID token.
+  scopes: string[];
+  // Scopes kept by the new refresh token. They can be wider than `scopes`, when the client asked for a narrower
+  // access token during a refresh.
+  refreshTokenScopes: string[];
   nonce?: string | null;
   authTime: number;
 }) {
@@ -38,16 +49,18 @@ async function buildTokenResponse({
     return tokenError('invalid_grant', 'The user no longer exists.');
   }
 
+  const scope = scopes.join(' ');
   const accessToken = await signOidcAccessToken({ userId, clientId: client.clientId, scope });
   const idToken = await signOidcIdToken({ user, clientId: client.clientId, scope, nonce, authTime, accessToken });
 
   let refreshToken: string | undefined;
-  if (scope.split(' ').includes('offline_access')) {
+  if (refreshTokenScopes.includes('offline_access')) {
     refreshToken = nanoid(64);
     const result = await insertOidcRefreshToken(refreshToken, {
+      familyId,
       clientId: client.clientId,
       userId,
-      scope,
+      scope: refreshTokenScopes.join(' '),
       authTime,
       expiresAt: new Date(Date.now() + OIDC_REFRESH_TOKEN_LIFETIME_SECONDS * 1000),
     });
@@ -75,18 +88,23 @@ async function handleAuthorizationCodeGrant(client: OidcClient, body: URLSearchP
     return tokenError('invalid_request', 'The code parameter is missing.');
   }
 
-  const authCode = await consumeOidcAuthCode(code);
-  if (authCode == null || authCode.clientId !== client.clientId) {
+  const result = await consumeOidcAuthCode(code);
+  if (result.type === 'reused') {
+    console.warn(`[OIDC Token Endpoint]: Authorization code replay, revoked its tokens (client ${client.clientId}).`);
+    return tokenError('invalid_grant', 'The authorization code has already been used.');
+  }
+  if (result.type === 'invalid' || result.value.clientId !== client.clientId) {
     return tokenError('invalid_grant', 'The authorization code is not valid.');
   }
+  const authCode = result.value;
 
   if (new Date(authCode.expiresAt).getTime() < Date.now()) {
     return tokenError('invalid_grant', 'The authorization code has expired.');
   }
 
-  const redirectUri = body.get('redirect_uri');
-  if (redirectUri != null && redirectUri !== authCode.redirectUri) {
-    return tokenError('invalid_grant', 'The redirect_uri does not match the authorization request.');
+  // The authorize endpoint always requires redirect_uri, so it is required here as well (RFC 6749, section 4.1.3).
+  if (body.get('redirect_uri') !== authCode.redirectUri) {
+    return tokenError('invalid_grant', 'The redirect_uri is missing or does not match the authorization request.');
   }
 
   const codeVerifier = body.get('code_verifier');
@@ -105,10 +123,13 @@ async function handleAuthorizationCodeGrant(client: OidcClient, body: URLSearchP
     );
   }
 
+  const scopes = parseScope(authCode.scope);
   return buildTokenResponse({
     client,
     userId: authCode.userId,
-    scope: authCode.scope,
+    familyId: authCode.familyId,
+    scopes,
+    refreshTokenScopes: scopes,
     nonce: authCode.nonce,
     authTime: authCode.authTime,
   });
@@ -120,10 +141,16 @@ async function handleRefreshTokenGrant(client: OidcClient, body: URLSearchParams
     return tokenError('invalid_request', 'The refresh_token parameter is missing.');
   }
 
-  const refreshToken = await consumeOidcRefreshToken(token);
-  if (refreshToken == null || refreshToken.clientId !== client.clientId) {
+  const result = await consumeOidcRefreshToken(token);
+  if (result.type === 'reused') {
+    // Either the client or an attacker holds a copy of a rotated token, so the whole token family is revoked.
+    console.warn(`[OIDC Token Endpoint]: Refresh token reuse, revoked its token family (client ${client.clientId}).`);
+    return tokenError('invalid_grant', 'The refresh token has already been used.');
+  }
+  if (result.type === 'invalid' || result.value.clientId !== client.clientId) {
     return tokenError('invalid_grant', 'The refresh token is not valid.');
   }
+  const refreshToken = result.value;
 
   if (new Date(refreshToken.expiresAt).getTime() < Date.now()) {
     return tokenError('invalid_grant', 'The refresh token has expired.');
@@ -134,11 +161,16 @@ async function handleRefreshTokenGrant(client: OidcClient, body: URLSearchParams
     return tokenError('invalid_grant', 'The user has revoked access for this application.');
   }
 
-  const grantedScopes = refreshToken.scope.split(' ').filter(Boolean);
-  const requestedScopes = (body.get('scope') ?? '').split(/\s+/).filter(Boolean);
-  const scopes =
-    requestedScopes.length > 0 ? requestedScopes.filter((scope) => grantedScopes.includes(scope)) : grantedScopes;
+  const grantScopes = parseScope(grant.scope);
+  const refreshTokenScopes = parseScope(refreshToken.scope).filter((scope) => grantScopes.includes(scope));
+  const requestedScopes = parseScope(body.get('scope'));
 
+  // A refresh request may narrow the scope, but never widen it (RFC 6749, section 6).
+  if (requestedScopes.some((scope) => !refreshTokenScopes.includes(scope))) {
+    return tokenError('invalid_scope', 'The requested scope exceeds the scope granted by the user.');
+  }
+
+  const scopes = requestedScopes.length > 0 ? requestedScopes : refreshTokenScopes;
   if (!scopes.includes('openid')) {
     return tokenError('invalid_scope', 'The openid scope is required.');
   }
@@ -146,7 +178,9 @@ async function handleRefreshTokenGrant(client: OidcClient, body: URLSearchParams
   return buildTokenResponse({
     client,
     userId: refreshToken.userId,
-    scope: scopes.join(' '),
+    familyId: refreshToken.familyId,
+    scopes,
+    refreshTokenScopes,
     authTime: refreshToken.authTime,
   });
 }

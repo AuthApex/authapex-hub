@@ -3,6 +3,7 @@ import { cookies } from 'next/headers';
 import { JWTPayload } from 'jose';
 import { decrypt, encrypt } from '@/lib/server/encryption';
 import { getOidcClient, OidcClient } from '@/lib/server/oidcMongodb';
+import { isAllowedOidcRedirectUri } from '@/lib/server/oidc/redirectUri';
 import {
   OIDC_DEFAULT_SCOPES,
   OIDC_REQUEST_COOKIE,
@@ -20,7 +21,8 @@ export interface OidcAuthorizationRequest {
   scopes: string[];
   state: string | null;
   nonce: string | null;
-  prompt: string | null;
+  prompt: string[];
+  maxAge: number | null;
   codeChallenge: string | null;
   codeChallengeMethod: 'S256' | null;
   params: string;
@@ -28,6 +30,8 @@ export interface OidcAuthorizationRequest {
 
 // A S256 challenge is a base64url encoded SHA-256 digest, which is always 43 characters long.
 const S256_CODE_CHALLENGE_PATTERN = /^[A-Za-z0-9_-]{43}$/;
+const MAX_AGE_PATTERN = /^\d{1,10}$/;
+const SUPPORTED_PROMPTS = ['none', 'login', 'consent', 'select_account'];
 
 export type OidcAuthorizationRequestResult =
   | { type: 'valid'; request: OidcAuthorizationRequest }
@@ -51,7 +55,7 @@ export async function resolveOidcAuthorizationRequest(
   }
 
   const client = await getOidcClient(clientId);
-  if (client == null || !client.redirectUris.includes(redirectUri)) {
+  if (client == null || !client.redirectUris.includes(redirectUri) || !isAllowedOidcRedirectUri(redirectUri)) {
     return { type: 'invalid' };
   }
 
@@ -119,8 +123,33 @@ export async function resolveOidcAuthorizationRequest(
     }
   }
 
+  const prompt = parsePrompt(params.get('prompt'));
+  if (prompt.includes('none') && prompt.length > 1) {
+    return {
+      type: 'error',
+      redirectUri,
+      state,
+      error: 'invalid_request',
+      description: 'The prompt value none cannot be combined with other values.',
+    };
+  }
+
+  const rawMaxAge = params.get('max_age');
+  if (rawMaxAge != null && !MAX_AGE_PATTERN.test(rawMaxAge)) {
+    return {
+      type: 'error',
+      redirectUri,
+      state,
+      error: 'invalid_request',
+      description: 'The max_age parameter must be a non-negative integer.',
+    };
+  }
+
   const allowedScopes = getAllowedScopes(client);
-  const scopes = ['openid', ...requestedScopes.filter((scope) => scope !== 'openid' && allowedScopes.includes(scope))];
+  const scopes = [
+    'openid',
+    ...new Set(requestedScopes.filter((scope) => scope !== 'openid' && allowedScopes.includes(scope))),
+  ];
 
   return {
     type: 'valid',
@@ -130,12 +159,33 @@ export async function resolveOidcAuthorizationRequest(
       scopes,
       state,
       nonce: params.get('nonce'),
-      prompt: params.get('prompt'),
+      prompt,
+      maxAge: rawMaxAge != null ? Number(rawMaxAge) : null,
       codeChallenge,
       codeChallengeMethod: codeChallenge != null ? 'S256' : null,
       params: params.toString(),
     },
   };
+}
+
+function parsePrompt(prompt: string | null): string[] {
+  return [...new Set((prompt ?? '').split(/\s+/).filter((value) => SUPPORTED_PROMPTS.includes(value)))];
+}
+
+// Once the user signed in again, prompt=login / select_account and max_age are fulfilled. They are removed from the
+// resumed request, otherwise the authorize endpoint would ask for another sign in forever.
+export function getParamsAfterSignin(params: string): string {
+  const searchParams = new URLSearchParams(params);
+  const prompt = parsePrompt(searchParams.get('prompt')).filter(
+    (value) => value !== 'login' && value !== 'select_account'
+  );
+  if (prompt.length > 0) {
+    searchParams.set('prompt', prompt.join(' '));
+  } else {
+    searchParams.delete('prompt');
+  }
+  searchParams.delete('max_age');
+  return searchParams.toString();
 }
 
 export function buildOidcErrorRedirect(

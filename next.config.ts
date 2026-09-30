@@ -5,6 +5,18 @@ const nextConfig: NextConfig = {
   experimental: {
     reactCompiler: true,
   },
+  async headers() {
+    return [
+      {
+        // The hub is never embedded, so framing is blocked to prevent clickjacking of the sign in and consent pages.
+        source: '/:path*',
+        headers: [
+          { key: 'X-Frame-Options', value: 'DENY' },
+          { key: 'Content-Security-Policy', value: "frame-ancestors 'none'" },
+        ],
+      },
+    ];
+  },
   async rewrites() {
     return [
       {

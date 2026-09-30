@@ -8,9 +8,10 @@ import { Translations } from '@/locales/translation';
 
 export interface RegisterFormProps {
   trans: Translations;
+  flow?: string | null;
 }
 
-export function RegisterForm({ trans }: RegisterFormProps) {
+export function RegisterForm({ trans, flow }: RegisterFormProps) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errors, setErrors] = useState<ValidationResult['errors']>([]);
   const generalError = getErrorMessageForName('general', errors);
@@ -25,6 +26,7 @@ export function RegisterForm({ trans }: RegisterFormProps) {
   };
   return (
     <form action={onSubmit} className="flex flex-col gap-2">
+      {flow && <input type="hidden" name="flow" value={flow} />}
       <TextInput
         label={trans.signup.name}
         name="username"

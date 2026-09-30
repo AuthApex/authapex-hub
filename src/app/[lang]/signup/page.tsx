@@ -7,10 +7,15 @@ import { Footer } from '@/components/Footer';
 import { RegisterForm } from '@/components/client/forms/RegisterForm';
 import { getAuth } from '@/lib/actions/auth';
 import { redirect } from 'next/navigation';
+import { OIDC_SIGNIN_FLOW } from '@/lib/consts';
 
-export default async function Signup({ params }: Readonly<{ params: Promise<{ lang: string }> }>) {
+export default async function Signup({
+  params,
+  searchParams,
+}: Readonly<{ params: Promise<{ lang: string }>; searchParams: Promise<{ flow?: string | string[] }> }>) {
   const lang = (await params).lang;
   const trans = getTranslation(lang);
+  const flow = (await searchParams).flow === OIDC_SIGNIN_FLOW ? OIDC_SIGNIN_FLOW : null;
 
   const auth = await getAuth();
 
@@ -32,10 +37,10 @@ export default async function Signup({ params }: Readonly<{ params: Promise<{ la
             <Typography as="h2" size="xl" weight="bold" className="text-center">
               {trans.signup.title}
             </Typography>
-            <RegisterForm trans={trans} />
+            <RegisterForm trans={trans} flow={flow} />
             <Typography className="text-center mt-2">
               {trans.signup.alreadyHaveAnAccount}{' '}
-              <Link href={getRoute(lang, '/signin')} className="link">
+              <Link href={getRoute(lang, flow ? `/signin?flow=${flow}` : '/signin')} className="link">
                 {trans.signin.button}
               </Link>
             </Typography>

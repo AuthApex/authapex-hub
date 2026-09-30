@@ -8,6 +8,7 @@ import { Typography } from 'gtomy-lib';
 import { Footer } from '@/components/Footer';
 import { OidcConsentCard } from '@/components/client/OidcConsentCard';
 import { getOidcRequestParams, resolveOidcAuthorizationRequest } from '@/lib/server/oidc/authorizationRequest';
+import { OIDC_SIGNIN_FLOW } from '@/lib/consts';
 
 export const dynamic = 'force-dynamic';
 
@@ -17,7 +18,7 @@ export default async function OidcConsent({ params }: Readonly<{ params: Promise
 
   const auth = await getAuth();
   if (!auth.isAuth) {
-    redirect(getRoute(lang, '/signin'));
+    redirect(getRoute(lang, `/signin?flow=${OIDC_SIGNIN_FLOW}`));
   }
 
   const requestParams = await getOidcRequestParams();

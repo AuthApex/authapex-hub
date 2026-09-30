@@ -2,7 +2,8 @@
 
 import { getAuth } from '@/lib/actions/auth';
 import { getRoute } from '@/lib/getRoute';
-import { upsertOidcGrant } from '@/lib/server/oidcMongodb';
+import { addOidcGrantScopes } from '@/lib/server/oidcMongodb';
+import { OIDC_SIGNIN_FLOW } from '@/lib/consts';
 import {
   buildOidcErrorRedirect,
   clearOidcRequestCookie,
@@ -17,7 +18,7 @@ export interface OidcConsentResult {
 export async function approveOidcAuthorization(lang: string): Promise<OidcConsentResult> {
   const auth = await getAuth();
   if (!auth.isAuth) {
-    return { redirectUrl: getRoute(lang, '/signin') };
+    return { redirectUrl: getRoute(lang, `/signin?flow=${OIDC_SIGNIN_FLOW}`) };
   }
 
   const params = await getOidcRequestParams();
@@ -30,11 +31,7 @@ export async function approveOidcAuthorization(lang: string): Promise<OidcConsen
     return { redirectUrl: getRoute(lang, '/oidc/error') };
   }
 
-  const result = await upsertOidcGrant(
-    resolved.request.client.clientId,
-    auth.user.userId,
-    resolved.request.scopes.join(' ')
-  );
+  const result = await addOidcGrantScopes(resolved.request.client.clientId, auth.user.userId, resolved.request.scopes);
   if (!result.success) {
     return { redirectUrl: getRoute(lang, '/oidc/error') };
   }

@@ -17,6 +17,7 @@ export interface OidcClientWithSecretHash extends OidcClient {
 }
 
 export interface OidcAuthCode {
+  familyId: string;
   clientId: string;
   userId: string;
   redirectUri: string;
@@ -29,12 +30,17 @@ export interface OidcAuthCode {
 }
 
 export interface OidcRefreshToken {
+  familyId: string;
   clientId: string;
   userId: string;
   scope: string;
   authTime: number;
   expiresAt: Date;
 }
+
+// Codes and refresh tokens are marked as used instead of being deleted, so a replay can be detected.
+// Everything issued from the same authorization code shares a familyId and is revoked together on replay.
+export type OidcConsumeResult<T> = { type: 'valid'; value: T } | { type: 'reused' } | { type: 'invalid' };
 
 export interface OidcGrant {
   clientId: string;
@@ -157,26 +163,45 @@ export async function insertOidcAuthCode(code: string, authCode: OidcAuthCode): 
   }
 }
 
-export async function consumeOidcAuthCode(code: string): Promise<OidcAuthCode | null> {
+async function revokeOidcTokenFamily(db: Db, familyId: unknown): Promise<void> {
+  if (typeof familyId !== 'string') {
+    return;
+  }
+  await db.collection('oidcRefreshTokens').deleteMany({ familyId });
+}
+
+export async function consumeOidcAuthCode(code: string): Promise<OidcConsumeResult<OidcAuthCode>> {
   try {
     const db = await getOidcDb();
-    const authCode = await db.collection('oidcAuthCodes').findOneAndDelete({ codeHash: hashOidcSecret(code) });
+    const codeHash = hashOidcSecret(code);
+    const authCode = await db
+      .collection('oidcAuthCodes')
+      .findOneAndUpdate({ codeHash, usedAt: { $exists: false } }, { $set: { usedAt: new Date() } });
     if (authCode == null) {
-      return null;
+      const usedAuthCode = await db.collection('oidcAuthCodes').findOne({ codeHash });
+      if (usedAuthCode == null) {
+        return { type: 'invalid' };
+      }
+      await revokeOidcTokenFamily(db, usedAuthCode.familyId);
+      return { type: 'reused' };
     }
     return {
-      clientId: authCode.clientId,
-      userId: authCode.userId,
-      redirectUri: authCode.redirectUri,
-      scope: authCode.scope,
-      nonce: authCode.nonce,
-      codeChallenge: authCode.codeChallenge,
-      codeChallengeMethod: authCode.codeChallengeMethod,
-      authTime: authCode.authTime,
-      expiresAt: authCode.expiresAt,
+      type: 'valid',
+      value: {
+        familyId: authCode.familyId,
+        clientId: authCode.clientId,
+        userId: authCode.userId,
+        redirectUri: authCode.redirectUri,
+        scope: authCode.scope,
+        nonce: authCode.nonce,
+        codeChallenge: authCode.codeChallenge,
+        codeChallengeMethod: authCode.codeChallengeMethod,
+        authTime: authCode.authTime,
+        expiresAt: authCode.expiresAt,
+      },
     };
   } catch {
-    return null;
+    return { type: 'invalid' };
   }
 }
 
@@ -190,24 +215,34 @@ export async function insertOidcRefreshToken(token: string, refreshToken: OidcRe
   }
 }
 
-export async function consumeOidcRefreshToken(token: string): Promise<OidcRefreshToken | null> {
+export async function consumeOidcRefreshToken(token: string): Promise<OidcConsumeResult<OidcRefreshToken>> {
   try {
     const db = await getOidcDb();
+    const tokenHash = hashOidcSecret(token);
     const refreshToken = await db
       .collection('oidcRefreshTokens')
-      .findOneAndDelete({ tokenHash: hashOidcSecret(token) });
+      .findOneAndUpdate({ tokenHash, usedAt: { $exists: false } }, { $set: { usedAt: new Date() } });
     if (refreshToken == null) {
-      return null;
+      const usedRefreshToken = await db.collection('oidcRefreshTokens').findOne({ tokenHash });
+      if (usedRefreshToken == null) {
+        return { type: 'invalid' };
+      }
+      await revokeOidcTokenFamily(db, usedRefreshToken.familyId);
+      return { type: 'reused' };
     }
     return {
-      clientId: refreshToken.clientId,
-      userId: refreshToken.userId,
-      scope: refreshToken.scope,
-      authTime: refreshToken.authTime,
-      expiresAt: refreshToken.expiresAt,
+      type: 'valid',
+      value: {
+        familyId: refreshToken.familyId,
+        clientId: refreshToken.clientId,
+        userId: refreshToken.userId,
+        scope: refreshToken.scope,
+        authTime: refreshToken.authTime,
+        expiresAt: refreshToken.expiresAt,
+      },
     };
   } catch {
-    return null;
+    return { type: 'invalid' };
   }
 }
 
@@ -229,9 +264,12 @@ export async function getOidcGrant(clientId: string, userId: string): Promise<Oi
   }
 }
 
-export async function upsertOidcGrant(clientId: string, userId: string, scope: string): Promise<DbUpdateResult> {
+export async function addOidcGrantScopes(clientId: string, userId: string, scopes: string[]): Promise<DbUpdateResult> {
   try {
     const db = await getOidcDb();
+    const existingGrant = await db.collection('oidcGrants').findOne({ clientId, userId });
+    const existingScopes = typeof existingGrant?.scope === 'string' ? existingGrant.scope.split(' ') : [];
+    const scope = Array.from(new Set([...existingScopes, ...scopes].filter(Boolean))).join(' ');
     await db
       .collection('oidcGrants')
       .updateOne(
@@ -275,17 +313,6 @@ export async function removeOidcGrant(clientId: string, userId: string): Promise
     await db.collection('oidcGrants').deleteOne({ clientId, userId });
     await db.collection('oidcAuthCodes').deleteMany({ clientId, userId });
     await db.collection('oidcRefreshTokens').deleteMany({ clientId, userId });
-    return { success: true };
-  } catch {
-    return { success: false };
-  }
-}
-
-export async function removeOidcUserTokens(userId: string): Promise<DbUpdateResult> {
-  try {
-    const db = await getOidcDb();
-    await db.collection('oidcAuthCodes').deleteMany({ userId });
-    await db.collection('oidcRefreshTokens').deleteMany({ userId });
     return { success: true };
   } catch {
     return { success: false };

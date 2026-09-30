@@ -5,6 +5,9 @@ export const AUTH_URL = 'https://id.authapex.net';
 export const APP_NAME = 'authapex';
 export const REDIRECT_URL = ''; // Not needed
 
+// Marks sign in / sign up pages reached from the OIDC authorize endpoint (`?flow=oidc`).
+export const OIDC_SIGNIN_FLOW = 'oidc';
+
 export const AUTHORIZATION_SERVICE = new AuthorizationService({
   authApi: AUTH_URL,
   app: APP_NAME,

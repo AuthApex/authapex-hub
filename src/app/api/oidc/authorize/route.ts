@@ -1,14 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { nanoid } from 'nanoid';
 import { getAuth } from '@/lib/actions/auth';
+import { getSessionAuthTime, invalidateSession } from '@/lib/server/mongodb';
 import { getOidcGrant, insertOidcAuthCode } from '@/lib/server/oidcMongodb';
 import {
   buildOidcErrorRedirect,
   createOidcRequestToken,
   getOidcRequestCookieOptions,
+  getParamsAfterSignin,
   resolveOidcAuthorizationRequest,
 } from '@/lib/server/oidc/authorizationRequest';
 import { getOidcIssuer, OIDC_AUTH_CODE_LIFETIME_SECONDS, OIDC_REQUEST_COOKIE } from '@/lib/server/oidc/config';
+import { sessionKey } from '@/lib/server/session';
+import { OIDC_SIGNIN_FLOW } from '@/lib/consts';
 
 async function redirectToInteraction(path: string, params: string) {
   const response = NextResponse.redirect(new URL(path, getOidcIssuer()));
@@ -29,24 +33,39 @@ async function handleAuthorize(params: URLSearchParams) {
     );
   }
 
-  const { client, redirectUri, scopes, state, nonce, prompt, codeChallenge, codeChallengeMethod } = resolved.request;
+  const { client, redirectUri, scopes, state, nonce, prompt, maxAge, codeChallenge, codeChallengeMethod } =
+    resolved.request;
 
   const auth = await getAuth();
-  if (!auth.isAuth) {
-    if (prompt === 'none') {
+  const authTime = auth.isAuth ? await getSessionAuthTime(auth.sessionId) : null;
+  const isAuthTooOld = authTime != null && maxAge != null && Date.now() - authTime.getTime() > maxAge * 1000;
+  // Sessions created before authTime was stored have an unknown sign in time, so they have to sign in again.
+  const requiresSignin =
+    !auth.isAuth || authTime == null || isAuthTooOld || prompt.includes('login') || prompt.includes('select_account');
+
+  if (requiresSignin) {
+    if (prompt.includes('none')) {
       return NextResponse.redirect(
-        buildOidcErrorRedirect(redirectUri, state, 'login_required', 'The user is not signed in.')
+        buildOidcErrorRedirect(redirectUri, state, 'login_required', 'The user has to sign in.')
       );
     }
-    return redirectToInteraction('/signin', resolved.request.params);
+    const response = await redirectToInteraction(
+      `/signin?flow=${OIDC_SIGNIN_FLOW}`,
+      getParamsAfterSignin(resolved.request.params)
+    );
+    if (auth.isAuth) {
+      await invalidateSession({ sessionId: auth.sessionId });
+      response.cookies.delete(sessionKey);
+    }
+    return response;
   }
 
   const grant = await getOidcGrant(client.clientId, auth.user.userId);
   const grantedScopes = grant?.scope.split(' ') ?? [];
   const hasConsent = grant != null && scopes.every((scope) => grantedScopes.includes(scope));
 
-  if (!hasConsent || prompt === 'consent') {
-    if (prompt === 'none') {
+  if (!hasConsent || prompt.includes('consent')) {
+    if (prompt.includes('none')) {
       return NextResponse.redirect(
         buildOidcErrorRedirect(redirectUri, state, 'consent_required', 'The user has not granted access yet.')
       );
@@ -56,6 +75,7 @@ async function handleAuthorize(params: URLSearchParams) {
 
   const code = nanoid(48);
   const result = await insertOidcAuthCode(code, {
+    familyId: nanoid(),
     clientId: client.clientId,
     userId: auth.user.userId,
     redirectUri,
@@ -63,7 +83,7 @@ async function handleAuthorize(params: URLSearchParams) {
     nonce,
     codeChallenge,
     codeChallengeMethod,
-    authTime: Math.floor(Date.now() / 1000),
+    authTime: Math.floor(authTime.getTime() / 1000),
     expiresAt: new Date(Date.now() + OIDC_AUTH_CODE_LIFETIME_SECONDS * 1000),
   });
 
