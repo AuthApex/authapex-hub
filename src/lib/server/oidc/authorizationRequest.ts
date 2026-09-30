@@ -21,8 +21,13 @@ export interface OidcAuthorizationRequest {
   state: string | null;
   nonce: string | null;
   prompt: string | null;
+  codeChallenge: string | null;
+  codeChallengeMethod: 'S256' | null;
   params: string;
 }
+
+// A S256 challenge is a base64url encoded SHA-256 digest, which is always 43 characters long.
+const S256_CODE_CHALLENGE_PATTERN = /^[A-Za-z0-9_-]{43}$/;
 
 export type OidcAuthorizationRequestResult =
   | { type: 'valid'; request: OidcAuthorizationRequest }
@@ -82,6 +87,38 @@ export async function resolveOidcAuthorizationRequest(
     };
   }
 
+  const codeChallenge = params.get('code_challenge');
+  const codeChallengeMethod = params.get('code_challenge_method');
+  if (codeChallenge == null && codeChallengeMethod != null) {
+    return {
+      type: 'error',
+      redirectUri,
+      state,
+      error: 'invalid_request',
+      description: 'The code_challenge parameter is missing.',
+    };
+  }
+  if (codeChallenge != null) {
+    if (codeChallengeMethod !== 'S256') {
+      return {
+        type: 'error',
+        redirectUri,
+        state,
+        error: 'invalid_request',
+        description: 'Only the S256 code_challenge_method is supported.',
+      };
+    }
+    if (!S256_CODE_CHALLENGE_PATTERN.test(codeChallenge)) {
+      return {
+        type: 'error',
+        redirectUri,
+        state,
+        error: 'invalid_request',
+        description: 'The code_challenge parameter is not valid.',
+      };
+    }
+  }
+
   const allowedScopes = getAllowedScopes(client);
   const scopes = ['openid', ...requestedScopes.filter((scope) => scope !== 'openid' && allowedScopes.includes(scope))];
 
@@ -94,6 +131,8 @@ export async function resolveOidcAuthorizationRequest(
       state,
       nonce: params.get('nonce'),
       prompt: params.get('prompt'),
+      codeChallenge,
+      codeChallengeMethod: codeChallenge != null ? 'S256' : null,
       params: params.toString(),
     },
   };

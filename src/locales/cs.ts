@@ -260,6 +260,11 @@ export const CS: Translations = {
       remove: 'Odstranit',
       copyClientId: 'Kopírovat client ID',
       copyClientSecret: 'Kopírovat secret',
+      secretShownOnce: 'Uložte si client secret nyní. Ukládá se pouze jako hash a znovu ho zobrazit nelze.',
+      regenerateSecret: 'Vygenerovat nový secret',
+      regenerateSecretConfirm:
+        'Vygenerovat nový client secret? Současný secret okamžitě přestane fungovat a aplikaci bude nutné překonfigurovat.',
+      close: 'Zavřít',
     },
     users: {
       title: 'Uživatelé',

@@ -1,5 +1,4 @@
 import 'server-only';
-import { AUTH_URL } from '@/lib/consts';
 
 export const OIDC_SUPPORTED_SCOPES = ['openid', 'profile', 'email', 'groups', 'offline_access'];
 export const OIDC_DEFAULT_SCOPES = ['openid', 'profile', 'email'];
@@ -12,7 +11,20 @@ export const OIDC_REQUEST_LIFETIME_SECONDS = 15 * 60;
 export const OIDC_REQUEST_COOKIE = 'oidc-request';
 
 export function getOidcIssuer(): string {
-  return AUTH_URL.replace(/\/+$/, '');
+  const issuer = process.env.OIDC_ISSUER?.trim().replace(/\/+$/, '');
+  if (!issuer) {
+    throw new Error('OIDC_ISSUER is not defined.');
+  }
+
+  const url = new URL(issuer);
+  if (url.protocol !== 'https:' && !process.env.DEVELOPMENT) {
+    throw new Error('OIDC_ISSUER must use https.');
+  }
+  if (url.search || url.hash) {
+    throw new Error('OIDC_ISSUER must not contain a query or fragment.');
+  }
+
+  return issuer;
 }
 
 export function getOidcEndpoints() {

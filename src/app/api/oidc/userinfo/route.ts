@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getUserByUserId } from '@/lib/server/mongodb';
+import { getOidcGrant } from '@/lib/server/oidcMongodb';
 import { getOidcUserClaims, verifyOidcAccessToken } from '@/lib/server/oidc/tokens';
 
 const NO_STORE_HEADERS = { 'Cache-Control': 'no-store', Pragma: 'no-cache' };
@@ -21,8 +22,13 @@ async function handleUserinfo(request: NextRequest) {
   }
 
   const payload = await verifyOidcAccessToken(authorizationHeader.slice(7).trim());
-  if (payload?.sub == null) {
+  if (payload?.sub == null || payload.client_id == null) {
     return unauthorized('The access token is not valid.');
+  }
+
+  const grant = await getOidcGrant(payload.client_id, payload.sub);
+  if (grant == null) {
+    return unauthorized('The user has revoked access for this application.');
   }
 
   const user = await getUserByUserId(payload.sub);

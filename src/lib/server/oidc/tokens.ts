@@ -104,14 +104,19 @@ export async function signOidcIdToken({
 }
 
 export async function verifyOidcAccessToken(token: string): Promise<OidcAccessTokenPayload | null> {
+  const { publicKey, alg } = await getOidcSigningKey();
+  const issuer = getOidcIssuer();
   try {
-    const { publicKey, alg } = await getOidcSigningKey();
-    const issuer = getOidcIssuer();
     const { payload } = await jwtVerify<OidcAccessTokenPayload>(token, publicKey, {
       issuer,
       audience: issuer,
       algorithms: [alg],
+      typ: 'at+jwt',
+      requiredClaims: ['sub', 'client_id', 'exp', 'iat'],
     });
+    if (typeof payload.sub !== 'string' || typeof payload.client_id !== 'string') {
+      return null;
+    }
     return payload;
   } catch {
     return null;

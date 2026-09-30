@@ -11,8 +11,10 @@ import {
 import { authenticateOidcClient } from '@/lib/server/oidc/clientAuth';
 import { signOidcAccessToken, signOidcIdToken } from '@/lib/server/oidc/tokens';
 import { OIDC_ACCESS_TOKEN_LIFETIME_SECONDS, OIDC_REFRESH_TOKEN_LIFETIME_SECONDS } from '@/lib/server/oidc/config';
+import { getS256CodeChallenge, isEqualSecret } from '@/lib/server/oidc/hash';
 
 const NO_STORE_HEADERS = { 'Cache-Control': 'no-store', Pragma: 'no-cache' };
+const CODE_VERIFIER_PATTERN = /^[A-Za-z0-9\-._~]{43,128}$/;
 
 function tokenError(error: string, description: string, status = 400) {
   return NextResponse.json({ error, error_description: description }, { status, headers: NO_STORE_HEADERS });
@@ -42,14 +44,16 @@ async function buildTokenResponse({
   let refreshToken: string | undefined;
   if (scope.split(' ').includes('offline_access')) {
     refreshToken = nanoid(64);
-    await insertOidcRefreshToken({
-      token: refreshToken,
+    const result = await insertOidcRefreshToken(refreshToken, {
       clientId: client.clientId,
       userId,
       scope,
       authTime,
       expiresAt: new Date(Date.now() + OIDC_REFRESH_TOKEN_LIFETIME_SECONDS * 1000),
     });
+    if (!result.success) {
+      return tokenError('server_error', 'The refresh token could not be issued.', 500);
+    }
   }
 
   return NextResponse.json(
@@ -83,6 +87,22 @@ async function handleAuthorizationCodeGrant(client: OidcClient, body: URLSearchP
   const redirectUri = body.get('redirect_uri');
   if (redirectUri != null && redirectUri !== authCode.redirectUri) {
     return tokenError('invalid_grant', 'The redirect_uri does not match the authorization request.');
+  }
+
+  const codeVerifier = body.get('code_verifier');
+  if (authCode.codeChallenge) {
+    if (
+      codeVerifier == null ||
+      !CODE_VERIFIER_PATTERN.test(codeVerifier) ||
+      !isEqualSecret(authCode.codeChallenge, getS256CodeChallenge(codeVerifier))
+    ) {
+      return tokenError('invalid_grant', 'The code_verifier is missing or does not match the code_challenge.');
+    }
+  } else if (codeVerifier != null) {
+    return tokenError(
+      'invalid_grant',
+      'A code_verifier was sent, but the authorization request had no code_challenge.'
+    );
   }
 
   return buildTokenResponse({

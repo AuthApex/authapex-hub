@@ -12,6 +12,7 @@ import { getOidcClients } from '@/lib/server/oidcMongodb';
 import { AddOidcClientButton } from '@/components/client/actionButtons/AddOidcClientButton';
 import { CopyTextButton } from '@/components/client/actionButtons/CopyTextButton';
 import { RemoveOidcClientButton } from '@/components/client/actionButtons/RemoveOidcClientButton';
+import { RegenerateOidcClientSecretButton } from '@/components/client/actionButtons/RegenerateOidcClientSecretButton';
 
 export default async function Admin({ params }: Readonly<{ params: Promise<{ lang: string }> }>) {
   const lang = (await params).lang;
@@ -79,7 +80,7 @@ export default async function Admin({ params }: Readonly<{ params: Promise<{ lan
                       <td>{client.scopes.join(' ')}</td>
                       <td className="flex gap-2 flex-col justify-end w-max">
                         <CopyTextButton text={client.clientId} label={trans.admin.oidcClients.copyClientId} />
-                        <CopyTextButton text={client.clientSecret} label={trans.admin.oidcClients.copyClientSecret} />
+                        <RegenerateOidcClientSecretButton clientId={client.clientId} trans={trans} />
                         <RemoveOidcClientButton clientId={client.clientId} trans={trans} />
                       </td>
                     </tr>

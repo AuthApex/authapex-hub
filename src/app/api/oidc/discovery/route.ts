@@ -5,7 +5,16 @@ import { getOidcSigningKey } from '@/lib/server/oidc/keys';
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
-  const endpoints = getOidcEndpoints();
+  let endpoints: ReturnType<typeof getOidcEndpoints>;
+  try {
+    endpoints = getOidcEndpoints();
+  } catch (error) {
+    console.error('[OIDC Discovery Error]:', error);
+    return NextResponse.json(
+      { error: 'server_error', error_description: 'The OIDC issuer is not configured.' },
+      { status: 500 }
+    );
+  }
 
   let signingAlgorithms = ['RS256'];
   try {
@@ -28,6 +37,7 @@ export async function GET() {
       subject_types_supported: ['public'],
       id_token_signing_alg_values_supported: signingAlgorithms,
       token_endpoint_auth_methods_supported: ['client_secret_basic', 'client_secret_post'],
+      code_challenge_methods_supported: ['S256'],
       claims_supported: [
         'iss',
         'sub',

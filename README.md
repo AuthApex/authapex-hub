@@ -9,6 +9,7 @@ provider, so third party applications such as Immich, Gitea, Grafana or Nextclou
 
 | Variable            | Required | Description                                                                                         |
 | ------------------- | -------- | --------------------------------------------------------------------------------------------------- |
+| `OIDC_ISSUER`       | yes      | Public base URL of the hub, e.g. `https://id.authapex.net`. Must use `https` outside development.    |
 | `OIDC_PRIVATE_KEY`  | yes      | PKCS#8 PEM private key used to sign ID tokens and access tokens. `\n` escaped newlines are allowed. |
 | `OIDC_KEY_ID`       | no       | `kid` published in the JWKS. Defaults to the RFC 7638 thumbprint of the public key.                 |
 
@@ -30,7 +31,8 @@ RSA keys are signed with `RS256`, EC keys (`P-256`, `P-384`, `P-521`) with `ES25
 | Token         | `/api/oidc/token`                       |
 | UserInfo      | `/api/oidc/userinfo`                    |
 
-Supported: the authorization code flow, the refresh token grant (requires the `offline_access` scope),
+Supported: the authorization code flow with optional PKCE (`S256` only), the refresh token grant (requires the
+`offline_access` scope) and `client_secret_basic` / `client_secret_post` client authentication.
 
 ### Scopes and claims
 
@@ -46,5 +48,9 @@ Supported: the authorization code flow, the refresh token grant (requires the `o
 
 Clients are managed in the admin section under **OAuth2 / OIDC clients** (`/admin/oidc-clients`). Every client has a
 generated `client_id` and `client_secret`, an explicit list of allowed redirect URIs and the scopes it may request.
+The client secret is stored only as a SHA-256 hash and is shown once, when the client is created. If it gets lost, it
+can be regenerated in the admin section (the application then has to be updated with the new secret). Authorization
+codes and refresh tokens are stored hashed as well. Records created before hashing was introduced are migrated
+automatically on the first OIDC database access.
 Users see a consent screen the first time an application asks for access and can revoke it later on the
 **Authorized applications** page.

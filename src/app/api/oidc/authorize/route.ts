@@ -29,7 +29,7 @@ async function handleAuthorize(params: URLSearchParams) {
     );
   }
 
-  const { client, redirectUri, scopes, state, nonce, prompt } = resolved.request;
+  const { client, redirectUri, scopes, state, nonce, prompt, codeChallenge, codeChallengeMethod } = resolved.request;
 
   const auth = await getAuth();
   if (!auth.isAuth) {
@@ -55,13 +55,14 @@ async function handleAuthorize(params: URLSearchParams) {
   }
 
   const code = nanoid(48);
-  const result = await insertOidcAuthCode({
-    code,
+  const result = await insertOidcAuthCode(code, {
     clientId: client.clientId,
     userId: auth.user.userId,
     redirectUri,
     scope: scopes.join(' '),
     nonce,
+    codeChallenge,
+    codeChallengeMethod,
     authTime: Math.floor(Date.now() / 1000),
     expiresAt: new Date(Date.now() + OIDC_AUTH_CODE_LIFETIME_SECONDS * 1000),
   });

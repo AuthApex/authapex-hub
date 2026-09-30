@@ -8,7 +8,7 @@ import {
   ValidationResult,
 } from '@/lib/validations';
 import { addAuthorizedApp, deleteAuthorizedApp, setUserRoles } from '@/lib/server/mongodb';
-import { addOidcClient, deleteOidcClient } from '@/lib/server/oidcMongodb';
+import { addOidcClient, deleteOidcClient, regenerateOidcClientSecret } from '@/lib/server/oidcMongodb';
 import { getAuth } from '@/lib/actions/auth';
 import { PERMISSION_SERVICE } from '@/lib/consts';
 import { RoleModel } from '@authapex/core';
@@ -59,7 +59,16 @@ export async function removeAuthorizedApp(name: string): Promise<ValidationResul
   }
 }
 
-export async function createNewOidcClient(formData: FormData): Promise<ValidationResult> {
+export interface OidcClientCredentials {
+  clientId: string;
+  clientSecret: string;
+}
+
+export interface OidcClientValidationResult extends ValidationResult {
+  credentials?: OidcClientCredentials;
+}
+
+export async function createNewOidcClient(formData: FormData): Promise<OidcClientValidationResult> {
   const auth = await getAuth();
   if (!auth.isAuth || !PERMISSION_SERVICE.hasPermission(auth.user, 'admin')) {
     return { success: false, errors: [] };
@@ -129,7 +138,28 @@ export async function createNewOidcClient(formData: FormData): Promise<Validatio
 
   const result = await addOidcClient(values.displayName, redirectUris, finalScopes);
   if (result.success) {
-    return { success: true, errors: [] };
+    return {
+      success: true,
+      errors: [],
+      credentials: { clientId: result.clientId, clientSecret: result.clientSecret },
+    };
+  } else {
+    return { success: false, errors: [] };
+  }
+}
+
+export async function regenerateOidcClientSecretAction(clientId: string): Promise<OidcClientValidationResult> {
+  const auth = await getAuth();
+  if (!auth.isAuth || !PERMISSION_SERVICE.hasPermission(auth.user, 'admin') || typeof clientId !== 'string') {
+    return { success: false, errors: [] };
+  }
+  const result = await regenerateOidcClientSecret(clientId);
+  if (result.success) {
+    return {
+      success: true,
+      errors: [],
+      credentials: { clientId: result.clientId, clientSecret: result.clientSecret },
+    };
   } else {
     return { success: false, errors: [] };
   }
@@ -137,7 +167,7 @@ export async function createNewOidcClient(formData: FormData): Promise<Validatio
 
 export async function removeOidcClient(clientId: string): Promise<ValidationResult> {
   const auth = await getAuth();
-  if (!auth.isAuth || !PERMISSION_SERVICE.hasPermission(auth.user, 'admin')) {
+  if (!auth.isAuth || !PERMISSION_SERVICE.hasPermission(auth.user, 'admin') || typeof clientId !== 'string') {
     return { success: false, errors: [] };
   }
   const result = await deleteOidcClient(clientId);

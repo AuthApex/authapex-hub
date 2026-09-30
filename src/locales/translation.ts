@@ -232,6 +232,10 @@ export interface Translations {
       remove: string;
       copyClientId: string;
       copyClientSecret: string;
+      secretShownOnce: string;
+      regenerateSecret: string;
+      regenerateSecretConfirm: string;
+      close: string;
     };
     users: {
       title: string;

@@ -261,6 +261,11 @@ export const EN: Translations = {
       remove: 'Remove',
       copyClientId: 'Copy client ID',
       copyClientSecret: 'Copy secret',
+      secretShownOnce: 'Store the client secret now. It is saved only as a hash and cannot be shown again.',
+      regenerateSecret: 'Regenerate secret',
+      regenerateSecretConfirm:
+        'Generate a new client secret? The current secret stops working immediately and the application has to be reconfigured.',
+      close: 'Close',
     },
     users: {
       title: 'Users',

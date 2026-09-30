@@ -1,15 +1,6 @@
 import 'server-only';
-import { timingSafeEqual } from 'crypto';
-import { getOidcClient, OidcClient } from '@/lib/server/oidcMongodb';
-
-function isEqual(expected: string, actual: string): boolean {
-  const expectedBuffer = Buffer.from(expected);
-  const actualBuffer = Buffer.from(actual);
-  if (expectedBuffer.length !== actualBuffer.length) {
-    return false;
-  }
-  return timingSafeEqual(expectedBuffer, actualBuffer);
-}
+import { getOidcClientWithSecretHash, OidcClient } from '@/lib/server/oidcMongodb';
+import { hashOidcSecret, isEqualSecret } from '@/lib/server/oidc/hash';
 
 function decodeBasicCredentials(authorizationHeader: string): { clientId: string; clientSecret: string } | null {
   try {
@@ -47,10 +38,15 @@ export async function authenticateOidcClient(
     return null;
   }
 
-  const client = await getOidcClient(clientId);
-  if (client == null || !isEqual(client.clientSecret, clientSecret)) {
+  const client = await getOidcClientWithSecretHash(clientId);
+  if (client == null || !isEqualSecret(client.clientSecretHash, hashOidcSecret(clientSecret))) {
     return null;
   }
 
-  return client;
+  return {
+    clientId: client.clientId,
+    displayName: client.displayName,
+    redirectUris: client.redirectUris,
+    scopes: client.scopes,
+  };
 }
