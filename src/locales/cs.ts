@@ -20,6 +20,7 @@ export const CS: Translations = {
     userInformation: 'Uživatelské informace',
     permissions: 'Přístupy',
     editDisplayName: 'Upravit jméno',
+    editEmail: 'Upravit email',
     displayName: 'Zobrazované jméno',
     save: 'Uložit',
   },

@@ -212,8 +212,8 @@ export async function updateUserRoles(userId: string, roles: RoleModel[]): Promi
   }
 
   const result = await setUserRoles(userId, roles);
-  await notifyUserUpdate(auth.user);
   if (result.success) {
+    await notifyUserUpdate(auth.user);
     return { success: true, errors: [] };
   } else {
     return { success: false, errors: [] };

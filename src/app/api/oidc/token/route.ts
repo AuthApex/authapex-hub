@@ -36,10 +36,7 @@ async function buildTokenResponse({
   client: OidcClient;
   userId: string;
   familyId: string;
-  // Scopes of the issued access and ID token.
   scopes: string[];
-  // Scopes kept by the new refresh token. They can be wider than `scopes`, when the client asked for a narrower
-  // access token during a refresh.
   refreshTokenScopes: string[];
   nonce?: string | null;
   authTime: number;

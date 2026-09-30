@@ -1,8 +1,13 @@
 'use server';
 
-import { mapValidationErrorToValidationResult, updateDisplayNameSchema, ValidationResult } from '@/lib/validations';
+import {
+  mapValidationErrorToValidationResult,
+  updateDisplayNameSchema,
+  updateEmailSchema,
+  ValidationResult,
+} from '@/lib/validations';
 import { getAuth } from '@/lib/actions/auth';
-import { removeUserAppSession, setDisplayName, setProfileImageId } from '@/lib/server/mongodb';
+import { removeUserAppSession, setDisplayName, setEmail, setProfileImageId } from '@/lib/server/mongodb';
 import { removeOidcGrant } from '@/lib/server/oidcMongodb';
 import { notifySessionDelete, notifyUserUpdate } from '@/lib/server/websockets';
 
@@ -33,8 +38,43 @@ export async function updateDisplayName(formData: FormData): Promise<ValidationR
   }
 
   const result = await setDisplayName(auth.user.userId, trimmedDisplayName);
-  await notifyUserUpdate(auth.user);
   if (result.success) {
+    await notifyUserUpdate(auth.user);
+    return { success: true, errors: [] };
+  } else {
+    return { success: false, errors: [] };
+  }
+}
+
+export async function updateEmail(formData: FormData): Promise<ValidationResult> {
+  const values = await updateEmailSchema
+    .validate(
+      {
+        email: formData.get('email'),
+      },
+      {
+        abortEarly: false,
+      }
+    )
+    .catch(mapValidationErrorToValidationResult);
+
+  if ('success' in values) {
+    return values;
+  }
+
+  const auth = await getAuth();
+  if (!auth.isAuth) {
+    return { success: false, errors: [] };
+  }
+
+  const normalizedEmail = values.email.trim().toLowerCase();
+  if (auth.user.email === normalizedEmail) {
+    return { success: true, errors: [] };
+  }
+
+  const result = await setEmail(auth.user.userId, normalizedEmail);
+  if (result.success) {
+    await notifyUserUpdate(auth.user);
     return { success: true, errors: [] };
   } else {
     return { success: false, errors: [] };

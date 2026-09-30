@@ -1,7 +1,6 @@
 import { AuthorizationService, PermissionService } from '@authapex/core';
 
-// TODO: Move configs to env
-export const AUTH_URL = 'https://id.authapex.net';
+export const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://id.authapex.net';
 export const APP_NAME = 'authapex';
 export const REDIRECT_URL = ''; // Not needed
 
@@ -9,7 +8,7 @@ export const REDIRECT_URL = ''; // Not needed
 export const OIDC_SIGNIN_FLOW = 'oidc';
 
 export const AUTHORIZATION_SERVICE = new AuthorizationService({
-  authApi: AUTH_URL,
+  authApi: APP_URL,
   app: APP_NAME,
   redirectUrl: REDIRECT_URL,
 });

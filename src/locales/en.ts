@@ -20,6 +20,7 @@ export const EN: Translations = {
     userInformation: 'User information',
     permissions: 'Permissions',
     editDisplayName: 'Edit name',
+    editEmail: 'Edit email',
     displayName: 'Display name',
     save: 'Save',
   },

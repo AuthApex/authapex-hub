@@ -50,6 +50,10 @@ export const updateDisplayNameSchema = object({
   displayName: string().required('Toto pole je vyžadované'),
 });
 
+export const updateEmailSchema = object({
+  email: string().required('Toto pole je vyžadované'),
+});
+
 export const adminAddNewAppSchema = object({
   name: string().required('Toto pole je vyžadované'),
   displayName: string().required('Toto pole je vyžadované'),

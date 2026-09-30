@@ -20,6 +20,7 @@ export interface Translations {
     cropProfileImage: string;
     crop: string;
     editDisplayName: string;
+    editEmail: string;
     displayName: string;
     save: string;
   };

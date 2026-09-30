@@ -21,6 +21,23 @@ export async function setDisplayName(userId: string, newDisplayName: string): Pr
   }
 }
 
+export async function setEmail(userId: string, normalizedEmail: string): Promise<DbUpdateResult> {
+  try {
+    const serverState = getServerState();
+    const db = serverState.mongoClient.db(serverState.mongoDbName);
+
+    const existingUser = await db.collection('users').findOne({ email: normalizedEmail });
+    if (existingUser) {
+      return { success: false };
+    }
+
+    await db.collection('users').updateOne({ userId }, { $set: { email: normalizedEmail } });
+    return { success: true };
+  } catch {
+    return { success: false };
+  }
+}
+
 export async function setProfileImageId(
   userId: string,
   newProfileImageId: string | null | undefined
@@ -69,7 +86,6 @@ export async function insertSession({
   userId: string;
   sessionId: string;
   expiresAt: Date;
-  // When the user actually authenticated. Rotated sessions keep the original value.
   authTime: Date | null;
 }): Promise<DbUpdateResult> {
   try {

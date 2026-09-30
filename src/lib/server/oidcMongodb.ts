@@ -39,8 +39,6 @@ export interface OidcRefreshToken {
   expiresAt: Date;
 }
 
-// Codes and refresh tokens are marked as used instead of being deleted, so a replay can be detected.
-// Everything issued from the same authorization code shares a familyId and is revoked together on replay.
 export type OidcConsumeResult<T> = { type: 'valid'; value: T } | { type: 'reused' } | { type: 'invalid' };
 
 export interface OidcGrant {

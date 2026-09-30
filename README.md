@@ -7,11 +7,11 @@ provider, so third party applications such as Immich, Gitea, Grafana or Nextclou
 
 ### Configuration
 
-| Variable            | Required | Description                                                                                         |
-| ------------------- | -------- | --------------------------------------------------------------------------------------------------- |
-| `OIDC_ISSUER`       | yes      | Public base URL of the hub, e.g. `https://id.authapex.net`. Must use `https` outside development.    |
-| `OIDC_PRIVATE_KEY`  | yes      | PKCS#8 PEM private key used to sign ID tokens and access tokens. `\n` escaped newlines are allowed. |
-| `OIDC_KEY_ID`       | no       | `kid` published in the JWKS. Defaults to the RFC 7638 thumbprint of the public key.                 |
+| Variable            | Required | Description                                                                                                                       |
+| ------------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| `OIDC_PRIVATE_KEY`  | yes      | PKCS#8 PEM private key used to sign ID tokens and access tokens. `\n` escaped newlines are allowed.                               |
+| `OIDC_ISSUER`       | no       | Public base URL of the hub, e.g. `https://id.authapex.net`. Must use `https` outside development. Defaults to NEXT_PUBLIC_APP_URL |
+| `OIDC_KEY_ID`       | no       | `kid` published in the JWKS. Defaults to the RFC 7638 thumbprint of the public key.                                               |
 
 An RSA key can be generated with:
 

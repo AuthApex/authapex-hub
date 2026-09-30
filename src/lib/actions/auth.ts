@@ -186,6 +186,7 @@ type AuthResponse = AuthResponseLoggedOut | AuthResponseLoggedIn;
 
 interface AuthResponseLoggedOut {
   isAuth: false;
+  isGoogleAccount: false;
   sessionId: null;
   expiresAt: null;
   user: null;
@@ -193,6 +194,7 @@ interface AuthResponseLoggedOut {
 
 interface AuthResponseLoggedIn {
   isAuth: true;
+  isGoogleAccount: boolean;
   sessionId: string;
   expiresAt: Date;
   user: User;
@@ -202,16 +204,17 @@ export async function getAuth(): Promise<AuthResponse> {
   const session = await getRawSession();
 
   if (!session?.sessionId) {
-    return { isAuth: false, sessionId: null, user: null, expiresAt: null };
+    return { isAuth: false, isGoogleAccount: false, sessionId: null, user: null, expiresAt: null };
   }
 
   const user = await getUserBySession(session.sessionId);
   if (!user) {
-    return { isAuth: false, sessionId: null, user: null, expiresAt: null };
+    return { isAuth: false, isGoogleAccount: false, sessionId: null, user: null, expiresAt: null };
   }
 
   return {
     isAuth: true,
+    isGoogleAccount: user.googleId != null,
     sessionId: session.sessionId,
     expiresAt: new Date(session.expiresAt),
     user: {
