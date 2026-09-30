@@ -2,7 +2,7 @@
 
 import { Button, TextInput } from 'gtomy-lib';
 import { signin } from '@/lib/actions/auth';
-import { useState } from 'react';
+import { useState, useTransition } from 'react';
 import { getErrorMessageForName, ValidationResult } from '@/lib/validations';
 import { Translations } from '@/locales/translation';
 
@@ -12,17 +12,20 @@ export interface LoginFormProps {
 }
 
 export function LoginForm({ trans, flow }: LoginFormProps) {
+  const [, startTransition] = useTransition();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errors, setErrors] = useState<ValidationResult['errors']>([]);
   const generalError = getErrorMessageForName('general', errors);
 
   const onSubmit = async (formData: FormData) => {
     setIsLoading(true);
-    const result = await signin(formData);
-    if (!result.success) {
-      setErrors(result.errors);
-    }
-    setIsLoading(false);
+    startTransition(async () => {
+      const result = await signin(formData);
+      if (!result.success) {
+        setErrors(result.errors);
+      }
+      setIsLoading(false);
+    });
   };
   return (
     <form action={onSubmit} className="flex flex-col gap-2">
