@@ -55,6 +55,13 @@ export function AddOidcClientDialog({ trans, ...props }: AddOidcClientDialogProp
             rows={3}
             error={getErrorMessageForName('redirectUris', errors)}
           />
+          <TextareaInput
+            label={trans.admin.oidcClients.postLogoutRedirectUris}
+            hint={trans.admin.oidcClients.postLogoutRedirectUrisHint}
+            name="postLogoutRedirectUris"
+            rows={2}
+            error={getErrorMessageForName('postLogoutRedirectUris', errors)}
+          />
           <TextInput
             label={trans.admin.oidcClients.scopes}
             hint={trans.admin.oidcClients.scopesHint}

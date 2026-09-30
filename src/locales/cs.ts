@@ -86,6 +86,13 @@ export const CS: Translations = {
       description: 'Požadavek na přihlášení není platný nebo vypršel. Zkuste se přihlásit z aplikace znovu.',
       backHome: 'Zpátky na hlavní stránku',
     },
+    logout: {
+      title: 'Odhlášení',
+      subtitle: 'Chcete se odhlásit z AuthApex?',
+      requestedBy: 'Požaduje',
+      button: 'Odhlásit se',
+      cancelButton: 'Zůstat přihlášen',
+    },
   },
   terms: {
     title: 'Podmínky využití služby',
@@ -254,6 +261,9 @@ export const CS: Translations = {
       displayName: 'Zobrazované jméno',
       redirectUris: 'Redirect URI',
       redirectUrisHint: 'Jedna URI na řádek',
+      postLogoutRedirectUris: 'Post logout redirect URI',
+      postLogoutRedirectUrisHint:
+        'Volitelné, jedna URI na řádek. Kam může aplikace uživatele přesměrovat po odhlášení.',
       scopes: 'Scopes',
       scopesHint: 'Oddělené mezerou, např. openid profile email',
       addNewClient: 'Přidat nového klienta',

@@ -9,6 +9,7 @@ export interface OidcClient {
   clientId: string;
   displayName: string;
   redirectUris: string[];
+  postLogoutRedirectUris: string[];
   scopes: string[];
 }
 
@@ -64,6 +65,7 @@ function toOidcClient(client: Document): OidcClient {
     clientId: client.clientId,
     displayName: client.displayName,
     redirectUris: client.redirectUris ?? [],
+    postLogoutRedirectUris: client.postLogoutRedirectUris ?? [],
     scopes: client.scopes ?? [],
   };
 }
@@ -104,6 +106,7 @@ export async function getOidcClients(): Promise<OidcClient[]> {
 export async function addOidcClient(
   displayName: string,
   redirectUris: string[],
+  postLogoutRedirectUris: string[],
   scopes: string[]
 ): Promise<OidcClientCredentialsResult> {
   try {
@@ -115,6 +118,7 @@ export async function addOidcClient(
       clientSecretHash: hashOidcSecret(clientSecret),
       displayName,
       redirectUris,
+      postLogoutRedirectUris,
       scopes,
       createdAt: new Date(),
     });

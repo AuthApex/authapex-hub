@@ -60,6 +60,7 @@ export const adminAddNewAppSchema = object({
 export const adminAddOidcClientSchema = object({
   displayName: string().required('Toto pole je vyžadované'),
   redirectUris: string().required('Toto pole je vyžadované'),
+  postLogoutRedirectUris: string().nullable().optional(),
   scopes: string().nullable().optional(),
 });
 

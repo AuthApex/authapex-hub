@@ -10,12 +10,21 @@ import {
   getOidcRequestParams,
   resolveOidcAuthorizationRequest,
 } from '@/lib/server/oidc/authorizationRequest';
+import {
+  clearOidcLogoutRequestCookie,
+  getOidcLogoutRequestParams,
+  getPostLogoutRedirect,
+  OidcLogoutRequest,
+  resolveOidcLogoutRequest,
+} from '@/lib/server/oidc/logoutRequest';
+import { invalidateSession } from '@/lib/server/mongodb';
+import { deleteSession } from '@/lib/server/session';
 
-export interface OidcConsentResult {
+export interface OidcRedirectResult {
   redirectUrl: string;
 }
 
-export async function approveOidcAuthorization(lang: string): Promise<OidcConsentResult> {
+export async function approveOidcAuthorization(lang: string): Promise<OidcRedirectResult> {
   const auth = await getAuth();
   if (!auth.isAuth) {
     return { redirectUrl: getRoute(lang, `/signin?flow=${OIDC_SIGNIN_FLOW}`) };
@@ -42,7 +51,7 @@ export async function approveOidcAuthorization(lang: string): Promise<OidcConsen
   return { redirectUrl: `/api/oidc/authorize?${authorizeParams.toString()}` };
 }
 
-export async function denyOidcAuthorization(lang: string): Promise<OidcConsentResult> {
+export async function denyOidcAuthorization(lang: string): Promise<OidcRedirectResult> {
   const params = await getOidcRequestParams();
   await clearOidcRequestCookie();
 
@@ -63,4 +72,34 @@ export async function denyOidcAuthorization(lang: string): Promise<OidcConsentRe
   );
 
   return { redirectUrl: redirectUrl.toString() };
+}
+
+async function consumeStoredLogoutRequest(): Promise<OidcLogoutRequest | null> {
+  const params = await getOidcLogoutRequestParams();
+  await clearOidcLogoutRequestCookie();
+  if (params == null) {
+    return null;
+  }
+  const resolved = await resolveOidcLogoutRequest(new URLSearchParams(params));
+  return resolved.type === 'valid' ? resolved.request : null;
+}
+
+export async function confirmOidcLogout(lang: string): Promise<OidcRedirectResult> {
+  const request = await consumeStoredLogoutRequest();
+
+  const auth = await getAuth();
+  if (auth.isAuth) {
+    await invalidateSession({ sessionId: auth.sessionId });
+  }
+  await deleteSession();
+  await clearOidcRequestCookie();
+
+  const target = request != null ? getPostLogoutRedirect(request) : null;
+  return { redirectUrl: target?.toString() ?? getRoute(lang, '/signin') };
+}
+
+export async function cancelOidcLogout(lang: string): Promise<OidcRedirectResult> {
+  const request = await consumeStoredLogoutRequest();
+  const target = request != null ? getPostLogoutRedirect(request) : null;
+  return { redirectUrl: target?.toString() ?? getRoute(lang, '/') };
 }

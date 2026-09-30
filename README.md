@@ -30,9 +30,10 @@ RSA keys are signed with `RS256`, EC keys (`P-256`, `P-384`, `P-521`) with `ES25
 | Authorization | `/api/oidc/authorize`                   |
 | Token         | `/api/oidc/token`                       |
 | UserInfo      | `/api/oidc/userinfo`                    |
+| End session   | `/api/oidc/logout`                      |
 
 Supported: the authorization code flow with optional PKCE (`S256` only), the refresh token grant (requires the
-`offline_access` scope) and `client_secret_basic` / `client_secret_post` client authentication.
+`offline_access` scope), `client_secret_basic` / `client_secret_post` client authentication and RP-Initiated Logout.
 
 - `prompt` supports `none`, `login`, `consent` and `select_account`. `login`, `select_account` and an exceeded
   `max_age` end the current hub session and ask the user to sign in again.
@@ -42,6 +43,19 @@ Supported: the authorization code flow with optional PKCE (`S256` only), the ref
   original one.
 - Logging out of the hub does not revoke refresh tokens, users revoke applications on the **Authorized applications**
   page.
+
+### Logout
+
+Applications log users out by sending them to the end session endpoint (GET or POST) with the parameters
+`id_token_hint`, `client_id`, `post_logout_redirect_uri` and `state`, all optional. The hub session is ended, the
+consent and refresh tokens of the application are kept.
+
+- With a valid `id_token_hint` (expired tokens are accepted) of the signed in user, the user is logged out right away.
+  Otherwise the user has to confirm the logout, so other sites can not log users out by linking to the endpoint.
+- `post_logout_redirect_uri` must exactly match one of the client's registered post logout redirect URIs, the client
+  is identified by `client_id` or the `id_token_hint`. `state` is passed back. Without a redirect URI the user ends on
+  the hub sign in page.
+- Other applications are not notified (no front or back channel logout), they keep their own sessions.
 
 ### Scopes and claims
 
@@ -56,7 +70,8 @@ Supported: the authorization code flow with optional PKCE (`S256` only), the ref
 ### Registering a client
 
 Clients are managed in the admin section under **OAuth2 / OIDC clients** (`/admin/oidc-clients`). Every client has a
-generated `client_id` and `client_secret`, an explicit list of allowed redirect URIs and the scopes it may request.
+generated `client_id` and `client_secret`, an explicit list of allowed redirect URIs, optional post logout redirect URIs
+and the scopes it may request.
 The client secret is stored only as a SHA-256 hash and is shown once, when the client is created. If it gets lost, it
 can be regenerated in the admin section (the application then has to be updated with the new secret). Authorization
 codes and refresh tokens are stored hashed as well.

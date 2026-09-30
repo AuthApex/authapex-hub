@@ -87,6 +87,13 @@ export const EN: Translations = {
       description: 'The sign in request is not valid or has expired. Please try signing in from the application again.',
       backHome: 'Back to home page',
     },
+    logout: {
+      title: 'Sign out',
+      subtitle: 'Do you want to sign out of AuthApex?',
+      requestedBy: 'Requested by',
+      button: 'Sign out',
+      cancelButton: 'Stay signed in',
+    },
   },
   terms: {
     title: 'Terms of Service',
@@ -255,6 +262,8 @@ export const EN: Translations = {
       displayName: 'Display name',
       redirectUris: 'Redirect URIs',
       redirectUrisHint: 'One URI per line',
+      postLogoutRedirectUris: 'Post logout redirect URIs',
+      postLogoutRedirectUrisHint: 'Optional, one URI per line. Where the application may send users after signing out.',
       scopes: 'Scopes',
       scopesHint: 'Space separated, e.g. openid profile email',
       addNewClient: 'Add new client',

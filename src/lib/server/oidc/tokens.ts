@@ -1,6 +1,6 @@
 import 'server-only';
 import { createHash } from 'crypto';
-import { JWTPayload, jwtVerify, SignJWT } from 'jose';
+import { compactVerify, JWTPayload, jwtVerify, SignJWT } from 'jose';
 import { nanoid } from 'nanoid';
 import { UserWithPassword } from '@/lib/models/User';
 import { getOidcSigningKey } from '@/lib/server/oidc/keys';
@@ -101,6 +101,34 @@ export async function signOidcIdToken({
     .setIssuedAt()
     .setExpirationTime(`${OIDC_ACCESS_TOKEN_LIFETIME_SECONDS}s`)
     .sign(privateKey);
+}
+
+export interface OidcIdTokenHint {
+  sub: string;
+  clientId: string;
+}
+
+export async function verifyOidcIdTokenHint(token: string): Promise<OidcIdTokenHint | null> {
+  const { publicKey, alg } = await getOidcSigningKey();
+  const issuer = getOidcIssuer();
+  try {
+    const { payload, protectedHeader } = await compactVerify(token, publicKey, { algorithms: [alg] });
+    if (protectedHeader.typ === 'at+jwt') {
+      return null;
+    }
+    const claims: JWTPayload = JSON.parse(new TextDecoder().decode(payload));
+    const audience = Array.isArray(claims.aud) ? claims.aud : [claims.aud];
+    if (claims.iss !== issuer || typeof claims.sub !== 'string' || audience.length !== 1) {
+      return null;
+    }
+    const clientId = audience[0];
+    if (typeof clientId !== 'string' || clientId === issuer) {
+      return null;
+    }
+    return { sub: claims.sub, clientId };
+  } catch {
+    return null;
+  }
 }
 
 export async function verifyOidcAccessToken(token: string): Promise<OidcAccessTokenPayload | null> {

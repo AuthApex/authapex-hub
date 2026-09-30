@@ -30,6 +30,7 @@ export async function GET() {
       token_endpoint: endpoints.tokenEndpoint,
       userinfo_endpoint: endpoints.userinfoEndpoint,
       jwks_uri: endpoints.jwksUri,
+      end_session_endpoint: endpoints.endSessionEndpoint,
       scopes_supported: OIDC_SUPPORTED_SCOPES,
       response_types_supported: ['code'],
       response_modes_supported: ['query'],

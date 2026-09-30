@@ -69,6 +69,24 @@ export interface OidcClientValidationResult extends ValidationResult {
   credentials?: OidcClientCredentials;
 }
 
+function parseUriList(value: string | null | undefined): string[] {
+  return (value ?? '')
+    .split(/\s+/)
+    .map((uri) => uri.trim())
+    .filter((uri) => uri.length > 0);
+}
+
+function getInvalidUriError(path: string, uris: string[]): ValidationResult['errors'][number] | null {
+  const invalidUri = uris.find((uri) => !isAllowedOidcRedirectUri(uri));
+  if (invalidUri == null) {
+    return null;
+  }
+  return {
+    path,
+    message: `Neplatná URI ${invalidUri}: povoleno je https://, http:// pouze pro localhost a vlastní schéma aplikace s tečkou (např. app.example:/callback), bez #fragmentu`,
+  };
+}
+
 export async function createNewOidcClient(formData: FormData): Promise<OidcClientValidationResult> {
   const auth = await getAuth();
   if (!auth.isAuth || !PERMISSION_SERVICE.hasPermission(auth.user, 'admin')) {
@@ -80,6 +98,7 @@ export async function createNewOidcClient(formData: FormData): Promise<OidcClien
       {
         displayName: formData.get('displayName'),
         redirectUris: formData.get('redirectUris'),
+        postLogoutRedirectUris: formData.get('postLogoutRedirectUris'),
         scopes: formData.get('scopes'),
       },
       {
@@ -92,10 +111,8 @@ export async function createNewOidcClient(formData: FormData): Promise<OidcClien
     return values;
   }
 
-  const redirectUris = values.redirectUris
-    .split(/\s+/)
-    .map((redirectUri) => redirectUri.trim())
-    .filter((redirectUri) => redirectUri.length > 0);
+  const redirectUris = parseUriList(values.redirectUris);
+  const postLogoutRedirectUris = parseUriList(values.postLogoutRedirectUris);
 
   if (redirectUris.length === 0) {
     return {
@@ -109,17 +126,12 @@ export async function createNewOidcClient(formData: FormData): Promise<OidcClien
     };
   }
 
-  const invalidRedirectUri = redirectUris.find((redirectUri) => !isAllowedOidcRedirectUri(redirectUri));
-  if (invalidRedirectUri != null) {
-    return {
-      success: false,
-      errors: [
-        {
-          path: 'redirectUris',
-          message: `Neplatná URI ${invalidRedirectUri}: povoleno je https://, http:// pouze pro localhost a vlastní schéma aplikace s tečkou (např. app.example:/callback), bez #fragmentu`,
-        },
-      ],
-    };
+  const uriErrors = [
+    getInvalidUriError('redirectUris', redirectUris),
+    getInvalidUriError('postLogoutRedirectUris', postLogoutRedirectUris),
+  ].filter((error) => error != null);
+  if (uriErrors.length > 0) {
+    return { success: false, errors: uriErrors };
   }
 
   const parsedScopes = (values.scopes ?? '')
@@ -129,7 +141,7 @@ export async function createNewOidcClient(formData: FormData): Promise<OidcClien
   const scopes = parsedScopes.length === 0 ? ['openid', 'profile', 'email'] : parsedScopes;
   const finalScopes = ['openid', ...scopes.filter((scope) => scope !== 'openid')];
 
-  const result = await addOidcClient(values.displayName, redirectUris, finalScopes);
+  const result = await addOidcClient(values.displayName, redirectUris, postLogoutRedirectUris, finalScopes);
   if (result.success) {
     return {
       success: true,

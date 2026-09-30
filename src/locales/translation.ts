@@ -86,6 +86,13 @@ export interface Translations {
       description: string;
       backHome: string;
     };
+    logout: {
+      title: string;
+      subtitle: string;
+      requestedBy: string;
+      button: string;
+      cancelButton: string;
+    };
   };
   terms: {
     title: string;
@@ -226,6 +233,8 @@ export interface Translations {
       displayName: string;
       redirectUris: string;
       redirectUrisHint: string;
+      postLogoutRedirectUris: string;
+      postLogoutRedirectUrisHint: string;
       scopes: string;
       scopesHint: string;
       addNewClient: string;
