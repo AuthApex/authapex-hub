@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.3](https://github.com/AuthApex/authapex-hub/compare/v0.7.2...v0.7.3) (2026-10-01)
+
+
+### Features
+
+* add logout request ([748511e](https://github.com/AuthApex/authapex-hub/commit/748511e39d23ae48a98dabc4dc0009ed4fb645b0))
+* add option to change email to non-google accounts ([e068443](https://github.com/AuthApex/authapex-hub/commit/e0684432899ecfc249886deecf8f6041dc9bb09e))
+
+
+### Bug Fixes
+
+* add useTransition for async redirect operations ([4cb4f6b](https://github.com/AuthApex/authapex-hub/commit/4cb4f6b7614594c9646eb1a6b278b9bd468eb067))
+* google login redirect ([89ad055](https://github.com/AuthApex/authapex-hub/commit/89ad0553e1fde075bc8f5759a44456ac12edd900))
+* high security updates ([11b666e](https://github.com/AuthApex/authapex-hub/commit/11b666ed2866288f1360ddfd0ad0cd284df5a455))
+* medium security updates ([b8a3eb6](https://github.com/AuthApex/authapex-hub/commit/b8a3eb61f511ac90ac5e3b8133dd7fb7f063f006))
+* pipeline coolify deploy request ([be547fa](https://github.com/AuthApex/authapex-hub/commit/be547fabd808a65a402bf86c4d4fd9650ce6d19b))
+
 ### [0.7.2](https://github.com/AuthApex/authapex-hub/compare/v0.7.1...v0.7.2) (2026-09-29)
 
 
