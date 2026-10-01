@@ -158,8 +158,6 @@ function parsePrompt(prompt: string | null): string[] {
   return [...new Set((prompt ?? '').split(/\s+/).filter((value) => SUPPORTED_PROMPTS.includes(value)))];
 }
 
-// Once the user signed in again, prompt=login / select_account and max_age are fulfilled. They are removed from the
-// resumed request, otherwise the authorize endpoint would ask for another sign in forever.
 export function getParamsAfterSignin(params: string): string {
   const searchParams = new URLSearchParams(params);
   const prompt = parsePrompt(searchParams.get('prompt')).filter(
@@ -170,7 +168,6 @@ export function getParamsAfterSignin(params: string): string {
   } else {
     searchParams.delete('prompt');
   }
-  searchParams.delete('max_age');
   return searchParams.toString();
 }
 

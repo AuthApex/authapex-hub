@@ -34,8 +34,7 @@ RSA keys are signed with `RS256`, EC keys (`P-256`, `P-384`, `P-521`) with `ES25
 Supported: the authorization code flow with optional PKCE (`S256` only), the refresh token grant (requires the
 `offline_access` scope), `client_secret_basic` / `client_secret_post` client authentication.
 
-- `prompt` supports `none`, `login`, `consent` and `select_account`. `login`, `select_account` and an exceeded
-  `max_age` end the current hub session and ask the user to sign in again.
+- `prompt` supports `none`, `login`, `consent` and `select_account`. `login`, `select_account`.
 - `auth_time` is the time the user actually signed in, it is kept when the hub session is rotated.
 - Refresh tokens rotate on every use. Reusing an already used refresh token or authorization code revokes all refresh
   tokens issued from the same authorization. A refresh request may narrow the scope, the new refresh token keeps the
