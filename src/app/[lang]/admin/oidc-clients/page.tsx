@@ -63,7 +63,6 @@ export default async function Admin({ params }: Readonly<{ params: Promise<{ lan
                     <th>{trans.admin.oidcClients.displayName}</th>
                     <th>{trans.admin.oidcClients.clientId}</th>
                     <th>{trans.admin.oidcClients.redirectUris}</th>
-                    <th>{trans.admin.oidcClients.postLogoutRedirectUris}</th>
                     <th>{trans.admin.oidcClients.scopes}</th>
                     <th></th>
                   </tr>
@@ -77,13 +76,6 @@ export default async function Admin({ params }: Readonly<{ params: Promise<{ lan
                         {client.redirectUris.map((redirectUri) => (
                           <div key={redirectUri}>{redirectUri}</div>
                         ))}
-                      </td>
-                      <td>
-                        {client.postLogoutRedirectUris.length === 0
-                          ? '-'
-                          : client.postLogoutRedirectUris.map((redirectUri) => (
-                              <div key={redirectUri}>{redirectUri}</div>
-                            ))}
                       </td>
                       <td>{client.scopes.join(' ')}</td>
                       <td className="flex gap-2 flex-col justify-end w-max">

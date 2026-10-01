@@ -54,7 +54,6 @@ export async function signinWithGoogle(credentials: CredentialResponse, flow?: s
     sessionId: session.sessionId,
     userId: user.userId,
     expiresAt: session.expiresAt,
-    authTime: new Date(),
   });
   await handleAuthorizeRedirect(flow);
 }
@@ -106,7 +105,6 @@ export async function signin(formData: FormData): Promise<ValidationResult> {
     sessionId: session.sessionId,
     userId: user.userId,
     expiresAt: session.expiresAt,
-    authTime: new Date(),
   });
   if (result.success) {
     await handleAuthorizeRedirect(formData.get('flow'));
@@ -161,7 +159,6 @@ export async function signup(formData: FormData): Promise<ValidationResult> {
     sessionId: session.sessionId,
     userId: user.userId,
     expiresAt: session.expiresAt,
-    authTime: new Date(),
   });
 
   if (result.success) {

@@ -98,7 +98,6 @@ export async function createNewOidcClient(formData: FormData): Promise<OidcClien
       {
         displayName: formData.get('displayName'),
         redirectUris: formData.get('redirectUris'),
-        postLogoutRedirectUris: formData.get('postLogoutRedirectUris'),
         scopes: formData.get('scopes'),
       },
       {
@@ -112,7 +111,6 @@ export async function createNewOidcClient(formData: FormData): Promise<OidcClien
   }
 
   const redirectUris = parseUriList(values.redirectUris);
-  const postLogoutRedirectUris = parseUriList(values.postLogoutRedirectUris);
 
   if (redirectUris.length === 0) {
     return {
@@ -126,10 +124,7 @@ export async function createNewOidcClient(formData: FormData): Promise<OidcClien
     };
   }
 
-  const uriErrors = [
-    getInvalidUriError('redirectUris', redirectUris),
-    getInvalidUriError('postLogoutRedirectUris', postLogoutRedirectUris),
-  ].filter((error) => error != null);
+  const uriErrors = [getInvalidUriError('redirectUris', redirectUris)].filter((error) => error != null);
   if (uriErrors.length > 0) {
     return { success: false, errors: uriErrors };
   }
@@ -141,7 +136,7 @@ export async function createNewOidcClient(formData: FormData): Promise<OidcClien
   const scopes = parsedScopes.length === 0 ? ['openid', 'profile', 'email'] : parsedScopes;
   const finalScopes = ['openid', ...scopes.filter((scope) => scope !== 'openid')];
 
-  const result = await addOidcClient(values.displayName, redirectUris, postLogoutRedirectUris, finalScopes);
+  const result = await addOidcClient(values.displayName, redirectUris, finalScopes);
   if (result.success) {
     return {
       success: true,

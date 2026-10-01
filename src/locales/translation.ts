@@ -234,8 +234,6 @@ export interface Translations {
       displayName: string;
       redirectUris: string;
       redirectUrisHint: string;
-      postLogoutRedirectUris: string;
-      postLogoutRedirectUrisHint: string;
       scopes: string;
       scopesHint: string;
       addNewClient: string;

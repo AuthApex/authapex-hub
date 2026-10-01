@@ -36,6 +36,5 @@ export function getOidcEndpoints() {
     tokenEndpoint: `${issuer}/api/oidc/token`,
     userinfoEndpoint: `${issuer}/api/oidc/userinfo`,
     jwksUri: `${issuer}/.well-known/jwks.json`,
-    endSessionEndpoint: `${issuer}/api/oidc/logout`,
   };
 }

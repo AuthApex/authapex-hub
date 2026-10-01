@@ -22,7 +22,6 @@ export interface OidcAuthorizationRequest {
   state: string | null;
   nonce: string | null;
   prompt: string[];
-  maxAge: number | null;
   codeChallenge: string | null;
   codeChallengeMethod: 'S256' | null;
   params: string;
@@ -134,17 +133,6 @@ export async function resolveOidcAuthorizationRequest(
     };
   }
 
-  const rawMaxAge = params.get('max_age');
-  if (rawMaxAge != null && !MAX_AGE_PATTERN.test(rawMaxAge)) {
-    return {
-      type: 'error',
-      redirectUri,
-      state,
-      error: 'invalid_request',
-      description: 'The max_age parameter must be a non-negative integer.',
-    };
-  }
-
   const allowedScopes = getAllowedScopes(client);
   const scopes = [
     'openid',
@@ -160,7 +148,6 @@ export async function resolveOidcAuthorizationRequest(
       state,
       nonce: params.get('nonce'),
       prompt,
-      maxAge: rawMaxAge != null ? Number(rawMaxAge) : null,
       codeChallenge,
       codeChallengeMethod: codeChallenge != null ? 'S256' : null,
       params: params.toString(),

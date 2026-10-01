@@ -47,7 +47,6 @@ export async function authenticateOidcClient(
     clientId: client.clientId,
     displayName: client.displayName,
     redirectUris: client.redirectUris,
-    postLogoutRedirectUris: client.postLogoutRedirectUris,
     scopes: client.scopes,
   };
 }

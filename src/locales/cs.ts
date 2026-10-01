@@ -262,9 +262,6 @@ export const CS: Translations = {
       displayName: 'Zobrazované jméno',
       redirectUris: 'Redirect URI',
       redirectUrisHint: 'Jedna URI na řádek',
-      postLogoutRedirectUris: 'Post logout redirect URI',
-      postLogoutRedirectUrisHint:
-        'Volitelné, jedna URI na řádek. Kam může aplikace uživatele přesměrovat po odhlášení.',
       scopes: 'Scopes',
       scopesHint: 'Oddělené mezerou, např. openid profile email',
       addNewClient: 'Přidat nového klienta',
