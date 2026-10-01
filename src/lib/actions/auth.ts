@@ -179,6 +179,7 @@ export async function logout(): Promise<void> {
   }
   await deleteSession();
   await clearOidcRequestCookie();
+  redirect('./signin');
 }
 
 type AuthResponse = AuthResponseLoggedOut | AuthResponseLoggedIn;
@@ -230,6 +231,8 @@ export async function getAuth(): Promise<AuthResponse> {
 
 // TODO: lang redirects dont seem to work
 async function handleAuthorizeRedirect(flow: unknown): Promise<void> {
+  // A pending OIDC request is only resumed when the sign in was started by the authorize endpoint. Otherwise an
+  // abandoned OIDC flow would hijack a later, unrelated sign in.
   if (flow === OIDC_SIGNIN_FLOW) {
     const oidcRequestParams = await getOidcRequestParams();
     if (oidcRequestParams) {

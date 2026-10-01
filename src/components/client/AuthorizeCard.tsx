@@ -2,7 +2,7 @@
 
 import { Translations } from '@/locales/translation';
 import useCookie from 'react-use-cookie';
-import { useCallback, useEffect, useState, useTransition } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Button, LoadingState, Typography } from 'gtomy-lib';
 import { authorize } from '@/lib/actions/authorize';
@@ -20,7 +20,6 @@ export interface AuthorizeCardProps {
 
 export function AuthorizeCard({ isAuth, trans, lang, authorizedApps, userAppSessions }: AuthorizeCardProps) {
   const router = useRouter();
-  const [, startTransition] = useTransition();
   const [rawAuthorizeData, setRawAuthorizeData, removeRawAuthorizeData] = useCookie('authorize-data', undefined);
   const searchParams = useSearchParams();
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -29,10 +28,8 @@ export function AuthorizeCard({ isAuth, trans, lang, authorizedApps, userAppSess
 
   const onAuthorize = useCallback(async () => {
     setIsLoading(true);
-    startTransition(async () => {
-      await authorize(lang);
-      setIsLoading(false);
-    });
+    await authorize(lang);
+    setIsLoading(false);
   }, [lang]);
 
   const cancelAuthorize = useCallback(() => {
