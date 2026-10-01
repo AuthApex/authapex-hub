@@ -41,8 +41,12 @@ export function OidcConsentCard({ lang, trans, displayName, redirectUrlOrigin, s
       <div className="grid grid-cols-2 gap-4">
         <Typography>{trans.oidc.consent.appName}</Typography>
         <Typography>{displayName}</Typography>
-        <Typography>{trans.oidc.consent.appUrl}</Typography>
-        <Typography>{redirectUrlOrigin}</Typography>
+        {redirectUrlOrigin && (
+          <>
+            <Typography>{trans.oidc.consent.appUrl}</Typography>
+            <Typography>{redirectUrlOrigin}</Typography>
+          </>
+        )}
       </div>
       <div className="flex flex-col gap-2 mt-4">
         <Typography weight="semibold">{trans.oidc.consent.permissions}</Typography>
