@@ -9,7 +9,6 @@ import {
 } from '@/lib/validations';
 import { addAuthorizedApp, deleteAuthorizedApp, setUserRoles } from '@/lib/server/mongodb';
 import { addOidcClient, deleteOidcClient, regenerateOidcClientSecret } from '@/lib/server/oidcMongodb';
-import { isAllowedOidcRedirectUri } from '@/lib/server/oidc/redirectUri';
 import { getAuth } from '@/lib/actions/auth';
 import { PERMISSION_SERVICE } from '@/lib/consts';
 import { RoleModel } from '@authapex/core';
@@ -76,17 +75,6 @@ function parseUriList(value: string | null | undefined): string[] {
     .filter((uri) => uri.length > 0);
 }
 
-function getInvalidUriError(path: string, uris: string[]): ValidationResult['errors'][number] | null {
-  const invalidUri = uris.find((uri) => !isAllowedOidcRedirectUri(uri));
-  if (invalidUri == null) {
-    return null;
-  }
-  return {
-    path,
-    message: `Neplatná URI ${invalidUri}: povoleno je https://, http:// pouze pro localhost a vlastní schéma aplikace s tečkou (např. app.example:/callback), bez #fragmentu`,
-  };
-}
-
 export async function createNewOidcClient(formData: FormData): Promise<OidcClientValidationResult> {
   const auth = await getAuth();
   if (!auth.isAuth || !PERMISSION_SERVICE.hasPermission(auth.user, 'admin')) {
@@ -122,11 +110,6 @@ export async function createNewOidcClient(formData: FormData): Promise<OidcClien
         },
       ],
     };
-  }
-
-  const uriErrors = [getInvalidUriError('redirectUris', redirectUris)].filter((error) => error != null);
-  if (uriErrors.length > 0) {
-    return { success: false, errors: uriErrors };
   }
 
   const parsedScopes = (values.scopes ?? '')

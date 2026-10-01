@@ -29,7 +29,6 @@ export interface OidcAuthorizationRequest {
 
 // A S256 challenge is a base64url encoded SHA-256 digest, which is always 43 characters long.
 const S256_CODE_CHALLENGE_PATTERN = /^[A-Za-z0-9_-]{43}$/;
-const MAX_AGE_PATTERN = /^\d{1,10}$/;
 const SUPPORTED_PROMPTS = ['none', 'login', 'consent', 'select_account'];
 
 export type OidcAuthorizationRequestResult =
