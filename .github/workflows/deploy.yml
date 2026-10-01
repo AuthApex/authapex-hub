@@ -29,6 +29,6 @@ jobs:
     needs: [ publish ]
     steps:
       - run: |
-          curl --request GET \
+          curl --request POST \
           --url 'https://${{ secrets.COOLIFY_API_URL }}/api/v1/deploy?uuid=${{ secrets.COOLIFY_API_FRONTEND_UUID }}&force=false' \
           --header 'Authorization: Bearer ${{ secrets.COOLIFY_API_TOKEN }}'
