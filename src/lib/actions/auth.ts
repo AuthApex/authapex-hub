@@ -206,6 +206,7 @@ export async function getAuth(): Promise<AuthResponse> {
 
   const user = await getUserBySession(session.sessionId);
   if (!user) {
+    await deleteSession();
     return { isAuth: false, isGoogleAccount: false, sessionId: null, user: null, expiresAt: null };
   }
 
