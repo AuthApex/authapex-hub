@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.4](https://github.com/AuthApex/authapex-hub/compare/v0.7.3...v0.7.4) (2026-10-01)
+
+
+### Features
+
+* remove logout ([62e301f](https://github.com/AuthApex/authapex-hub/commit/62e301f95ae73bea19e656247a6eb35d11488a1e))
+
+
+### Bug Fixes
+
+* display of redirectUrl ([bf4ef77](https://github.com/AuthApex/authapex-hub/commit/bf4ef7721284f9be59789dcb4e4dedde3629f6b6))
+* lint and audit ([65dd90b](https://github.com/AuthApex/authapex-hub/commit/65dd90b8132f3245847e2ef4eea375f7b7538bf1))
+
 ### [0.7.3](https://github.com/AuthApex/authapex-hub/compare/v0.7.2...v0.7.3) (2026-10-01)
 
 
