@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.7.5](https://github.com/AuthApex/authapex-hub/compare/v0.7.4...v0.7.5) (2026-10-01)
+
+
+### Bug Fixes
+
+* clear session if expired ([aef6d6e](https://github.com/AuthApex/authapex-hub/commit/aef6d6e3e72043d8a4c586a979a9e7bef1c4bccd))
+* remove max age params ([033aff5](https://github.com/AuthApex/authapex-hub/commit/033aff5fb7dd6f4933017d9eeb4ca297d2a1919e))
+
 ### [0.7.4](https://github.com/AuthApex/authapex-hub/compare/v0.7.3...v0.7.4) (2026-10-01)
 
 
