@@ -8,26 +8,21 @@ import { getRoute } from '@/lib/getRoute';
 import { getAuth } from '@/lib/actions/auth';
 import { redirect } from 'next/navigation';
 import { PERMISSION_SERVICE } from '@/lib/consts';
-import { getUsers, searchUsers } from '@/lib/server/mongodb';
+import { findUsers, getAuthorizedAppsSanitized, getUserRoleApplications } from '@/lib/server/mongodb';
 import { ProfileImage } from '@/components/ProfileImage';
 import { AdminUsersPagination } from '@/components/client/AdminUsersPagination';
 import { AdminUsersFilter } from '@/components/client/AdminUsersFilter';
+import { parseAdminUsersQuery } from '@/lib/userFilters';
 
 export default async function Admin({
   params,
   searchParams,
 }: Readonly<{
   params: Promise<{ lang: string }>;
-  searchParams: Promise<{ page?: string; size?: string; sortBy?: string; sortOrder?: string; q?: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }>) {
   const lang = (await params).lang;
   const trans = getTranslation(lang);
-
-  const page = +((await searchParams).page ?? 0);
-  const usersPerPage = +((await searchParams).size ?? 5);
-  const sortBy = (await searchParams).sortBy ?? '_id';
-  const sortOrder = (await searchParams).sortOrder ?? 'asc';
-  const query = (await searchParams).q ?? '';
 
   const auth = await getAuth();
 
@@ -39,21 +34,24 @@ export default async function Admin({
     redirect(getRoute(lang, '/'));
   }
 
-  if (
-    isNaN(page) ||
-    isNaN(usersPerPage) ||
-    !['_id', 'username', 'displayName', 'email'].includes(sortBy) ||
-    !['asc', 'desc'].includes(sortOrder)
-  ) {
+  const { filters, page, size: usersPerPage, sortBy, sortOrder, isValid } = parseAdminUsersQuery(await searchParams);
+
+  if (!isValid) {
     redirect(getRoute(lang, '/admin/users'));
   }
 
-  let users;
-  if (query) {
-    users = await searchUsers(query);
-  } else {
-    users = await getUsers(page, usersPerPage, sortBy as never, sortOrder as never);
-  }
+  const [{ users, hasMore }, verifiedApps, roleApplications] = await Promise.all([
+    findUsers({ filters, page, usersPerPage, sortBy, sortOrder }),
+    getAuthorizedAppsSanitized(),
+    getUserRoleApplications(),
+  ]);
+
+  const applications = [
+    ...verifiedApps.map((app) => ({ value: app.name, label: app.displayName })),
+    ...roleApplications
+      .filter((application) => !verifiedApps.some((app) => app.name === application))
+      .map((application) => ({ value: application, label: application })),
+  ].sort((a, b) => a.label.localeCompare(b.label));
 
   return (
     <div className="flex min-h-svh flex-col items-center justify-center gap-6 p-6">
@@ -79,7 +77,8 @@ export default async function Admin({
               </ul>
             </div>
             <AdminUsersFilter
-              query={query}
+              filters={filters}
+              applications={applications}
               usersPerPage={String(usersPerPage)}
               sortBy={sortBy}
               sortOrder={sortOrder}
@@ -96,7 +95,14 @@ export default async function Admin({
                   </tr>
                 </thead>
                 <tbody>
-                  {users.slice(0, query ? users.length : usersPerPage).map((user) => (
+                  {users.length === 0 && (
+                    <tr>
+                      <td colSpan={4} className="text-center opacity-70">
+                        {trans.admin.users.noResults}
+                      </td>
+                    </tr>
+                  )}
+                  {users.map((user) => (
                     <tr key={user.userId}>
                       <td className="flex flex-col lg:flex-row gap-4">
                         <ProfileImage user={user} className="size-12" />
@@ -108,7 +114,23 @@ export default async function Admin({
                         </div>
                       </td>
                       <td>{user.displayName}</td>
-                      <td>{user.email}</td>
+                      <td>
+                        <div className="flex flex-col gap-1">
+                          <span>{user.email}</span>
+                          <div className="flex flex-wrap gap-1">
+                            <span className="badge badge-sm badge-ghost">
+                              {user.provider === 'google'
+                                ? trans.admin.users.providerGoogle
+                                : trans.admin.users.providerNative}
+                            </span>
+                            {!user.emailVerified && (
+                              <span className="badge badge-sm badge-warning">
+                                {trans.admin.users.verificationUnverified}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </td>
                       <td>
                         <Button size="sm" as={Link} href={getRoute(lang, '/admin/users/' + user.userId)}>
                           Detail
@@ -119,7 +141,7 @@ export default async function Admin({
                 </tbody>
               </table>
             </div>
-            {!query && <AdminUsersPagination page={page} isLast={users.length <= usersPerPage} />}
+            <AdminUsersPagination page={page} isLast={!hasMore} />
           </div>
         </div>
         <Footer lang={lang} trans={trans} isSignIn />

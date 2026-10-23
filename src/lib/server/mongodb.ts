@@ -1,10 +1,12 @@
 import 'server-only';
 import { getServerState } from '@/lib/server/serverState';
 import { nanoid } from 'nanoid';
-import { UserWithPassword } from '@/lib/models/User';
-import { RoleModel, TokenRequest, User } from '@authapex/core';
+import { AdminUser, UserWithPassword } from '@/lib/models/User';
+import { RoleModel, TokenRequest } from '@authapex/core';
 import Fuse from 'fuse.js';
 import { VerifiedStatus } from '@/lib/getVerifiedStatus';
+import { Document, Filter } from 'mongodb';
+import { AdminUsersFilters, UserSortField, UserSortOrder } from '@/lib/userFilters';
 
 export interface DbUpdateResult {
   success: boolean;
@@ -487,63 +489,141 @@ export async function getAuthorizedAppsSanitized(): Promise<{ name: string; disp
   }
 }
 
-export async function getUsers(
-  page: number,
-  usersPerPage: number,
-  sortBy: '_id' | 'username' | 'displayName' | 'email',
-  sortOrder: 'asc' | 'desc'
-): Promise<User[]> {
+export interface FindUsersOptions {
+  filters: AdminUsersFilters;
+  page: number;
+  usersPerPage: number;
+  sortBy: UserSortField;
+  sortOrder: UserSortOrder;
+}
+
+export interface FindUsersResult {
+  users: AdminUser[];
+  hasMore: boolean;
+}
+
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function buildUsersQuery(filters: AdminUsersFilters): Filter<Document> {
+  const query: Filter<Document> = {};
+
+  if (filters.email) {
+    query.email = { $regex: escapeRegExp(filters.email), $options: 'i' };
+  }
+
+  if (filters.provider === 'google') {
+    query.googleId = { $exists: true, $nin: [null, ''] };
+  } else if (filters.provider === 'native') {
+    query.$or = [{ googleId: { $exists: false } }, { googleId: null }, { googleId: '' }];
+  }
+
+  if (filters.verified === 'true') {
+    query.emailVerified = true;
+  } else if (filters.verified === 'false') {
+    query.emailVerified = { $ne: true };
+  }
+
+  if (filters.application || filters.role) {
+    const roleMatch: Record<string, string> = {};
+    if (filters.application) {
+      roleMatch.application = filters.application;
+    }
+    if (filters.role) {
+      roleMatch.role = filters.role;
+    }
+    query.roles = { $elemMatch: roleMatch };
+  }
+
+  return query;
+}
+
+function compareUsers(a: Document, b: Document, sortBy: UserSortField): number {
+  if (sortBy === '_id') {
+    return String(a._id).localeCompare(String(b._id));
+  }
+  return String(a[sortBy] ?? '').localeCompare(String(b[sortBy] ?? ''), undefined, { sensitivity: 'base' });
+}
+
+function mapAdminUser(user: Document): AdminUser {
+  return {
+    userId: user.userId,
+    email: user.email,
+    displayName: user.displayName,
+    username: user.username,
+    roles: user.roles ?? [],
+    profileImageId: user.profileImageId ?? null,
+    profileImageUrl: user.profileImageUrl ?? null,
+    provider: user.googleId ? 'google' : 'native',
+    emailVerified: user.emailVerified === true,
+  };
+}
+
+export async function findUsers({
+  filters,
+  page,
+  usersPerPage,
+  sortBy,
+  sortOrder,
+}: FindUsersOptions): Promise<FindUsersResult> {
   try {
     const serverState = getServerState();
     const db = serverState.mongoClient.db(serverState.mongoDbName);
-
+    const collection = db.collection('users');
+    const query = buildUsersQuery(filters);
     const sortDirection = sortOrder === 'desc' ? -1 : 1;
+    const offset = page * usersPerPage;
 
-    const users = await db
-      .collection('users')
-      .find({})
+    if (filters.query) {
+      const candidates = await collection.find(query).toArray();
+      const fuse = new Fuse(candidates, {
+        keys: ['displayName', 'username', 'email'],
+        threshold: 0.2,
+        ignoreDiacritics: true,
+      });
+
+      const exactMatches = candidates.filter((user) => user.userId === filters.query);
+      const exactMatchIds = new Set(exactMatches.map((user) => user.userId));
+      const fuzzyMatches = fuse
+        .search(filters.query)
+        .map((result) => result.item)
+        .filter((user) => !exactMatchIds.has(user.userId));
+
+      const matchedUsers = [...exactMatches, ...fuzzyMatches].sort(
+        (a, b) => sortDirection * compareUsers(a, b, sortBy)
+      );
+      const pageUsers = matchedUsers.slice(offset, offset + usersPerPage);
+
+      return {
+        users: pageUsers.map(mapAdminUser),
+        hasMore: matchedUsers.length > offset + usersPerPage,
+      };
+    }
+
+    const users = await collection
+      .find(query)
       .sort({ [sortBy]: sortDirection })
-      .skip(page * usersPerPage)
+      .skip(offset)
       .limit(usersPerPage + 1)
       .toArray();
 
-    return users.map((user) => ({
-      userId: user.userId,
-      email: user.email,
-      displayName: user.displayName,
-      username: user.username,
-      roles: user.roles,
-      profileImageId: user.profileImageId,
-      profileImageUrl: user.profileImageUrl,
-    }));
+    return {
+      users: users.slice(0, usersPerPage).map(mapAdminUser),
+      hasMore: users.length > usersPerPage,
+    };
   } catch {
-    return [];
+    return { users: [], hasMore: false };
   }
 }
 
-export async function searchUsers(query: string): Promise<User[]> {
+/** Returns all applications that appear in a role assigned to at least one user. */
+export async function getUserRoleApplications(): Promise<string[]> {
   try {
     const serverState = getServerState();
     const db = serverState.mongoClient.db(serverState.mongoDbName);
-    const users = await db.collection('users').find({}).toArray();
-    const fuse = new Fuse(users, {
-      keys: ['displayName', 'username', 'email'],
-      threshold: 0.2,
-      ignoreDiacritics: true,
-    });
-
-    const searchedUsersById = users.filter((user) => user.userId === query);
-    const searchedUsers = fuse.search(query).map((result) => result.item);
-
-    return [...searchedUsersById, ...searchedUsers].map((user) => ({
-      userId: user.userId,
-      email: user.email,
-      displayName: user.displayName,
-      username: user.username,
-      roles: user.roles,
-      profileImageId: user.profileImageId,
-      profileImageUrl: user.profileImageUrl,
-    }));
+    const applications = await db.collection('users').distinct('roles.application');
+    return applications.filter((app): app is string => typeof app === 'string' && app !== '').sort();
   } catch {
     return [];
   }
