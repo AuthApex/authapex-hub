@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.8.0](https://github.com/AuthApex/authapex-hub/compare/v0.7.5...v0.8.0) (2026-10-24)
+
+
+### Features
+
+* add users filtration ([c015a99](https://github.com/AuthApex/authapex-hub/commit/c015a998ab39c3da05a224f762e5e04e1fc093b7))
+
 ### [0.7.5](https://github.com/AuthApex/authapex-hub/compare/v0.7.4...v0.7.5) (2026-10-01)
 
 
