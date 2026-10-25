@@ -89,6 +89,7 @@ export function AdminUsersFilter({
         pushFilters(nextFilters);
         onOpenChange?.(false);
       }}
+      onOpenChange={onOpenChange}
       {...props}
     />
   ));
