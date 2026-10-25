@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.1](https://github.com/AuthApex/authapex-hub/compare/v0.8.0...v0.8.1) (2026-10-25)
+
+
+### Bug Fixes
+
+* closing user filter dialog ([b64bebd](https://github.com/AuthApex/authapex-hub/commit/b64bebd0c84b112117fdf401bac9dc76664b79c1))
+
 ## [0.8.0](https://github.com/AuthApex/authapex-hub/compare/v0.7.5...v0.8.0) (2026-10-24)
 
 
