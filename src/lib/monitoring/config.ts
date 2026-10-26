@@ -7,15 +7,12 @@ export interface MonitoringRuntimeConfig {
 
 export interface MonitoringResolution {
   config: MonitoringRuntimeConfig | null;
-  /** Set when monitoring is turned off on purpose or when no DSN is configured. */
   disabled: boolean;
-  /** Set when a DSN is configured but unusable, so the caller can log a useful message. */
   error: string | null;
 }
 
 type MonitoringEnv = Record<string, string | undefined>;
 
-/** Shared between the server runtime and the browser bundle, so both can reuse a runtime config. */
 export const MONITORING_GLOBAL_KEY = '__AUTHAPEX_MONITORING__';
 
 declare global {
@@ -61,16 +58,6 @@ function isHttpDsn(dsn: string): boolean {
   }
 }
 
-/**
- * Resolves the GlitchTip (Sentry compatible) configuration from environment variables.
- *
- * GlitchTip is completely optional: without a DSN (or with `GLITCHTIP_ENABLED=false`) monitoring stays disabled and
- * the application only writes to the container log. `GLITCHTIP_*` variables take precedence over the `SENTRY_*`
- * aliases, which makes it possible to point a standard Sentry deployment at a self-hosted GlitchTip instance.
- *
- * Everything is read at runtime. The browser receives the same config through `/api/monitoring/config`, so changing
- * the DSN never requires rebuilding the image.
- */
 export function resolveMonitoringConfig(env: MonitoringEnv = process.env): MonitoringResolution {
   if (['0', 'false', 'off', 'no'].includes((env.GLITCHTIP_ENABLED ?? '').trim().toLowerCase())) {
     return { config: null, disabled: true, error: null };

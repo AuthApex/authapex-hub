@@ -76,12 +76,6 @@ function createSentryOptions(config: MonitoringRuntimeConfig): Sentry.NodeOption
   };
 }
 
-/**
- * Starts error reporting when a GlitchTip DSN is present in the environment.
- *
- * Called from `instrumentation.ts` at server start, and lazily from the capture helpers so that early errors (for
- * example while loading the OIDC signing key) are not lost. Without a DSN this is a no-op.
- */
 export function initMonitoring(): boolean {
   if (isInitialized()) {
     return true;
@@ -156,7 +150,6 @@ export function captureMessage(
   });
 }
 
-/** Reports an error that escaped a Next.js request handler, server action or server component render. */
 export function logRequestError(error: unknown, request: RequestErrorRequest, context: RequestErrorContext): void {
   const route = context.routePath || request.path;
   console.error(`[request-error] ${request.method} ${request.path} (${context.routeType} ${route})`, error);

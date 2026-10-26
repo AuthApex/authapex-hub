@@ -17,13 +17,6 @@ export interface SanitizableEvent {
   user?: SanitizableUser;
 }
 
-/**
- * Removes credentials and personal data before an event is sent to GlitchTip.
- *
- * The hub handles OAuth codes, refresh tokens, API keys and session cookies, so request headers, bodies and query
- * strings must never leave the server in an error report. Only the opaque user id is kept, which is enough to
- * correlate reports without sending an email address or IP address.
- */
 export function sanitizeMonitoringEvent<T extends object>(event: T): T {
   const sanitizable = event as SanitizableEvent;
   if (sanitizable.request != null) {

@@ -7,7 +7,6 @@ import {
 } from '@/lib/server/monitoring';
 
 export interface LogContext extends MonitoringContext {
-  /** Short machine readable area, e.g. `mongodb`, `oidc`, `api-route`. Stored as a tag. */
   area?: string;
 }
 
@@ -20,12 +19,6 @@ function withArea(context: LogContext): MonitoringContext {
   return { ...rest, tags };
 }
 
-/**
- * Logs an error locally and forwards it to GlitchTip when monitoring is configured.
- *
- * Use this instead of a bare `console.error` so every unexpected failure is visible in the container log and in the
- * error tracker. Expected failures (invalid credentials, expired tokens, malformed cookies, ...) must not be reported.
- */
 export function logError(error: unknown, message: string, context: LogContext = {}): void {
   console.error(`[authapex-hub] ${message}`, error);
   captureException(error, {
@@ -34,10 +27,6 @@ export function logError(error: unknown, message: string, context: LogContext = 
   });
 }
 
-/**
- * Logs a non-fatal failure. When an error is passed its stack trace is reported as well, tagged as a warning so it is
- * easier to filter from real failures.
- */
 export function logWarning(message: string, context: LogContext = {}, error?: unknown): void {
   if (error === undefined) {
     console.warn(`[authapex-hub] ${message}`);

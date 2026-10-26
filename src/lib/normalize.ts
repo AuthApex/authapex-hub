@@ -1,4 +1,3 @@
-/** Normalizes a username: trims it, replaces whitespace with underscores, strips diacritics and lowercases it. */
 export function normalizeUsername(username: string): string {
   return username
     .trim()
@@ -8,7 +7,6 @@ export function normalizeUsername(username: string): string {
     .toLowerCase();
 }
 
-/** Normalizes an email address by trimming it and lowercasing it. */
 export function normalizeEmail(email: string): string {
   return email.trim().toLowerCase();
 }

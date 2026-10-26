@@ -108,7 +108,6 @@ export function countActiveAdminUsersFilters(filters: AdminUsersFilters): number
   return Object.values(filters).filter((value) => value !== '').length;
 }
 
-/** Writes all filter values into the params and resets pagination. */
 export function setAdminUsersFilters(params: URLSearchParams, filters: AdminUsersFilters): void {
   for (const [field, param] of Object.entries(FILTER_PARAM_KEYS) as [keyof AdminUsersFilters, string][]) {
     const value = filters[field].trim();
@@ -121,7 +120,6 @@ export function setAdminUsersFilters(params: URLSearchParams, filters: AdminUser
   params.delete('page');
 }
 
-/** Removes all filters and resets pagination, keeping sorting and page size intact. */
 export function clearAdminUsersFilters(params: URLSearchParams): void {
   for (const param of Object.values(FILTER_PARAM_KEYS)) {
     params.delete(param);

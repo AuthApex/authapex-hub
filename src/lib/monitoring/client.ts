@@ -43,11 +43,6 @@ function getBrowserConfig(): MonitoringRuntimeConfig | null {
   return globalThis[MONITORING_GLOBAL_KEY] ?? null;
 }
 
-/**
- * Initializes the browser SDK when a GlitchTip DSN is available.
- *
- * Safe to call more than once: the first successful call wins and later calls are no-ops.
- */
 export function initClientMonitoring(): boolean {
   if (isClientInitialized()) {
     return true;
@@ -125,12 +120,6 @@ function flushPendingErrors(): void {
   }
 }
 
-/**
- * Fetches the runtime monitoring configuration from the server.
- *
- * This lets static pages and deployments that only change the container environment report errors without rebuilding
- * the image. A Sentry/GlitchTip DSN is public by design, so the endpoint does not need authentication.
- */
 export function loadClientMonitoringConfig(): Promise<boolean> {
   if (isClientInitialized()) {
     return Promise.resolve(true);
@@ -169,7 +158,6 @@ export function loadClientMonitoringConfig(): Promise<boolean> {
   return configRequest;
 }
 
-/** Reports an unexpected browser side failure. Errors that happen before the config is loaded are queued. */
 export function captureClientException(error: unknown, context: ClientMonitoringContext = {}): void {
   if (!initClientMonitoring()) {
     const pendingErrors = getPendingErrors();
@@ -183,10 +171,6 @@ export function captureClientException(error: unknown, context: ClientMonitoring
   sendClientException(error, context);
 }
 
-/**
- * Records an expected, user-driven outcome (for example a cancelled Google login) as a breadcrumb instead of an
- * error event. Breadcrumbs are attached to the next real error and never create an issue on their own.
- */
 export function logClientInfo(message: string, context: ClientMonitoringContext = {}): void {
   console.info(`[authapex-hub] ${message}`);
   if (!isClientInitialized()) {

@@ -1,4 +1,3 @@
-/** Splits a whitespace separated string into trimmed, non-empty values. */
 export function parseWhitespaceList(value: string | null | undefined): string[] {
   return (value ?? '')
     .split(/\s+/)

@@ -577,7 +577,6 @@ export async function findUsers({
   }
 }
 
-/** Returns all applications that appear in a role assigned to at least one user. */
 export async function getUserRoleApplications(): Promise<string[]> {
   try {
     const serverState = getServerState();
