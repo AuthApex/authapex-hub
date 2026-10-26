@@ -4,6 +4,7 @@ import { getServerState } from '@/lib/server/serverState';
 import { nanoid } from 'nanoid';
 import { DbUpdateResult } from '@/lib/server/mongodb';
 import { hashOidcSecret } from '@/lib/server/oidc/hash';
+import { mergeOidcScopes, parseOidcScopes } from '@/lib/server/oidc/scope';
 
 export interface OidcClient {
   clientId: string;
@@ -266,8 +267,8 @@ export async function addOidcGrantScopes(clientId: string, userId: string, scope
   try {
     const db = await getOidcDb();
     const existingGrant = await db.collection('oidcGrants').findOne({ clientId, userId });
-    const existingScopes = typeof existingGrant?.scope === 'string' ? existingGrant.scope.split(' ') : [];
-    const scope = Array.from(new Set([...existingScopes, ...scopes].filter(Boolean))).join(' ');
+    const existingScopes = parseOidcScopes(existingGrant?.scope);
+    const scope = mergeOidcScopes(existingScopes, scopes).join(' ');
     await db
       .collection('oidcGrants')
       .updateOne(

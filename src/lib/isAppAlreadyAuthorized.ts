@@ -14,5 +14,5 @@ export function isAppAlreadyAuthorized(
   } else if (status === VerifiedStatus.VERIFIED) {
     session = userAppSessions.some((session) => session.app === appName && session.verified === true);
   }
-  return session != null;
+  return session === true;
 }

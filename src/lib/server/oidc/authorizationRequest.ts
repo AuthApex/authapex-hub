@@ -10,6 +10,7 @@ import {
   OIDC_REQUEST_LIFETIME_SECONDS,
   OIDC_SUPPORTED_SCOPES,
 } from '@/lib/server/oidc/config';
+import { parseOidcScopes } from '@/lib/server/oidc/scope';
 
 export interface OidcRequestPayload extends JWTPayload {
   params: string;
@@ -78,7 +79,7 @@ export async function resolveOidcAuthorizationRequest(
     };
   }
 
-  const requestedScopes = (params.get('scope') ?? '').split(/\s+/).filter(Boolean);
+  const requestedScopes = parseOidcScopes(params.get('scope'));
   if (!requestedScopes.includes('openid')) {
     return {
       type: 'error',
@@ -133,10 +134,7 @@ export async function resolveOidcAuthorizationRequest(
   }
 
   const allowedScopes = getAllowedScopes(client);
-  const scopes = [
-    'openid',
-    ...new Set(requestedScopes.filter((scope) => scope !== 'openid' && allowedScopes.includes(scope))),
-  ];
+  const scopes = ['openid', ...requestedScopes.filter((scope) => scope !== 'openid' && allowedScopes.includes(scope))];
 
   return {
     type: 'valid',

@@ -21,6 +21,18 @@ jobs:
           cache: 'npm'
       - run: npm ci
       - run: npm run lint:check
+  test:
+    name: Unit Tests
+    if: github.event_name == 'pull_request' || !startsWith(github.event.head_commit.message, 'chore(release):')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+      - run: npm ci
+      - run: npm test
   audit:
     name: Npm Audit
     if: github.event_name == 'pull_request' || !startsWith(github.event.head_commit.message, 'chore(release):')
@@ -37,7 +49,7 @@ jobs:
     name: Build Application
     if: github.event_name == 'pull_request' || !startsWith(github.event.head_commit.message, 'chore(release):')
     runs-on: ubuntu-latest
-    needs: [lint-check, audit]
+    needs: [lint-check, audit, test]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

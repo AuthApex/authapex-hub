@@ -13,6 +13,9 @@ import { getAuth } from '@/lib/actions/auth';
 import { PERMISSION_SERVICE } from '@/lib/consts';
 import { RoleModel } from '@authapex/core';
 import { notifyUserUpdate } from '@/lib/server/websockets';
+import { OIDC_DEFAULT_SCOPES } from '@/lib/server/oidc/config';
+import { parseWhitespaceList } from '@/lib/parseList';
+import { ensureOpenIdScope, parseOidcScopes } from '@/lib/server/oidc/scope';
 
 export async function createNewAuthorizedApp(formData: FormData): Promise<ValidationResult> {
   const auth = await getAuth();
@@ -68,13 +71,6 @@ export interface OidcClientValidationResult extends ValidationResult {
   credentials?: OidcClientCredentials;
 }
 
-function parseUriList(value: string | null | undefined): string[] {
-  return (value ?? '')
-    .split(/\s+/)
-    .map((uri) => uri.trim())
-    .filter((uri) => uri.length > 0);
-}
-
 export async function createNewOidcClient(formData: FormData): Promise<OidcClientValidationResult> {
   const auth = await getAuth();
   if (!auth.isAuth || !PERMISSION_SERVICE.hasPermission(auth.user, 'admin')) {
@@ -98,7 +94,7 @@ export async function createNewOidcClient(formData: FormData): Promise<OidcClien
     return values;
   }
 
-  const redirectUris = parseUriList(values.redirectUris);
+  const redirectUris = parseWhitespaceList(values.redirectUris);
 
   if (redirectUris.length === 0) {
     return {
@@ -112,12 +108,9 @@ export async function createNewOidcClient(formData: FormData): Promise<OidcClien
     };
   }
 
-  const parsedScopes = (values.scopes ?? '')
-    .split(/\s+/)
-    .map((scope) => scope.trim())
-    .filter((scope) => scope.length > 0);
-  const scopes = parsedScopes.length === 0 ? ['openid', 'profile', 'email'] : parsedScopes;
-  const finalScopes = ['openid', ...scopes.filter((scope) => scope !== 'openid')];
+  const parsedScopes = parseOidcScopes(values.scopes);
+  const scopes = parsedScopes.length === 0 ? OIDC_DEFAULT_SCOPES : parsedScopes;
+  const finalScopes = ensureOpenIdScope(scopes);
 
   const result = await addOidcClient(values.displayName, redirectUris, finalScopes);
   if (result.success) {

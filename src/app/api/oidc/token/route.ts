@@ -12,16 +12,13 @@ import { authenticateOidcClient } from '@/lib/server/oidc/clientAuth';
 import { signOidcAccessToken, signOidcIdToken } from '@/lib/server/oidc/tokens';
 import { OIDC_ACCESS_TOKEN_LIFETIME_SECONDS, OIDC_REFRESH_TOKEN_LIFETIME_SECONDS } from '@/lib/server/oidc/config';
 import { getS256CodeChallenge, isEqualSecret } from '@/lib/server/oidc/hash';
+import { parseOidcScopes } from '@/lib/server/oidc/scope';
 
 const NO_STORE_HEADERS = { 'Cache-Control': 'no-store', Pragma: 'no-cache' };
 const CODE_VERIFIER_PATTERN = /^[A-Za-z0-9\-._~]{43,128}$/;
 
 function tokenError(error: string, description: string, status = 400) {
   return NextResponse.json({ error, error_description: description }, { status, headers: NO_STORE_HEADERS });
-}
-
-function parseScope(scope: string | null | undefined): string[] {
-  return [...new Set((scope ?? '').split(/\s+/).filter(Boolean))];
 }
 
 async function buildTokenResponse({
@@ -120,7 +117,7 @@ async function handleAuthorizationCodeGrant(client: OidcClient, body: URLSearchP
     );
   }
 
-  const scopes = parseScope(authCode.scope);
+  const scopes = parseOidcScopes(authCode.scope);
   return buildTokenResponse({
     client,
     userId: authCode.userId,
@@ -158,9 +155,9 @@ async function handleRefreshTokenGrant(client: OidcClient, body: URLSearchParams
     return tokenError('invalid_grant', 'The user has revoked access for this application.');
   }
 
-  const grantScopes = parseScope(grant.scope);
-  const refreshTokenScopes = parseScope(refreshToken.scope).filter((scope) => grantScopes.includes(scope));
-  const requestedScopes = parseScope(body.get('scope'));
+  const grantScopes = parseOidcScopes(grant.scope);
+  const refreshTokenScopes = parseOidcScopes(refreshToken.scope).filter((scope) => grantScopes.includes(scope));
+  const requestedScopes = parseOidcScopes(body.get('scope'));
 
   // A refresh request may narrow the scope, but never widen it (RFC 6749, section 6).
   if (requestedScopes.some((scope) => !refreshTokenScopes.includes(scope))) {

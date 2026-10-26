@@ -10,6 +10,7 @@ import { getAuth } from '@/lib/actions/auth';
 import { removeUserAppSession, setDisplayName, setEmail, setProfileImageId } from '@/lib/server/mongodb';
 import { removeOidcGrant } from '@/lib/server/oidcMongodb';
 import { notifySessionDelete, notifyUserUpdate } from '@/lib/server/websockets';
+import { normalizeEmail } from '@/lib/normalize';
 
 export async function updateDisplayName(formData: FormData): Promise<ValidationResult> {
   const values = await updateDisplayNameSchema
@@ -67,7 +68,7 @@ export async function updateEmail(formData: FormData): Promise<ValidationResult>
     return { success: false, errors: [] };
   }
 
-  const normalizedEmail = values.email.trim().toLowerCase();
+  const normalizedEmail = normalizeEmail(values.email);
   if (auth.user.email === normalizedEmail) {
     return { success: true, errors: [] };
   }
