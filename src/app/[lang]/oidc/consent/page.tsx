@@ -10,8 +10,6 @@ import { OidcConsentCard } from '@/components/client/OidcConsentCard';
 import { getOidcRequestParams, resolveOidcAuthorizationRequest } from '@/lib/server/oidc/authorizationRequest';
 import { OIDC_SIGNIN_FLOW } from '@/lib/consts';
 
-export const dynamic = 'force-dynamic';
-
 export default async function OidcConsent({ params }: Readonly<{ params: Promise<{ lang: string }> }>) {
   const lang = (await params).lang;
   const trans = getTranslation(lang);

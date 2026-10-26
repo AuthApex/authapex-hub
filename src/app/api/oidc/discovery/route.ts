@@ -3,8 +3,6 @@ import { getOidcEndpoints, OIDC_SUPPORTED_SCOPES } from '@/lib/server/oidc/confi
 import { getOidcSigningKey } from '@/lib/server/oidc/keys';
 import { logError } from '@/lib/server/logger';
 
-export const dynamic = 'force-dynamic';
-
 export async function GET() {
   let endpoints: ReturnType<typeof getOidcEndpoints>;
   try {

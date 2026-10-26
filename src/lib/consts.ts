@@ -6,8 +6,8 @@ export const APP_NAME = 'authapex';
 export const OIDC_SIGNIN_FLOW = 'oidc';
 
 export const AUTHORIZATION_SERVICE = new AuthorizationService({
-  authApi: process.env.NEXT_PUBLIC_APP_URL || 'https://id.authapex.net',
   app: APP_NAME,
+  authApi: '',
   redirectUrl: '',
 });
 export const PERMISSION_SERVICE = new PermissionService({ app: APP_NAME });

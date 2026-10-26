@@ -2,8 +2,6 @@ import { NextResponse } from 'next/server';
 import { getOidcJwks } from '@/lib/server/oidc/keys';
 import { logError } from '@/lib/server/logger';
 
-export const dynamic = 'force-dynamic';
-
 export async function GET() {
   try {
     return NextResponse.json(await getOidcJwks(), {

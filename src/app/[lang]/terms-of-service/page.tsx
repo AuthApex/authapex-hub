@@ -3,6 +3,12 @@ import { Button, ColumnPage, Typography } from 'gtomy-lib';
 import Link from 'next/link';
 import { getRoute } from '@/lib/getRoute';
 
+export function generateStaticParams() {
+  return ['en', 'cs'].map((lang) => ({
+    lang,
+  }));
+}
+
 export default async function TermsOfService({ params }: Readonly<{ params: Promise<{ lang: string }> }>) {
   const lang = (await params).lang;
   const trans = getTranslation(lang);

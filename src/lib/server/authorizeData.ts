@@ -11,7 +11,7 @@ export async function getAuthorizeData(): Promise<AuthorizeData | null> {
   }
   try {
     return AUTHORIZATION_SERVICE.decodeAuthorizeData(authorizeData);
-  } catch (error) {
+  } catch {
     return null;
   }
 }

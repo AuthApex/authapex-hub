@@ -10,10 +10,7 @@ export const OIDC_ACCESS_TOKEN_LIFETIME_SECONDS = 60 * 60;
 export const OIDC_REFRESH_TOKEN_LIFETIME_SECONDS = 30 * 24 * 60 * 60;
 export const OIDC_REQUEST_LIFETIME_SECONDS = 15 * 60;
 
-export const OIDC_LOGOUT_REQUEST_LIFETIME_SECONDS = 5 * 60;
-
 export const OIDC_REQUEST_COOKIE = 'oidc-request';
-export const OIDC_LOGOUT_REQUEST_COOKIE = 'oidc-logout-request';
 
 export function getOidcIssuer(): string {
   const issuer = (process.env.OIDC_ISSUER || getAppUrl()).trim().replace(/\/+$/, '');

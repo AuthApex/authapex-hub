@@ -1,14 +1,9 @@
 import type { Metadata, Viewport } from 'next';
 import { getTranslation } from '@/locales/lang';
 import { ReactNode } from 'react';
+import { notFound } from 'next/navigation';
 
 import '../globals.css';
-
-export function generateStaticParams() {
-  return ['en', 'cs'].map((lang) => ({
-    lang,
-  }));
-}
 
 export async function generateMetadata({ params }: Readonly<{ params: Promise<{ lang: string }> }>): Promise<Metadata> {
   const lang = (await params).lang;
@@ -25,11 +20,17 @@ export const viewport: Viewport = {
   maximumScale: 1,
 };
 
+const locales = ['en', 'cs'];
+
 export default async function RootLayout({
   children,
   params,
 }: Readonly<{ children: ReactNode; params: Promise<{ lang: string }> }>) {
   const lang = (await params).lang;
+
+  if (!locales.includes(lang)) {
+    notFound();
+  }
 
   return (
     <html lang={lang} data-theme="dark">

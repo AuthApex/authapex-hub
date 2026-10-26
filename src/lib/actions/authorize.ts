@@ -20,7 +20,7 @@ export async function authorize(lang: string): Promise<void> {
     let redirectUrl: URL;
     try {
       redirectUrl = new URL(authorizeData.redirectUrl);
-    } catch (error) {
+    } catch {
       await clearAuthorizeData();
       redirect(getRoute(lang, '/'));
     }

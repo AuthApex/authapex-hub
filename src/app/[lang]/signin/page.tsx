@@ -3,12 +3,12 @@ import Image from 'next/image';
 import { Typography } from 'gtomy-lib';
 import { Footer } from '@/components/Footer';
 import { LoginForm } from '@/components/client/forms/LoginForm';
-import { GoogleLoginButton } from '@/components/client/GoogleLoginButton';
 import Link from 'next/link';
 import { getRoute } from '@/lib/getRoute';
 import { getAuth } from '@/lib/actions/auth';
 import { redirect } from 'next/navigation';
 import { OIDC_SIGNIN_FLOW } from '@/lib/consts';
+import { GoogleLoginButton } from '@/components/client/GoogleLoginButton';
 import { getGoogleClientId } from '@/lib/server/config';
 
 export default async function Signin({

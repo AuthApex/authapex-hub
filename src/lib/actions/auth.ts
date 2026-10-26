@@ -32,7 +32,7 @@ export async function signinWithGoogle(credentials: CredentialResponse, flow?: s
     googleSession = await getGoogleSessionFromToken({
       token: credentials.credential,
     });
-  } catch (error) {
+  } catch {
     return;
   }
   if (!googleSession) {
