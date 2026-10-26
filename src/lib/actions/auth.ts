@@ -21,7 +21,7 @@ import { notifyUserUpdate } from '@/lib/server/websockets';
 import { clearOidcRequestCookie, getOidcRequestParams } from '@/lib/server/oidc/authorizationRequest';
 import { getOidcIssuer } from '@/lib/server/oidc/config';
 import { OIDC_SIGNIN_FLOW } from '@/lib/consts';
-import { logError, logExpectedWarning } from '@/lib/server/logger';
+import { logError } from '@/lib/server/logger';
 
 export async function signinWithGoogle(credentials: CredentialResponse, flow?: string | null): Promise<void> {
   if (!credentials.credential) {
@@ -33,8 +33,6 @@ export async function signinWithGoogle(credentials: CredentialResponse, flow?: s
       token: credentials.credential,
     });
   } catch (error) {
-    // An expired or tampered Google credential is an expected failure and must not be reported as a server error.
-    logExpectedWarning('The Google credential could not be verified', error);
     return;
   }
   if (!googleSession) {

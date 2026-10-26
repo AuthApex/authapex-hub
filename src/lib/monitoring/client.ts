@@ -1,5 +1,5 @@
 import * as Sentry from '@sentry/nextjs';
-import { MONITORING_GLOBAL_KEY, resolveMonitoringConfig, type MonitoringRuntimeConfig } from '@/lib/monitoring/config';
+import { MONITORING_GLOBAL_KEY, type MonitoringRuntimeConfig } from '@/lib/monitoring/config';
 import { sanitizeMonitoringEvent } from '@/lib/monitoring/sanitize';
 
 export interface ClientMonitoringContext {
@@ -40,24 +40,7 @@ function isConfigChecked(): boolean {
 }
 
 function getBrowserConfig(): MonitoringRuntimeConfig | null {
-  if (globalThis[MONITORING_GLOBAL_KEY]?.dsn) {
-    return globalThis[MONITORING_GLOBAL_KEY];
-  }
-
-  // Optional build time fallback for deployments that prefer NEXT_PUBLIC_* variables. The runtime value fetched from
-  // /api/monitoring/config is preferred because it does not require a rebuild when the DSN changes.
-  const { config, error } = resolveMonitoringConfig({
-    GLITCHTIP_DSN: process.env.NEXT_PUBLIC_GLITCHTIP_DSN,
-    SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN,
-    GLITCHTIP_ENVIRONMENT: process.env.NEXT_PUBLIC_GLITCHTIP_ENVIRONMENT,
-    GLITCHTIP_RELEASE: process.env.NEXT_PUBLIC_GLITCHTIP_RELEASE,
-    GLITCHTIP_TRACES_SAMPLE_RATE: process.env.NEXT_PUBLIC_GLITCHTIP_TRACES_SAMPLE_RATE,
-    NODE_ENV: process.env.NODE_ENV,
-  });
-  if (error != null) {
-    console.error(`[monitoring] ${error}`);
-  }
-  return config;
+  return globalThis[MONITORING_GLOBAL_KEY] ?? null;
 }
 
 /**

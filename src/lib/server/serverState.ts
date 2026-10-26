@@ -11,11 +11,11 @@ declare global {
 }
 
 export interface ServerState {
-  sessionSecret: Uint8Array<ArrayBufferLike>;
-  mongoClient: MongoClient;
-  mongoDbName: string;
-  googleClient: OAuth2Client;
-  cloudflareImages: CloudflareClient;
+  readonly sessionSecret: Uint8Array<ArrayBufferLike>;
+  readonly mongoClient: MongoClient;
+  readonly mongoDbName: string;
+  readonly googleClient: OAuth2Client | null;
+  readonly cloudflareImages: CloudflareClient | null;
 }
 
 export function getServerState(): ServerState {
@@ -23,12 +23,26 @@ export function getServerState(): ServerState {
     if (!process.env.SESSION_SECRET || !process.env.MONGODB_DB_NAME) {
       throw new Error('Env properties are not defined.');
     }
+
+    let googleClient: OAuth2Client | null;
+    let cloudflareImages: CloudflareClient | null;
+
     globalThis.serverState = {
       sessionSecret: new TextEncoder().encode(process.env.SESSION_SECRET),
       mongoClient: getMongoDbClient(),
       mongoDbName: process.env.MONGODB_DB_NAME,
-      googleClient: getGoogleClient(),
-      cloudflareImages: getCloudflareImagesClient(),
+      get googleClient() {
+        if (googleClient === undefined) {
+          googleClient = getGoogleClient();
+        }
+        return googleClient;
+      },
+      get cloudflareImages() {
+        if (cloudflareImages === undefined) {
+          cloudflareImages = getCloudflareImagesClient();
+        }
+        return cloudflareImages;
+      },
     };
   }
   return globalThis.serverState;

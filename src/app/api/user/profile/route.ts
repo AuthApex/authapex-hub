@@ -22,10 +22,15 @@ export async function POST(request: NextRequest) {
       return apiError('No file was provided.', 400);
     }
 
+    const cloudflareImages = getServerState().cloudflareImages;
+    if (cloudflareImages == null) {
+      return apiError('Profile image uploads are not configured.', 503);
+    }
+
     const uuid = nanoid();
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
-    const cloudflareImage = await getServerState().cloudflareImages.createImageFromBuffer(
+    const cloudflareImage = await cloudflareImages.createImageFromBuffer(
       {
         id: uuid,
         fileName: APP_NAME + '_' + uuid,
@@ -39,7 +44,7 @@ export async function POST(request: NextRequest) {
     if (!result.success) {
       // The database entry could not be updated, so remove the newly uploaded image again.
       try {
-        await getServerState().cloudflareImages.deleteImage(imageId);
+        await cloudflareImages.deleteImage(imageId);
       } catch (error) {
         logWarning('The orphaned profile image could not be deleted', { area: 'profile-image' }, error);
       }
@@ -50,7 +55,7 @@ export async function POST(request: NextRequest) {
 
     if (previousImageId != null) {
       try {
-        await getServerState().cloudflareImages.deleteImage(previousImageId);
+        await cloudflareImages.deleteImage(previousImageId);
       } catch (error) {
         // The new image is already stored, so failing to delete the old one must not fail the upload.
         logWarning('The previous profile image could not be deleted', { area: 'profile-image' }, error);

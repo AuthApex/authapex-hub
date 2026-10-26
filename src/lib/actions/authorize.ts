@@ -7,7 +7,6 @@ import { getAuth } from '@/lib/actions/auth';
 import { getAuthorizedAppsSanitized, insertAuthCode } from '@/lib/server/mongodb';
 import { getRoute } from '@/lib/getRoute';
 import { getVerifiedStatus } from '@/lib/getVerifiedStatus';
-import { logExpectedWarning } from '@/lib/server/logger';
 
 export async function authorize(lang: string): Promise<void> {
   const auth = await getAuth();
@@ -22,7 +21,6 @@ export async function authorize(lang: string): Promise<void> {
     try {
       redirectUrl = new URL(authorizeData.redirectUrl);
     } catch (error) {
-      logExpectedWarning('The authorize request contains an invalid redirect URL', error);
       await clearAuthorizeData();
       redirect(getRoute(lang, '/'));
     }

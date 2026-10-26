@@ -3,6 +3,9 @@ import { getServerState } from '@/lib/server/serverState';
 
 export async function getGoogleSessionFromToken({ token }: { token: string }) {
   const client = getServerState().googleClient;
+  if (client == null) {
+    return;
+  }
   const ticket = await client.verifyIdToken({
     idToken: token,
     audience: client._clientId,

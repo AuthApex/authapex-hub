@@ -35,18 +35,6 @@ export function logError(error: unknown, message: string, context: LogContext = 
 }
 
 /**
- * Writes an expected, client-caused failure (invalid credentials, malformed cookies, ...) to the container log
- * without creating a GlitchTip issue.
- */
-export function logExpectedWarning(message: string, error?: unknown): void {
-  if (error === undefined) {
-    console.warn(`[authapex-hub] ${message}`);
-    return;
-  }
-  console.warn(`[authapex-hub] ${message}`, error);
-}
-
-/**
  * Logs a non-fatal failure. When an error is passed its stack trace is reported as well, tagged as a warning so it is
  * easier to filter from real failures.
  */

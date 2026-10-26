@@ -1,6 +1,6 @@
 import 'server-only';
 
-import { APP_URL } from '@/lib/consts';
+import { getAppUrl } from '@/lib/server/config';
 
 export const OIDC_SUPPORTED_SCOPES = ['openid', 'profile', 'email', 'groups', 'offline_access'];
 export const OIDC_DEFAULT_SCOPES = ['openid', 'profile', 'email'];
@@ -16,7 +16,7 @@ export const OIDC_REQUEST_COOKIE = 'oidc-request';
 export const OIDC_LOGOUT_REQUEST_COOKIE = 'oidc-logout-request';
 
 export function getOidcIssuer(): string {
-  const issuer = (process.env.OIDC_ISSUER || APP_URL).trim().replace(/\/+$/, '');
+  const issuer = (process.env.OIDC_ISSUER || getAppUrl()).trim().replace(/\/+$/, '');
   const url = new URL(issuer);
   if (url.protocol !== 'https:' && !process.env.DEVELOPMENT) {
     throw new Error('OIDC_ISSUER must use https.');

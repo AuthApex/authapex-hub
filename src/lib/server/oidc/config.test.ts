@@ -47,20 +47,20 @@ describe('getOidcIssuer', () => {
     expect(() => getOidcIssuer()).toThrow();
   });
 
-  it('falls back to NEXT_PUBLIC_APP_URL', async () => {
+  it('falls back to APP_URL', async () => {
     vi.resetModules();
     vi.stubEnv('OIDC_ISSUER', '');
-    vi.stubEnv('NEXT_PUBLIC_APP_URL', 'https://fallback.example.com/');
+    vi.stubEnv('APP_URL', 'https://fallback.example.com/');
 
     const { getOidcIssuer: getFreshOidcIssuer } = await import('./config');
 
     expect(getFreshOidcIssuer()).toBe('https://fallback.example.com');
   });
 
-  it('falls back to the production URL when NEXT_PUBLIC_APP_URL is missing', async () => {
+  it('falls back to the production URL when APP_URL is missing', async () => {
     vi.resetModules();
     vi.stubEnv('OIDC_ISSUER', '');
-    vi.stubEnv('NEXT_PUBLIC_APP_URL', '');
+    vi.stubEnv('APP_URL', '');
 
     const { getOidcIssuer: getFreshOidcIssuer } = await import('./config');
 

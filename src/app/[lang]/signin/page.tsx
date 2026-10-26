@@ -9,6 +9,7 @@ import { getRoute } from '@/lib/getRoute';
 import { getAuth } from '@/lib/actions/auth';
 import { redirect } from 'next/navigation';
 import { OIDC_SIGNIN_FLOW } from '@/lib/consts';
+import { getGoogleClientId } from '@/lib/server/config';
 
 export default async function Signin({
   params,
@@ -17,6 +18,7 @@ export default async function Signin({
   const lang = (await params).lang;
   const trans = getTranslation(lang);
   const flow = (await searchParams).flow === OIDC_SIGNIN_FLOW ? OIDC_SIGNIN_FLOW : null;
+  const googleClientId = getGoogleClientId();
 
   const auth = await getAuth();
 
@@ -40,7 +42,7 @@ export default async function Signin({
             </Typography>
             <Typography className="text-center">{trans.signin.subtitle}</Typography>
             <div className="flex flex-col gap-4 mt-6 mb-4 items-center">
-              <GoogleLoginButton flow={flow} />
+              <GoogleLoginButton clientId={googleClientId} flow={flow} />
             </div>
             <div className="divider">{trans.signin.divider}</div>
             <LoginForm trans={trans} flow={flow} />

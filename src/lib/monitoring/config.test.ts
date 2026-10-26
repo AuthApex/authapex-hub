@@ -56,10 +56,6 @@ describe('resolveMonitoringConfig', () => {
     ).toMatchObject({ dsn, environment: 'glitchtip' });
   });
 
-  it('falls back to the build time NEXT_PUBLIC_* variables', () => {
-    expect(resolveMonitoringConfig({ NEXT_PUBLIC_GLITCHTIP_DSN: dsn }).config).toMatchObject({ dsn });
-  });
-
   it('defaults the environment to NODE_ENV or production', () => {
     expect(resolveMonitoringConfig({ GLITCHTIP_DSN: dsn, NODE_ENV: 'staging' }).config?.environment).toBe('staging');
     expect(resolveMonitoringConfig({ GLITCHTIP_DSN: dsn }).config?.environment).toBe('production');

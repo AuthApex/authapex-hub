@@ -21,8 +21,6 @@ jobs:
           context: .
           push: true
           tags: ${{ secrets.CI_REGISTRY_IMAGE }}
-          build-args: |
-            NEXT_PUBLIC_GOOGLE_CLIENT_ID=${{ secrets.NEXT_PUBLIC_GOOGLE_CLIENT_ID }}
   trigger:
     name: Trigger deploy to Coolify
     runs-on: ubuntu-latest
