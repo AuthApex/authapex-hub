@@ -62,6 +62,7 @@ export function initClientMonitoring(): boolean {
       environment: config.environment,
       release: config.release,
       tracesSampleRate: config.tracesSampleRate,
+      tunnel: config.tunnel,
       dataCollection: {
         userInfo: false,
         cookies: false,

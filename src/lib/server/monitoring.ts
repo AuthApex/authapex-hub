@@ -59,8 +59,7 @@ function createSentryOptions(config: MonitoringRuntimeConfig): Sentry.NodeOption
     environment: config.environment,
     release: config.release,
     tracesSampleRate: config.tracesSampleRate,
-    // The hub handles credentials, so keep request bodies, cookies, headers, query parameters and user details out of
-    // every report. `sanitizeMonitoringEvent` is an additional safety net for data attached by integrations.
+    tunnel: config.tunnel,
     dataCollection: {
       userInfo: false,
       cookies: false,

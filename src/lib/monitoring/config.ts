@@ -1,5 +1,6 @@
 export interface MonitoringRuntimeConfig {
   dsn: string;
+  tunnel?: string;
   environment: string;
   release?: string;
   tracesSampleRate: number;
@@ -77,13 +78,14 @@ export function resolveMonitoringConfig(env: MonitoringEnv = process.env): Monit
   }
 
   const environment = firstDefined(env, ['GLITCHTIP_ENVIRONMENT', 'SENTRY_ENVIRONMENT', 'NODE_ENV']) ?? 'production';
+  const tunnel = firstDefined(env, ['GLITCHTIP_TUNNEL', 'SENTRY_TUNNEL']);
   const release = firstDefined(env, ['GLITCHTIP_RELEASE', 'SENTRY_RELEASE']);
   const tracesSampleRate = parseSampleRate(
     firstDefined(env, ['GLITCHTIP_TRACES_SAMPLE_RATE', 'SENTRY_TRACES_SAMPLE_RATE'])
   );
 
   return {
-    config: { dsn, environment, release, tracesSampleRate },
+    config: { dsn, tunnel, environment, release, tracesSampleRate },
     disabled: false,
     error: null,
   };
