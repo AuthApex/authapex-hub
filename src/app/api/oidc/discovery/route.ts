@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getOidcEndpoints, OIDC_SUPPORTED_SCOPES } from '@/lib/server/oidc/config';
 import { getOidcSigningKey } from '@/lib/server/oidc/keys';
+import { logError } from '@/lib/server/logger';
 
 export const dynamic = 'force-dynamic';
 
@@ -9,7 +10,7 @@ export async function GET() {
   try {
     endpoints = getOidcEndpoints();
   } catch (error) {
-    console.error('[OIDC Discovery Error]:', error);
+    logError(error, 'OIDC discovery is not configured', { area: 'oidc-discovery' });
     return NextResponse.json(
       { error: 'server_error', error_description: 'The OIDC issuer is not configured.' },
       { status: 500 }
@@ -19,7 +20,10 @@ export async function GET() {
   let signingAlgorithms = ['RS256'];
   try {
     signingAlgorithms = [(await getOidcSigningKey()).alg];
-  } catch {
+  } catch (error) {
+    // Discovery stays available without a key so clients can still read the endpoints, but the misconfiguration is
+    // reported because the token endpoint cannot work until it is fixed.
+    logError(error, 'OIDC signing key is not configured', { area: 'oidc-discovery' });
     signingAlgorithms = ['RS256'];
   }
 

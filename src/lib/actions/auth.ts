@@ -21,14 +21,22 @@ import { notifyUserUpdate } from '@/lib/server/websockets';
 import { clearOidcRequestCookie, getOidcRequestParams } from '@/lib/server/oidc/authorizationRequest';
 import { getOidcIssuer } from '@/lib/server/oidc/config';
 import { OIDC_SIGNIN_FLOW } from '@/lib/consts';
+import { logError, logExpectedWarning } from '@/lib/server/logger';
 
 export async function signinWithGoogle(credentials: CredentialResponse, flow?: string | null): Promise<void> {
   if (!credentials.credential) {
     return;
   }
-  const googleSession = await getGoogleSessionFromToken({
-    token: credentials.credential,
-  });
+  let googleSession;
+  try {
+    googleSession = await getGoogleSessionFromToken({
+      token: credentials.credential,
+    });
+  } catch (error) {
+    // An expired or tampered Google credential is an expected failure and must not be reported as a server error.
+    logExpectedWarning('The Google credential could not be verified', error);
+    return;
+  }
   if (!googleSession) {
     return;
   }
@@ -50,11 +58,15 @@ export async function signinWithGoogle(credentials: CredentialResponse, flow?: s
     await notifyUserUpdate(user);
   }
   const session = await createSession();
-  await insertSession({
+  const result = await insertSession({
     sessionId: session.sessionId,
     userId: user.userId,
     expiresAt: session.expiresAt,
   });
+  if (!result.success) {
+    await deleteSession();
+    return;
+  }
   await handleAuthorizeRedirect(flow);
 }
 
@@ -75,29 +87,31 @@ export async function signin(formData: FormData): Promise<ValidationResult> {
     return values;
   }
 
+  const invalidCredentials: ValidationResult = {
+    success: false,
+    errors: [
+      {
+        path: 'general',
+        message: 'Špatný email nebo heslo',
+      },
+    ],
+  };
+
   const user = await getUserByEmail(values.email);
-  if (!user) {
-    return {
-      success: false,
-      errors: [
-        {
-          path: 'general',
-          message: 'Špatný email nebo heslo',
-        },
-      ],
-    };
+  if (!user || !user.password) {
+    // Users created through Google have no password, and an unknown email must look exactly the same.
+    return invalidCredentials;
   }
-  const isMatch = await bcrypt.compare(values.password, user.password);
+
+  let isMatch: boolean;
+  try {
+    isMatch = await bcrypt.compare(values.password, user.password);
+  } catch (error) {
+    logError(error, 'Password comparison failed', { area: 'auth' });
+    return invalidCredentials;
+  }
   if (!isMatch) {
-    return {
-      success: false,
-      errors: [
-        {
-          path: 'general',
-          message: 'Špatný email nebo heslo',
-        },
-      ],
-    };
+    return invalidCredentials;
   }
   const session = await createSession();
 
@@ -110,6 +124,7 @@ export async function signin(formData: FormData): Promise<ValidationResult> {
     await handleAuthorizeRedirect(formData.get('flow'));
     return { success: true, errors: [] };
   } else {
+    await deleteSession();
     return { success: false, errors: [] };
   }
 }
@@ -133,8 +148,17 @@ export async function signup(formData: FormData): Promise<ValidationResult> {
     return values;
   }
 
-  const salt = await bcrypt.genSalt();
-  const hash = await bcrypt.hash(values.password, salt);
+  let hash: string;
+  try {
+    const salt = await bcrypt.genSalt();
+    hash = await bcrypt.hash(values.password, salt);
+  } catch (error) {
+    logError(error, 'Password hashing failed', { area: 'auth' });
+    return {
+      success: false,
+      errors: [{ path: 'general', message: 'Registrace se nepodařila, zkuste to prosím znovu' }],
+    };
+  }
   const user = await createUser({
     username: values.username,
     email: values.email,
@@ -165,6 +189,7 @@ export async function signup(formData: FormData): Promise<ValidationResult> {
     await handleAuthorizeRedirect(formData.get('flow'));
     return { success: true, errors: [] };
   } else {
+    await deleteSession();
     return { success: false, errors: [] };
   }
 }

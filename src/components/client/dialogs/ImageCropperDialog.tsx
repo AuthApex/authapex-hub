@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { Translations } from '@/locales/translation';
 import Cropper, { Area } from 'react-easy-crop';
 import { ScissorsIcon } from '@heroicons/react/24/outline';
+import { captureClientException } from '@/lib/monitoring/client';
 
 export interface ImageCropperDialogProps extends BaseDialogProps {
   imageUrl: string | undefined;
@@ -53,6 +54,7 @@ export function ImageCropperDialog({ imageUrl, trans, onOpenChange, onComplete, 
         }
       })
       .catch((error) => {
+        captureClientException(error, { tags: { area: 'profile-image-upload' } });
         setError(error);
         setIsUploading(false);
       });
@@ -95,6 +97,7 @@ export function ImageCropperDialog({ imageUrl, trans, onOpenChange, onComplete, 
     setError(null);
     setIsUploading(true);
     cropAndUploadImage(imageUrl, croppedAreaPixels).catch((error) => {
+      captureClientException(error, { tags: { area: 'profile-image-crop' } });
       setError(error);
       setIsUploading(false);
     });

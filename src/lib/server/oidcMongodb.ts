@@ -1,5 +1,6 @@
 import 'server-only';
 import { Db, Document } from 'mongodb';
+import { logError } from '@/lib/server/logger';
 import { getServerState } from '@/lib/server/serverState';
 import { nanoid } from 'nanoid';
 import { DbUpdateResult } from '@/lib/server/mongodb';
@@ -72,7 +73,8 @@ export async function getOidcClient(clientId: string): Promise<OidcClient | null
     const db = await getOidcDb();
     const client = await db.collection('oidcClients').findOne({ clientId });
     return client == null ? null : toOidcClient(client);
-  } catch {
+  } catch (error) {
+    logError(error, 'MongoDB operation failed', { area: 'oidc-mongodb', tags: { operation: 'getOidcClient' } });
     return null;
   }
 }
@@ -85,7 +87,11 @@ export async function getOidcClientWithSecretHash(clientId: string): Promise<Oid
       return null;
     }
     return { ...toOidcClient(client), clientSecretHash: client.clientSecretHash };
-  } catch {
+  } catch (error) {
+    logError(error, 'MongoDB operation failed', {
+      area: 'oidc-mongodb',
+      tags: { operation: 'getOidcClientWithSecretHash' },
+    });
     return null;
   }
 }
@@ -95,7 +101,8 @@ export async function getOidcClients(): Promise<OidcClient[]> {
     const db = await getOidcDb();
     const clients = await db.collection('oidcClients').find({}).toArray();
     return clients.map(toOidcClient);
-  } catch {
+  } catch (error) {
+    logError(error, 'MongoDB operation failed', { area: 'oidc-mongodb', tags: { operation: 'getOidcClients' } });
     return [];
   }
 }
@@ -118,7 +125,8 @@ export async function addOidcClient(
       createdAt: new Date(),
     });
     return { success: true, clientId, clientSecret };
-  } catch {
+  } catch (error) {
+    logError(error, 'MongoDB operation failed', { area: 'oidc-mongodb', tags: { operation: 'addOidcClient' } });
     return { success: false };
   }
 }
@@ -134,7 +142,11 @@ export async function regenerateOidcClientSecret(clientId: string): Promise<Oidc
       return { success: false };
     }
     return { success: true, clientId, clientSecret };
-  } catch {
+  } catch (error) {
+    logError(error, 'MongoDB operation failed', {
+      area: 'oidc-mongodb',
+      tags: { operation: 'regenerateOidcClientSecret' },
+    });
     return { success: false };
   }
 }
@@ -147,7 +159,8 @@ export async function deleteOidcClient(clientId: string): Promise<DbUpdateResult
     await db.collection('oidcAuthCodes').deleteMany({ clientId });
     await db.collection('oidcRefreshTokens').deleteMany({ clientId });
     return { success: true };
-  } catch {
+  } catch (error) {
+    logError(error, 'MongoDB operation failed', { area: 'oidc-mongodb', tags: { operation: 'deleteOidcClient' } });
     return { success: false };
   }
 }
@@ -157,7 +170,8 @@ export async function insertOidcAuthCode(code: string, authCode: OidcAuthCode): 
     const db = await getOidcDb();
     await db.collection('oidcAuthCodes').insertOne({ ...authCode, codeHash: hashOidcSecret(code) });
     return { success: true };
-  } catch {
+  } catch (error) {
+    logError(error, 'MongoDB operation failed', { area: 'oidc-mongodb', tags: { operation: 'insertOidcAuthCode' } });
     return { success: false };
   }
 }
@@ -199,7 +213,8 @@ export async function consumeOidcAuthCode(code: string): Promise<OidcConsumeResu
         expiresAt: authCode.expiresAt,
       },
     };
-  } catch {
+  } catch (error) {
+    logError(error, 'MongoDB operation failed', { area: 'oidc-mongodb', tags: { operation: 'consumeOidcAuthCode' } });
     return { type: 'invalid' };
   }
 }
@@ -209,7 +224,11 @@ export async function insertOidcRefreshToken(token: string, refreshToken: OidcRe
     const db = await getOidcDb();
     await db.collection('oidcRefreshTokens').insertOne({ ...refreshToken, tokenHash: hashOidcSecret(token) });
     return { success: true };
-  } catch {
+  } catch (error) {
+    logError(error, 'MongoDB operation failed', {
+      area: 'oidc-mongodb',
+      tags: { operation: 'insertOidcRefreshToken' },
+    });
     return { success: false };
   }
 }
@@ -240,7 +259,11 @@ export async function consumeOidcRefreshToken(token: string): Promise<OidcConsum
         expiresAt: refreshToken.expiresAt,
       },
     };
-  } catch {
+  } catch (error) {
+    logError(error, 'MongoDB operation failed', {
+      area: 'oidc-mongodb',
+      tags: { operation: 'consumeOidcRefreshToken' },
+    });
     return { type: 'invalid' };
   }
 }
@@ -258,7 +281,8 @@ export async function getOidcGrant(clientId: string, userId: string): Promise<Oi
       scope: grant.scope,
       createdAt: grant.createdAt,
     };
-  } catch {
+  } catch (error) {
+    logError(error, 'MongoDB operation failed', { area: 'oidc-mongodb', tags: { operation: 'getOidcGrant' } });
     return null;
   }
 }
@@ -277,7 +301,8 @@ export async function addOidcGrantScopes(clientId: string, userId: string, scope
         { upsert: true }
       );
     return { success: true };
-  } catch {
+  } catch (error) {
+    logError(error, 'MongoDB operation failed', { area: 'oidc-mongodb', tags: { operation: 'addOidcGrantScopes' } });
     return { success: false };
   }
 }
@@ -301,7 +326,8 @@ export async function getOidcGrants(userId: string): Promise<OidcGrant[]> {
       displayName: clients.find((client) => client.clientId === grant.clientId)?.displayName,
       createdAt: grant.createdAt,
     }));
-  } catch {
+  } catch (error) {
+    logError(error, 'MongoDB operation failed', { area: 'oidc-mongodb', tags: { operation: 'getOidcGrants' } });
     return [];
   }
 }
@@ -313,7 +339,8 @@ export async function removeOidcGrant(clientId: string, userId: string): Promise
     await db.collection('oidcAuthCodes').deleteMany({ clientId, userId });
     await db.collection('oidcRefreshTokens').deleteMany({ clientId, userId });
     return { success: true };
-  } catch {
+  } catch (error) {
+    logError(error, 'MongoDB operation failed', { area: 'oidc-mongodb', tags: { operation: 'removeOidcGrant' } });
     return { success: false };
   }
 }

@@ -41,9 +41,10 @@ describe('encrypt / decrypt', () => {
 
   it('returns null for a tampered token', async () => {
     const token = await encrypt({ sessionId: 'session-1' }, '1h');
-    const tampered = token.slice(0, -1) + (token.endsWith('a') ? 'b' : 'a');
+    const [header, payload, signature] = token.split('.');
+    const tamperedSignature = `${signature[0] === 'a' ? 'b' : 'a'}${signature.slice(1)}`;
 
-    expect(await decrypt(tampered)).toBeNull();
+    expect(await decrypt([header, payload, tamperedSignature].join('.'))).toBeNull();
   });
 
   it('returns null for missing or invalid tokens', async () => {

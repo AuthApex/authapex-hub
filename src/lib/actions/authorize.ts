@@ -7,6 +7,7 @@ import { getAuth } from '@/lib/actions/auth';
 import { getAuthorizedAppsSanitized, insertAuthCode } from '@/lib/server/mongodb';
 import { getRoute } from '@/lib/getRoute';
 import { getVerifiedStatus } from '@/lib/getVerifiedStatus';
+import { logExpectedWarning } from '@/lib/server/logger';
 
 export async function authorize(lang: string): Promise<void> {
   const auth = await getAuth();
@@ -17,15 +18,25 @@ export async function authorize(lang: string): Promise<void> {
   if (authorizeData == null) {
     redirect(getRoute(lang, '/'));
   } else {
+    let redirectUrl: URL;
+    try {
+      redirectUrl = new URL(authorizeData.redirectUrl);
+    } catch (error) {
+      logExpectedWarning('The authorize request contains an invalid redirect URL', error);
+      await clearAuthorizeData();
+      redirect(getRoute(lang, '/'));
+    }
+
     const authorizedApps = await getAuthorizedAppsSanitized();
-    const redirectUrlOrigin = new URL(authorizeData.redirectUrl).origin;
-    const { status } = getVerifiedStatus(authorizedApps, authorizeData.app, redirectUrlOrigin);
+    const { status } = getVerifiedStatus(authorizedApps, authorizeData.app, redirectUrl.origin);
 
     await clearAuthorizeData();
 
     const authCode = nanoid();
-
-    await insertAuthCode(authCode, auth.user.userId, status);
+    const result = await insertAuthCode(authCode, auth.user.userId, status);
+    if (!result.success) {
+      redirect(getRoute(lang, '/'));
+    }
 
     const params = new URLSearchParams();
     params.append('authCode', authCode);

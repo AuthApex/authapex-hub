@@ -91,8 +91,10 @@ export async function removeProfileImage(): Promise<void> {
     return;
   }
 
-  await setProfileImageId(auth.user.userId, null);
-  await notifyUserUpdate(auth.user);
+  const result = await setProfileImageId(auth.user.userId, null);
+  if (result.success) {
+    await notifyUserUpdate(auth.user);
+  }
 }
 
 export async function removeActiveSession(app: string, verified: boolean | null): Promise<void> {
@@ -100,8 +102,10 @@ export async function removeActiveSession(app: string, verified: boolean | null)
   if (!auth.isAuth) {
     return;
   }
-  await notifySessionDelete(auth.user.userId, app, verified);
-  await removeUserAppSession(auth.user.userId, app, verified);
+  const result = await removeUserAppSession(auth.user.userId, app, verified);
+  if (result.success) {
+    await notifySessionDelete(auth.user.userId, app, verified);
+  }
 }
 
 export async function removeOidcApp(clientId: string): Promise<void> {

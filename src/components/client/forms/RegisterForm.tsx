@@ -5,6 +5,9 @@ import { signup } from '@/lib/actions/auth';
 import { useState } from 'react';
 import { getErrorMessageForName, ValidationResult } from '@/lib/validations';
 import { Translations } from '@/locales/translation';
+import { captureClientException } from '@/lib/monitoring/client';
+
+const UNEXPECTED_ERROR = 'Registrace se nepodařila, zkuste to prosím znovu';
 
 export interface RegisterFormProps {
   trans: Translations;
@@ -18,11 +21,17 @@ export function RegisterForm({ trans, flow }: RegisterFormProps) {
 
   const onSubmit = async (formData: FormData) => {
     setIsLoading(true);
-    const result = await signup(formData);
-    if (!result.success) {
-      setErrors(result.errors);
+    try {
+      const result = await signup(formData);
+      if (!result.success) {
+        setErrors(result.errors);
+      }
+    } catch (error) {
+      captureClientException(error, { tags: { area: 'signup' } });
+      setErrors([{ path: 'general', message: UNEXPECTED_ERROR }]);
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
   return (
     <form action={onSubmit} className="flex flex-col gap-2">

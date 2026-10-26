@@ -13,8 +13,9 @@ import { signOidcAccessToken, signOidcIdToken } from '@/lib/server/oidc/tokens';
 import { OIDC_ACCESS_TOKEN_LIFETIME_SECONDS, OIDC_REFRESH_TOKEN_LIFETIME_SECONDS } from '@/lib/server/oidc/config';
 import { getS256CodeChallenge, isEqualSecret } from '@/lib/server/oidc/hash';
 import { parseOidcScopes } from '@/lib/server/oidc/scope';
+import { NO_STORE_HEADERS } from '@/lib/server/api';
+import { logError, logWarning } from '@/lib/server/logger';
 
-const NO_STORE_HEADERS = { 'Cache-Control': 'no-store', Pragma: 'no-cache' };
 const CODE_VERIFIER_PATTERN = /^[A-Za-z0-9\-._~]{43,128}$/;
 
 function tokenError(error: string, description: string, status = 400) {
@@ -84,7 +85,10 @@ async function handleAuthorizationCodeGrant(client: OidcClient, body: URLSearchP
 
   const result = await consumeOidcAuthCode(code);
   if (result.type === 'reused') {
-    console.warn(`[OIDC Token Endpoint]: Authorization code replay, revoked its tokens (client ${client.clientId}).`);
+    logWarning('OIDC authorization code replay, revoked its tokens', {
+      area: 'oidc-token',
+      tags: { event: 'auth-code-replay' },
+    });
     return tokenError('invalid_grant', 'The authorization code has already been used.');
   }
   if (result.type === 'invalid' || result.value.clientId !== client.clientId) {
@@ -138,7 +142,10 @@ async function handleRefreshTokenGrant(client: OidcClient, body: URLSearchParams
   const result = await consumeOidcRefreshToken(token);
   if (result.type === 'reused') {
     // Either the client or an attacker holds a copy of a rotated token, so the whole token family is revoked.
-    console.warn(`[OIDC Token Endpoint]: Refresh token reuse, revoked its token family (client ${client.clientId}).`);
+    logWarning('OIDC refresh token reuse, revoked its token family', {
+      area: 'oidc-token',
+      tags: { event: 'refresh-token-reuse' },
+    });
     return tokenError('invalid_grant', 'The refresh token has already been used.');
   }
   if (result.type === 'invalid' || result.value.clientId !== client.clientId) {
@@ -180,17 +187,17 @@ async function handleRefreshTokenGrant(client: OidcClient, body: URLSearchParams
 }
 
 export async function POST(request: NextRequest) {
-  const body = new URLSearchParams(await request.text());
-
-  const client = await authenticateOidcClient(request.headers.get('authorization'), body);
-  if (client == null) {
-    return NextResponse.json(
-      { error: 'invalid_client', error_description: 'Client authentication failed.' },
-      { status: 401, headers: { ...NO_STORE_HEADERS, 'WWW-Authenticate': 'Basic realm="oidc"' } }
-    );
-  }
-
   try {
+    const body = new URLSearchParams(await request.text());
+
+    const client = await authenticateOidcClient(request.headers.get('authorization'), body);
+    if (client == null) {
+      return NextResponse.json(
+        { error: 'invalid_client', error_description: 'Client authentication failed.' },
+        { status: 401, headers: { ...NO_STORE_HEADERS, 'WWW-Authenticate': 'Basic realm="oidc"' } }
+      );
+    }
+
     const grantType = body.get('grant_type');
     if (grantType === 'authorization_code') {
       return await handleAuthorizationCodeGrant(client, body);
@@ -200,7 +207,7 @@ export async function POST(request: NextRequest) {
     }
     return tokenError('unsupported_grant_type', 'The requested grant type is not supported.');
   } catch (error) {
-    console.error('[OIDC Token Endpoint Error]:', error);
+    logError(error, 'OIDC token endpoint failed', { area: 'oidc-token' });
     return tokenError('server_error', 'The token could not be issued.', 500);
   }
 }

@@ -1,6 +1,7 @@
 import 'server-only';
 import { User, WebSocketEvent } from '@authapex/core';
 import { getUserAppSession, getUserAppSessions } from '@/lib/server/mongodb';
+import { logWarning } from '@/lib/server/logger';
 import axios from 'axios';
 
 export async function notifyUserUpdate(user: User): Promise<void> {
@@ -16,7 +17,9 @@ export async function notifyUserUpdate(user: User): Promise<void> {
           userId: user.userId,
         },
       } as WebSocketEvent)
-      .catch(console.error);
+      .catch((error) => {
+        logWarning('User update notification failed', { area: 'websockets', tags: { event: 'user-update' } }, error);
+      });
   });
 
   await Promise.all(promisses);
@@ -27,12 +30,14 @@ export async function notifySessionDelete(userId: string, app: string, verified:
   if (session?.websocketEndpoint == null) {
     return;
   }
-  await axios
-    .post(session.websocketEndpoint, {
+  try {
+    await axios.post(session.websocketEndpoint, {
       type: 'session-deleted',
       data: {
         userId,
       },
-    } as WebSocketEvent)
-    .catch(console.error);
+    } as WebSocketEvent);
+  } catch (error) {
+    logWarning('Session delete notification failed', { area: 'websockets', tags: { event: 'session-deleted' } }, error);
+  }
 }

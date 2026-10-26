@@ -1,23 +1,25 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { getServerState } from '@/lib/server/serverState';
 import { nanoid } from 'nanoid';
 import { APP_NAME } from '@/lib/consts';
 import { getAuth } from '@/lib/actions/auth';
 import { setProfileImageId } from '@/lib/server/mongodb';
 import { notifyUserUpdate } from '@/lib/server/websockets';
+import { apiError, handleRouteError, jsonNoStore } from '@/lib/server/api';
+import { logWarning } from '@/lib/server/logger';
 
 export async function POST(request: NextRequest) {
-  const auth = await getAuth();
-  if (!auth.isAuth) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-
   try {
+    const auth = await getAuth();
+    if (!auth.isAuth) {
+      return apiError('Unauthorized', 401);
+    }
+
     const formData = await request.formData();
     const file = formData.get('file') as Blob | null;
 
     if (!file) {
-      return NextResponse.json({ error: 'No file was provided.' }, { status: 400 });
+      return apiError('No file was provided.', 400);
     }
 
     const uuid = nanoid();
@@ -33,22 +35,30 @@ export async function POST(request: NextRequest) {
     const previousImageId = auth.user.profileImageId;
     const imageId = cloudflareImage.result.id;
     const result = await setProfileImageId(auth.user.userId, imageId);
+
+    if (!result.success) {
+      // The database entry could not be updated, so remove the newly uploaded image again.
+      try {
+        await getServerState().cloudflareImages.deleteImage(imageId);
+      } catch (error) {
+        logWarning('The orphaned profile image could not be deleted', { area: 'profile-image' }, error);
+      }
+      return jsonNoStore({ success: false });
+    }
+
     await notifyUserUpdate(auth.user);
 
     if (previousImageId != null) {
       try {
         await getServerState().cloudflareImages.deleteImage(previousImageId);
-      } catch {}
+      } catch (error) {
+        // The new image is already stored, so failing to delete the old one must not fail the upload.
+        logWarning('The previous profile image could not be deleted', { area: 'profile-image' }, error);
+      }
     }
 
-    if (result.success) {
-      return NextResponse.json({ success: true });
-    } else {
-      await getServerState().cloudflareImages.deleteImage(imageId);
-      return NextResponse.json({ success: false });
-    }
-  } catch (e) {
-    console.error(e);
-    return NextResponse.json({ error: 'Something went wrong during the upload.' }, { status: 500 });
+    return jsonNoStore({ success: true });
+  } catch (error) {
+    return handleRouteError(error, '/api/user/profile', 'Something went wrong during the upload.');
   }
 }

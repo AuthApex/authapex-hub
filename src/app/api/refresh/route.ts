@@ -1,16 +1,16 @@
-import { NextResponse } from 'next/server';
 import { getAuth } from '@/lib/actions/auth';
 import { addWeeks, isAfter } from 'date-fns';
 import { insertSession, invalidateSession } from '@/lib/server/mongodb';
 import { createSession, deleteSession } from '@/lib/server/session';
+import { apiError, handleRouteError, jsonNoStore } from '@/lib/server/api';
 
 export async function GET() {
-  const auth = await getAuth();
-  if (auth.isAuth && isAfter(addWeeks(new Date(), 1), auth.expiresAt)) {
-    try {
+  try {
+    const auth = await getAuth();
+    if (auth.isAuth && isAfter(addWeeks(new Date(), 1), auth.expiresAt)) {
       const invalidateResult = await invalidateSession({ sessionId: auth.sessionId });
       if (!invalidateResult.success) {
-        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+        return apiError('Internal Server Error', 500);
       }
       await deleteSession();
 
@@ -23,18 +23,17 @@ export async function GET() {
 
       if (!insertResult.success) {
         await deleteSession();
-        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+        return apiError('Internal Server Error', 500);
       }
 
-      return NextResponse.json({
+      return jsonNoStore({
         refreshed: true,
       });
-    } catch (e) {
-      console.error(e);
-      return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     }
+    return jsonNoStore({
+      refreshed: false,
+    });
+  } catch (error) {
+    return handleRouteError(error, '/api/refresh');
   }
-  return NextResponse.json({
-    refreshed: false,
-  });
 }

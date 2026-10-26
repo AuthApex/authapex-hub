@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getUserByUserId } from '@/lib/server/mongodb';
 import { getOidcGrant } from '@/lib/server/oidcMongodb';
 import { getOidcUserClaims, verifyOidcAccessToken } from '@/lib/server/oidc/tokens';
-
-const NO_STORE_HEADERS = { 'Cache-Control': 'no-store', Pragma: 'no-cache' };
+import { NO_STORE_HEADERS } from '@/lib/server/api';
+import { logError } from '@/lib/server/logger';
 
 function unauthorized(description: string) {
   return NextResponse.json(
@@ -41,10 +41,22 @@ async function handleUserinfo(request: NextRequest) {
   return NextResponse.json({ sub: user.userId, ...getOidcUserClaims(user, scopes) }, { headers: NO_STORE_HEADERS });
 }
 
+async function handleUserinfoRoute(request: NextRequest) {
+  try {
+    return await handleUserinfo(request);
+  } catch (error) {
+    logError(error, 'OIDC userinfo endpoint failed', { area: 'oidc-userinfo' });
+    return NextResponse.json(
+      { error: 'server_error', error_description: 'The user information could not be loaded.' },
+      { status: 500, headers: NO_STORE_HEADERS }
+    );
+  }
+}
+
 export async function GET(request: NextRequest) {
-  return handleUserinfo(request);
+  return handleUserinfoRoute(request);
 }
 
 export async function POST(request: NextRequest) {
-  return handleUserinfo(request);
+  return handleUserinfoRoute(request);
 }

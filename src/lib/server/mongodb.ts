@@ -1,5 +1,6 @@
 import 'server-only';
 import { getServerState } from '@/lib/server/serverState';
+import { logError } from '@/lib/server/logger';
 import { nanoid } from 'nanoid';
 import { AdminUser, UserWithPassword } from '@/lib/models/User';
 import { RoleModel, TokenRequest } from '@authapex/core';
@@ -19,7 +20,8 @@ export async function setDisplayName(userId: string, newDisplayName: string): Pr
     const db = serverState.mongoClient.db(serverState.mongoDbName);
     await db.collection('users').updateOne({ userId }, { $set: { displayName: newDisplayName } });
     return { success: true };
-  } catch {
+  } catch (error) {
+    logError(error, 'MongoDB operation failed', { area: 'mongodb', tags: { operation: 'setDisplayName' } });
     return { success: false };
   }
 }
@@ -36,7 +38,8 @@ export async function setEmail(userId: string, normalizedEmail: string): Promise
 
     await db.collection('users').updateOne({ userId }, { $set: { email: normalizedEmail } });
     return { success: true };
-  } catch {
+  } catch (error) {
+    logError(error, 'MongoDB operation failed', { area: 'mongodb', tags: { operation: 'setEmail' } });
     return { success: false };
   }
 }
@@ -50,7 +53,8 @@ export async function setProfileImageId(
     const db = serverState.mongoClient.db(serverState.mongoDbName);
     await db.collection('users').updateOne({ userId }, { $set: { profileImageId: newProfileImageId } });
     return { success: true };
-  } catch {
+  } catch (error) {
+    logError(error, 'MongoDB operation failed', { area: 'mongodb', tags: { operation: 'setProfileImageId' } });
     return { success: false };
   }
 }
@@ -64,7 +68,8 @@ export async function setProfileImageUrl(
     const db = serverState.mongoClient.db(serverState.mongoDbName);
     await db.collection('users').updateOne({ userId }, { $set: { profileImageUrl: newProfileImageUrl } });
     return { success: true };
-  } catch {
+  } catch (error) {
+    logError(error, 'MongoDB operation failed', { area: 'mongodb', tags: { operation: 'setProfileImageUrl' } });
     return { success: false };
   }
 }
@@ -75,7 +80,8 @@ export async function invalidateSession({ sessionId }: { sessionId: string }): P
     const db = serverState.mongoClient.db(serverState.mongoDbName);
     await db.collection('sessions').deleteOne({ sessionId });
     return { success: true };
-  } catch {
+  } catch (error) {
+    logError(error, 'MongoDB operation failed', { area: 'mongodb', tags: { operation: 'invalidateSession' } });
     return { success: false };
   }
 }
@@ -94,7 +100,8 @@ export async function insertSession({
     const db = serverState.mongoClient.db(serverState.mongoDbName);
     await db.collection('sessions').insertOne({ userId, sessionId, expiresAt });
     return { success: true };
-  } catch {
+  } catch (error) {
+    logError(error, 'MongoDB operation failed', { area: 'mongodb', tags: { operation: 'insertSession' } });
     return { success: false };
   }
 }
@@ -122,7 +129,8 @@ export async function getUserRawSession(
       verified: session.verified,
       websocketEndpoint: session.websocketEndpoint,
     };
-  } catch {
+  } catch (error) {
+    logError(error, 'MongoDB operation failed', { area: 'mongodb', tags: { operation: 'getUserRawSession' } });
     return null;
   }
 }
@@ -147,7 +155,8 @@ export async function getUserByEmail(email: string): Promise<UserWithPassword | 
       profileImageId: user.profileImageId,
       profileImageUrl: user.profileImageUrl,
     };
-  } catch {
+  } catch (error) {
+    logError(error, 'MongoDB operation failed', { area: 'mongodb', tags: { operation: 'getUserByEmail' } });
     return null;
   }
 }
@@ -172,7 +181,8 @@ export async function getUserByGoogleId(googleId: string): Promise<UserWithPassw
       profileImageId: user.profileImageId,
       profileImageUrl: user.profileImageUrl,
     };
-  } catch {
+  } catch (error) {
+    logError(error, 'MongoDB operation failed', { area: 'mongodb', tags: { operation: 'getUserByGoogleId' } });
     return null;
   }
 }
@@ -202,7 +212,8 @@ export async function getUserBySession(sessionId: string): Promise<UserWithPassw
       profileImageUrl: user.profileImageUrl,
       googleId: user.googleId,
     };
-  } catch {
+  } catch (error) {
+    logError(error, 'MongoDB operation failed', { area: 'mongodb', tags: { operation: 'getUserBySession' } });
     return null;
   }
 }
@@ -265,7 +276,8 @@ export async function createUser({
       profileImageId: user.profileImageId,
       profileImageUrl: user.profileImageUrl,
     };
-  } catch {
+  } catch (error) {
+    logError(error, 'MongoDB operation failed', { area: 'mongodb', tags: { operation: 'createUser' } });
     return null;
   }
 }
@@ -280,7 +292,8 @@ export async function insertAuthCode(
     const db = serverState.mongoClient.db(serverState.mongoDbName);
     await db.collection('authCodes').insertOne({ authCode, userId, status });
     return { success: true };
-  } catch {
+  } catch (error) {
+    logError(error, 'MongoDB operation failed', { area: 'mongodb', tags: { operation: 'insertAuthCode' } });
     return { success: false };
   }
 }
@@ -299,7 +312,8 @@ export async function getUserIdByAuthCode(
       userId: authCodeDoc.userId,
       status: authCodeDoc.status,
     };
-  } catch {
+  } catch (error) {
+    logError(error, 'MongoDB operation failed', { area: 'mongodb', tags: { operation: 'getUserIdByAuthCode' } });
     return null;
   }
 }
@@ -317,7 +331,8 @@ export async function isAppAuthorizedToSeeUser(
 
     const userAppSession = await getUserRawSession(app, userId, authorizedApp == null ? null : true);
     return !!userAppSession;
-  } catch {
+  } catch (error) {
+    logError(error, 'MongoDB operation failed', { area: 'mongodb', tags: { operation: 'isAppAuthorizedToSeeUser' } });
     return false;
   }
 }
@@ -358,7 +373,8 @@ export async function authorizeAppToSeeUser(
       .insertOne({ app: payload.app, userId, websocketEndpoint: payload.websocketEndpoint, verified });
 
     return { success: true };
-  } catch {
+  } catch (error) {
+    logError(error, 'MongoDB operation failed', { area: 'mongodb', tags: { operation: 'authorizeAppToSeeUser' } });
     return { success: false };
   }
 }
@@ -378,7 +394,8 @@ export async function getUserAppSession(userId: string, app: string, verified: b
       verified: session.verified,
       websocketEndpoint: session.websocketEndpoint ?? authorizedApp?.websocketEndpoint,
     };
-  } catch {
+  } catch (error) {
+    logError(error, 'MongoDB operation failed', { area: 'mongodb', tags: { operation: 'getUserAppSession' } });
     return null;
   }
 }
@@ -410,7 +427,8 @@ export async function getUserAppSessions(userId: string): Promise<
         websocketEndpoint: session.websocketEndpoint ?? authorizedApp?.websocketEndpoint,
       };
     });
-  } catch {
+  } catch (error) {
+    logError(error, 'MongoDB operation failed', { area: 'mongodb', tags: { operation: 'getUserAppSessions' } });
     return [];
   }
 }
@@ -425,7 +443,8 @@ export async function removeUserAppSession(
     const db = serverState.mongoClient.db(serverState.mongoDbName);
     await db.collection('userAppSessions').deleteOne({ userId, app, verified });
     return { success: true };
-  } catch {
+  } catch (error) {
+    logError(error, 'MongoDB operation failed', { area: 'mongodb', tags: { operation: 'removeUserAppSession' } });
     return { success: false };
   }
 }
@@ -451,7 +470,8 @@ export async function getAuthorizedApp(appName: string): Promise<{
       apiKey: app.apiKey,
       websocketEndpoint: app.websocketEndpoint,
     };
-  } catch {
+  } catch (error) {
+    logError(error, 'MongoDB operation failed', { area: 'mongodb', tags: { operation: 'getAuthorizedApp' } });
     return null;
   }
 }
@@ -470,17 +490,18 @@ export async function getAuthorizedApps(): Promise<
       apiKey: app.apiKey,
       websocketEndpoint: app.websocketEndpoint,
     }));
-  } catch {
+  } catch (error) {
+    logError(error, 'MongoDB operation failed', { area: 'mongodb', tags: { operation: 'getAuthorizedApps' } });
     return [];
   }
 }
 
 export async function getAuthorizedAppsSanitized(): Promise<{ name: string; displayName: string; url: string }[]> {
   try {
-    return getAuthorizedApps().then((apps) =>
-      apps.map((app) => ({ name: app.name, displayName: app.displayName, url: app.url }))
-    );
-  } catch {
+    const apps = await getAuthorizedApps();
+    return apps.map((app) => ({ name: app.name, displayName: app.displayName, url: app.url }));
+  } catch (error) {
+    logError(error, 'MongoDB operation failed', { area: 'mongodb', tags: { operation: 'getAuthorizedAppsSanitized' } });
     return [];
   }
 }
@@ -550,7 +571,8 @@ export async function findUsers({
       users: users.slice(0, usersPerPage).map(mapAdminUser),
       hasMore: users.length > usersPerPage,
     };
-  } catch {
+  } catch (error) {
+    logError(error, 'MongoDB operation failed', { area: 'mongodb', tags: { operation: 'findUsers' } });
     return { users: [], hasMore: false };
   }
 }
@@ -562,7 +584,8 @@ export async function getUserRoleApplications(): Promise<string[]> {
     const db = serverState.mongoClient.db(serverState.mongoDbName);
     const applications = await db.collection('users').distinct('roles.application');
     return applications.filter((app): app is string => typeof app === 'string' && app !== '').sort();
-  } catch {
+  } catch (error) {
+    logError(error, 'MongoDB operation failed', { area: 'mongodb', tags: { operation: 'getUserRoleApplications' } });
     return [];
   }
 }
@@ -578,7 +601,8 @@ export async function addAuthorizedApp(
     const db = serverState.mongoClient.db(serverState.mongoDbName);
     await db.collection('authorizedApps').insertOne({ name, displayName, url, apiKey: nanoid(64), websocketEndpoint });
     return { success: true };
-  } catch {
+  } catch (error) {
+    logError(error, 'MongoDB operation failed', { area: 'mongodb', tags: { operation: 'addAuthorizedApp' } });
     return { success: false };
   }
 }
@@ -589,7 +613,8 @@ export async function deleteAuthorizedApp(name: string): Promise<DbUpdateResult>
     const db = serverState.mongoClient.db(serverState.mongoDbName);
     await db.collection('authorizedApps').deleteOne({ name });
     return { success: true };
-  } catch {
+  } catch (error) {
+    logError(error, 'MongoDB operation failed', { area: 'mongodb', tags: { operation: 'deleteAuthorizedApp' } });
     return { success: false };
   }
 }
@@ -600,7 +625,8 @@ export async function setUserRoles(userId: string, roles: RoleModel[]): Promise<
     const db = serverState.mongoClient.db(serverState.mongoDbName);
     await db.collection('users').updateOne({ userId }, { $set: { roles } });
     return { success: true };
-  } catch {
+  } catch (error) {
+    logError(error, 'MongoDB operation failed', { area: 'mongodb', tags: { operation: 'setUserRoles' } });
     return { success: false };
   }
 }
@@ -626,7 +652,8 @@ export async function getUserByUserId(userId: string): Promise<UserWithPassword 
       profileImageUrl: user.profileImageUrl,
       emailVerified: user.emailVerified,
     };
-  } catch {
+  } catch (error) {
+    logError(error, 'MongoDB operation failed', { area: 'mongodb', tags: { operation: 'getUserByUserId' } });
     return null;
   }
 }
@@ -637,7 +664,8 @@ export async function removeAuthCode(authCode: string): Promise<DbUpdateResult> 
     const db = serverState.mongoClient.db(serverState.mongoDbName);
     await db.collection('authCodes').deleteOne({ authCode });
     return { success: true };
-  } catch {
+  } catch (error) {
+    logError(error, 'MongoDB operation failed', { area: 'mongodb', tags: { operation: 'removeAuthCode' } });
     return { success: false };
   }
 }
